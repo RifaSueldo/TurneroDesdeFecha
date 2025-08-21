@@ -3,8 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
+  <p><a href="#" onclick="mostrarRecuperar()">¿Olvidaste tu contraseña?</a></p>
+
+<div id="recuperarDiv" style="display:none;">
+  <h3>Recuperar Contraseña</h3>
+  <input type="email" id="recuperarEmail" placeholder="Tu email">
+  <button onclick="recuperarClave()">Enviar</button>
+</div>
+
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwrdojWN3xokdhO7K_AXAXBgT2-lDd2wSfGK4T6ntzsGuHhn6mYv2cWDnyrbTzihrnU/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwYyZxhhH5LV0k23fONwZ7INeWz1is4TiqcxHhjz2T3Rwbho_IUwRoumqJbvA8iPXbM/exec";
 
     async function login() {
       const email = document.getElementById("email").value.trim();
@@ -31,6 +39,33 @@
         alert("Usuario o contraseña incorrectos");
       }
     }
+    function mostrarRecuperar(){
+  document.getElementById("recuperarDiv").style.display = "block";
+}
+
+async function recuperarClave(){
+  const email = document.getElementById("recuperarEmail").value.trim();
+  if (!email) {
+    alert("Ingresá tu email");
+    return;
+  }
+
+  const res = await fetch(`${API_URL}`, {
+    method: "POST",
+    body: new URLSearchParams({
+      action: "recoverPassword",
+      email: email
+    })
+  });
+
+  const data = await res.json();
+  if (data.status === "ok") {
+    alert("Te enviamos tu contraseña al correo ingresado.");
+  } else {
+    alert(data.msg || "No encontramos tu email.");
+  }
+}
+
   </script>
 </head>
 <body>
