@@ -21,7 +21,6 @@ const API_URL = "https://script.google.com/macros/s/AKfycbzpZbolbStinswesYusO4rv
 let params = new URLSearchParams(window.location.search);
 let username = params.get("username");
 
-// Tomamos de la ruta si no hay query string (SPA Netlify)
 if (!username) {
   let path = window.location.pathname;
   path = path.replace(/\/+$/, "");
@@ -36,7 +35,6 @@ let profesionales = [];
 let turnosData = {};
 let selectedProf = "";
 let selectedHora = "";
-let diasReservados = []; // <-- días con reservas en formato YYYY-MM-DD
 
 // ------------------ UTIL ------------------
 function mostrarHoraDecimal(horaDecimal) {
@@ -69,9 +67,8 @@ function renderCalendario(year, month) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
 
-    // Si es pasado o ya reservado, deshabilitamos
-    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate()) || diasReservados.includes(fechaStr)) {
-      table += `<td style="color:#999; background:#ccc; cursor:not-allowed;">${d}</td>`;
+    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
     } else {
       table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
     }
@@ -102,16 +99,6 @@ async function cargarTurnos(fechaStr) {
   profesionales = data.profesionales;
   turnosData = data.turnos;
 
-  // marcar los días ya reservados
-  diasReservados = [];
-  Object.values(turnosData).forEach(turnos => {
-    turnos.forEach(t => {
-      if(t.estado==="bloqueado") {
-        diasReservados.push(fechaStr); // agrega día si tiene turno bloqueado
-      }
-    });
-  });
-
   let html = "";
   profesionales.forEach(prof=>{
     html += `<div class="turnos"><h3>${prof.nombre}</h3>`;
@@ -120,7 +107,7 @@ async function cargarTurnos(fechaStr) {
     else {
       turnos.forEach(t=>{
         const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
-        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${t.hora}')">${t.hora}</span>`;
+        html += `<span class="hora ${clase}" ${clase==="bloqueado" ? "" : `onclick="seleccionarTurno('${prof.nombre}','${t.hora}')"`}>${t.hora}</span>`;
       });
     }
     html += "</div>";
@@ -187,9 +174,7 @@ function seleccionarTurno(prof, hora) {
     document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
 
     if(result.status==="ok") {
-      diasReservados.push(fechaStr); // bloqueamos el día
-      renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth()); // refrescamos calendario
-      cargarTurnos(fechaStr); // refrescamos turnos
+      cargarTurnos(fechaStr); // refresca las horas y bloquea la que se reservó
     }
   };
 }
