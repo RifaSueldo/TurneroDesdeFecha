@@ -169,8 +169,36 @@ function seleccionarTurno(prof, hora) {
     const result = await res.json();
     document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
     if(result.status==="ok") cargarTurnos(fechaStr);
+    marcarDiaReservado(fechaStr); // <-- Esto bloquea el día
   };
 }
+  function marcarDiaReservado(fechaStr) {
+  // Recorremos todas las celdas del calendario
+  const calendario = document.getElementById("calendario");
+  const celdas = calendario.querySelectorAll("td");
+
+  celdas.forEach(td => {
+    // Obtenemos la fecha de la celda
+    const dia = td.innerText;
+    if (!dia) return;
+
+    // Reconstruimos la fecha de la celda
+    const yearMonth = calendario.querySelector("h2").innerText;
+    const [mesStr, añoStr] = yearMonth.split(" ");
+    const meses = { "enero":0,"febrero":1,"marzo":2,"abril":3,"mayo":4,"junio":5,"julio":6,"agosto":7,"septiembre":8,"octubre":9,"noviembre":10,"diciembre":11 };
+    const mes = meses[mesStr.toLowerCase()];
+    const año = parseInt(añoStr);
+    const fechaCelda = new Date(año, mes, parseInt(dia));
+    const fechaCeldaStr = fechaCelda.toISOString().split("T")[0];
+
+    if (fechaCeldaStr === fechaStr) {
+      td.style.backgroundColor = "#ccc";      // color gris
+      td.style.cursor = "not-allowed";        // cursor bloqueado
+      td.onclick = null;                       // deshabilitamos click
+    }
+  });
+}
+
 </script>
 </head>
 <body>
