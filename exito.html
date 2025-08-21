@@ -41,24 +41,29 @@
   </style>
 </head>
 <body>
-  <h1>¡Pago aprobado! 🎉</h1>
-  <p>En breve volverás al panel...</p>
-  <div class="spinner"></div>
+   <h1>✅ ¡Pago realizado con éxito!</h1>
+  <p>Estamos acreditando tus créditos...</p>
 
   <script>
-    // obtengo los parámetros de la URL (por si querés usarlos más adelante)
+    // Leer parámetros de la URL
     const params = new URLSearchParams(window.location.search);
-    const username = params.get("username");
     const userId = params.get("userId");
+    const username = params.get("username");
+    const cantidad = 1; // 💡 o la cantidad de créditos que correspondan
 
-    // redirigir al panel después de 3 segundos
-    setTimeout(() => {
-      if (username && userId) {
-        window.location.href = `panel.html?username=${username}&userId=${userId}`;
-      } else {
-        window.location.href = "panel.html";
-      }
-    }, 3000);
+    // Llamar a tu Apps Script para sumar créditos
+    fetch("https://script.google.com/macros/s/AKfycbymAcnwDSdSKVhMIKhV8G0nYgGc49QVgYfRL8sfp9Ci-QPjQ47wyugZ-K2lFoeq1NSMJA/exec?action=sumarCreditos&userId=" + userId + "&cantidad=" + cantidad)
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === "ok") {
+          document.body.innerHTML += `<p>Ya tienes ${data.nuevosCreditos} créditos.</p>`;
+        } else {
+          document.body.innerHTML += `<p>Hubo un error: ${data.msg}</p>`;
+        }
+      })
+      .catch(err => {
+        document.body.innerHTML += `<p>Error en la conexión: ${err}</p>`;
+      });
   </script>
 </body>
 </html>
