@@ -4,7 +4,32 @@
 <meta charset="UTF-8">
 <title>Panel de Configuración</title>
 <style>
-  body { font-family: Arial, sans-serif; padding:20px; }
+  body {
+    font-family: Arial, sans-serif;
+    margin:0; padding:0;
+    background:#eee;
+  }
+  header {
+    display:flex; justify-content:space-between; align-items:center;
+    background:#ddd; padding:10px;
+  }
+  header .logo { font-weight:bold; color:#4b2a72; }
+  header button {
+    background:#444; color:#fff; border:none; padding:8px 15px; cursor:pointer;
+    border-radius:4px;
+  }
+  .menu {
+    margin:0; padding:0; list-style:none;
+  }
+  .menu li {
+    background:#4b2a72; color:#fff; padding:15px;
+    cursor:pointer; border-bottom:1px solid #333;
+    font-weight:bold;
+  }
+  .menu li:hover { background:#5e3a8e; }
+  .submenu {
+    display:none; background:#f4f4f4; padding:15px;
+  }
   .profesional { border:1px solid #ccc; padding:10px; margin:10px 0; }
   h2 { margin-top:20px; }
   label { margin-right:10px; }
@@ -136,10 +161,47 @@ async function guardarExcepcion(profId) {
 </script>
 </head>
 <body onload="init()">
-  <h1>Panel de Configuración</h1>
-  <p>Usuario: <b id="username"></b></p>
-  <button onclick="agregarProfesional()">Agregar Profesional</button>
+  <header>
+    <div class="logo">TurnoX</div>
+    <button onclick="window.location.href='index.html'">Volver</button>
+  </header>
+  
+  <p style="padding:10px;">Usuario: <b id="username"></b></p>
+  <ul class="menu">
+    <li onclick="toggleSection('creditos')">Créditos +</li>
+    <div id="creditos" class="submenu">
+      <h3>Gestión de Créditos</h3>
+      <p>Aquí irá el sistema de fichas (descuento de 1 crédito por turno).</p>
+    </div>
+
+    <li onclick="toggleSection('turnos')">Turnos +</li>
+    <div id="turnos" class="submenu">
+      <h3>Gestión de Turnos</h3>
+      <p>Aquí mostraremos y configuraremos los turnos por profesional.</p>
+    </div>
+
+    <li onclick="toggleSection('clientes')">Clientes +</li>
+    <div id="clientes" class="submenu">
+      <h3>Listado de Clientes</h3>
+      <p>Buscador por DNI y listado de datos personales de cada cliente.</p>
+    </div>
+
+    <li onclick="toggleSection('config')">Configuración +</li>
+    <div id="config" class="submenu">
+      <h3>Configuración de horarios</h3>
+      <button onclick="agregarProfesional()">Agregar Profesional</button>
   <div id="profesionales"></div>
   <div id="config"></div>
+    </div>
+  </ul>
+  <script>
+  // Función para abrir/cerrar secciones
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const isVisible = section.style.display === "block";
+  document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
+  if (!isVisible) section.style.display = "block";
+}
+  </script>
 </body>
 </html>
