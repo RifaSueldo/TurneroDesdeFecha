@@ -18,31 +18,31 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxNcjfnN9gkEi07jw1jyU-X9szmmpAerEfdn6LmcCvP15R00BYvJXy8Qca_9kAGl7Sq/exec";
 
 // ------------------ OBTENER USERNAME ------------------
-// 1. Intentamos obtenerlo de query string
 let params = new URLSearchParams(window.location.search);
 let username = params.get("username");
 
-// 2. Si no existe, lo tomamos de la ruta (para /peluca o /peluca/)
+// Tomamos de la ruta si no hay query string (SPA Netlify)
 if (!username) {
-  let path = window.location.pathname; // ej: /peluca
+  let path = window.location.pathname;
   path = path.replace(/\/+$/, ""); // quitar slashes finales
   const lastSegment = path.substring(path.lastIndexOf("/") + 1);
-  if (lastSegment && lastSegment !== "username.html") {
-    username = lastSegment;
-  }
+  if (lastSegment && lastSegment !== "username.html") username = lastSegment;
 }
 
-if (!username) {
-  alert("Falta username en la URL");
-} else {
-  username = username.toLowerCase(); // ⬅ forzar minúsculas
-}
+if (!username) alert("Falta username en la URL");
 
 let selectedDate = new Date();
 let profesionales = [];
 let turnosData = {};
 let selectedProf = "";
 let selectedHora = "";
+
+// ------------------ UTIL ------------------
+function mostrarHoraDecimal(horaDecimal) {
+  const horas = Math.floor(horaDecimal);
+  const minutos = Math.round((horaDecimal - horas) * 60);
+  return `${String(horas).padStart(2,'0')}:${String(minutos).padStart(2,'0')}`;
+}
 
 // ------------------ RENDER CALENDARIO ------------------
 document.addEventListener("DOMContentLoaded", () => {
@@ -101,7 +101,8 @@ async function cargarTurnos(fechaStr) {
     else {
       turnos.forEach(t=>{
         const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
-        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${t.hora}')">${t.hora}</span>`;
+        const horaStr = mostrarHoraDecimal(Number(t.hora));
+        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${t.hora}')">${horaStr}</span>`;
       });
     }
     html += "</div>";
@@ -119,7 +120,7 @@ function seleccionarTurno(prof, hora) {
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
-    <h3>Reservando turno en ${username} con ${prof} a las ${hora}</h3>
+    <h3>Reservando turno en ${username} con ${prof} a las ${mostrarHoraDecimal(Number(hora))}</h3>
     <form id="reservaForm">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="text" name="apellido" placeholder="Apellido" required>
