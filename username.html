@@ -15,7 +15,7 @@
   </style>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbw4wpyYXmONcJQ3SCKKSOVGy_iRTSp9nfOpssN--eJdeG9bsVfg2ZiHecD2X0EQHsRN/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzx6U2e9a0pkdge4l5orf--iEnTVdrtJIr4BKx3coNVi0MNnCnGnVsOJeuoBuNjZpMu/exec";
 
 // ------------------ OBTENER USERNAME ------------------
 let params = new URLSearchParams(window.location.search);
@@ -34,14 +34,8 @@ let selectedDate = new Date();
 let profesionales = [];
 let turnosData = {};
 let selectedProf = "";
+let selectedProfId = "";
 let selectedHora = "";
-
-// ------------------ UTIL ------------------
-function mostrarHoraDecimal(horaDecimal) {
-  const horas = Math.floor(horaDecimal);
-  const minutos = Math.round((horaDecimal - horas) * 60);
-  return `${String(horas).padStart(2,'0')}:${String(minutos).padStart(2,'0')}`;
-}
 
 // ------------------ RENDER CALENDARIO ------------------
 document.addEventListener("DOMContentLoaded", () => {
@@ -96,18 +90,18 @@ async function cargarTurnos(fechaStr) {
     return;
   }
 
-  profesionales = data.profesionales;
   turnosData = data.turnos;
+  profesionales = data.profesionales;
 
   let html = "";
-  profesionales.forEach(prof=>{
-    html += `<div class="turnos"><h3>${prof.nombre}</h3>`;
-    const turnos = turnosData[prof.nombre] || [];
-    if (turnos.length===0) html += "<p>No hay turnos disponibles</p>";
+  Object.keys(turnosData).forEach(profId => {
+    const profObj = turnosData[profId];
+    html += `<div class="turnos"><h3>${profObj.nombre}</h3>`;
+    if (profObj.turnos.length===0) html += "<p>No hay turnos disponibles</p>";
     else {
-      turnos.forEach(t=>{
+      profObj.turnos.forEach(t=>{
         const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
-        html += `<span class="hora ${clase}" ${clase==="bloqueado" ? "" : `onclick="seleccionarTurno('${prof.nombre}','${t.hora}')"`}>${t.hora}</span>`;
+        html += `<span class="hora ${clase}" ${clase==="bloqueado" ? "" : `onclick="seleccionarTurno('${profId}','${t.hora}')"`}>${t.hora}</span>`;
       });
     }
     html += "</div>";
@@ -117,15 +111,19 @@ async function cargarTurnos(fechaStr) {
 }
 
 // ------------------ SELECCIONAR TURNO ------------------
-function seleccionarTurno(prof, hora) {
-  selectedProf = prof;
+function seleccionarTurno(profId, hora) {
+  selectedProfId = profId;
+  selectedProf = turnosData[profId].nombre;
   selectedHora = hora;
-  const fechaStr = selectedDate.toISOString().split("T")[0];
+  mostrarFormReserva();
+}
 
+function mostrarFormReserva() {
+  const fechaStr = selectedDate.toISOString().split("T")[0];
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
-    <h3>Reservando turno en ${username} con ${prof} a las ${hora}</h3>
+    <h3>Reservando turno con ${selectedProf} a las ${selectedHora}</h3>
     <form id="reservaForm">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="text" name="apellido" placeholder="Apellido" required>
@@ -150,6 +148,7 @@ function seleccionarTurno(prof, hora) {
     const dataToSend = {
       username,
       profesional: selectedProf,
+      profesionalId: selectedProfId,
       fecha: fechaStr,
       hora: selectedHora,
       nombre: formData.get("nombre"),
@@ -174,7 +173,7 @@ function seleccionarTurno(prof, hora) {
     document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
 
     if(result.status==="ok") {
-      cargarTurnos(fechaStr); // refresca las horas y bloquea la que se reservó
+      cargarTurnos(fechaStr); // refresca y bloquea la hora reservada
     }
   };
 }
