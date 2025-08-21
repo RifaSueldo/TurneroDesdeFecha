@@ -24,7 +24,7 @@ let username = params.get("username");
 // Tomamos de la ruta si no hay query string (SPA Netlify)
 if (!username) {
   let path = window.location.pathname;
-  path = path.replace(/\/+$/, ""); // quitar slashes finales
+  path = path.replace(/\/+$/, "");
   const lastSegment = path.substring(path.lastIndexOf("/") + 1);
   if (lastSegment && lastSegment !== "username.html") username = lastSegment;
 }
@@ -36,6 +36,14 @@ let profesionales = [];
 let turnosData = {};
 let selectedProf = "";
 let selectedHora = "";
+let diasReservados = []; // <-- días con reservas en formato YYYY-MM-DD
+
+// ------------------ UTIL ------------------
+function mostrarHoraDecimal(horaDecimal) {
+  const horas = Math.floor(horaDecimal);
+  const minutos = Math.round((horaDecimal - horas) * 60);
+  return `${String(horas).padStart(2,'0')}:${String(minutos).padStart(2,'0')}`;
+}
 
 // ------------------ RENDER CALENDARIO ------------------
 document.addEventListener("DOMContentLoaded", () => {
@@ -44,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderCalendario(year, month) {
-  const today = new Date(); // fecha actual
+  const today = new Date();
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const calendarDiv = document.getElementById("calendario");
@@ -61,9 +69,9 @@ function renderCalendario(year, month) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
 
-    // Si es pasado, deshabilitamos
-    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
+    // Si es pasado o ya reservado, deshabilitamos
+    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate()) || diasReservados.includes(fechaStr)) {
+      table += `<td style="color:#999; background:#ccc; cursor:not-allowed;">${d}</td>`;
     } else {
       table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
     }
@@ -94,6 +102,16 @@ async function cargarTurnos(fechaStr) {
   profesionales = data.profesionales;
   turnosData = data.turnos;
 
+  // marcar los días ya reservados
+  diasReservados = [];
+  Object.values(turnosData).forEach(turnos => {
+    turnos.forEach(t => {
+      if(t.estado==="bloqueado") {
+        diasReservados.push(fechaStr); // agrega día si tiene turno bloqueado
+      }
+    });
+  });
+
   let html = "";
   profesionales.forEach(prof=>{
     html += `<div class="turnos"><h3>${prof.nombre}</h3>`;
@@ -102,8 +120,7 @@ async function cargarTurnos(fechaStr) {
     else {
       turnos.forEach(t=>{
         const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
-        const horaStr = t.hora; // <-- ya está en formato "HH:MM"
-        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${horaStr}')">${horaStr}</span>`;
+        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${t.hora}')">${t.hora}</span>`;
       });
     }
     html += "</div>";
@@ -147,7 +164,7 @@ function seleccionarTurno(prof, hora) {
       username,
       profesional: selectedProf,
       fecha: fechaStr,
-      hora: selectedHora, // <-- ya es "HH:MM"
+      hora: selectedHora,
       nombre: formData.get("nombre"),
       apellido: formData.get("apellido"),
       telefono: formData.get("telefono"),
@@ -168,37 +185,14 @@ function seleccionarTurno(prof, hora) {
     });
     const result = await res.json();
     document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
-    if(result.status==="ok") cargarTurnos(fechaStr);
-    marcarDiaReservado(fechaStr); // <-- Esto bloquea el día
+
+    if(result.status==="ok") {
+      diasReservados.push(fechaStr); // bloqueamos el día
+      renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth()); // refrescamos calendario
+      cargarTurnos(fechaStr); // refrescamos turnos
+    }
   };
 }
-  function marcarDiaReservado(fechaStr) {
-  // Recorremos todas las celdas del calendario
-  const calendario = document.getElementById("calendario");
-  const celdas = calendario.querySelectorAll("td");
-
-  celdas.forEach(td => {
-    // Obtenemos la fecha de la celda
-    const dia = td.innerText;
-    if (!dia) return;
-
-    // Reconstruimos la fecha de la celda
-    const yearMonth = calendario.querySelector("h2").innerText;
-    const [mesStr, añoStr] = yearMonth.split(" ");
-    const meses = { "enero":0,"febrero":1,"marzo":2,"abril":3,"mayo":4,"junio":5,"julio":6,"agosto":7,"septiembre":8,"octubre":9,"noviembre":10,"diciembre":11 };
-    const mes = meses[mesStr.toLowerCase()];
-    const año = parseInt(añoStr);
-    const fechaCelda = new Date(año, mes, parseInt(dia));
-    const fechaCeldaStr = fechaCelda.toISOString().split("T")[0];
-
-    if (fechaCeldaStr === fechaStr) {
-      td.style.backgroundColor = "#ccc";      // color gris
-      td.style.cursor = "not-allowed";        // cursor bloqueado
-      td.onclick = null;                       // deshabilitamos click
-    }
-  });
-}
-
 </script>
 </head>
 <body>
