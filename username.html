@@ -120,9 +120,10 @@ async function cargarTurnos(fechaStr) {
     if (profObj.turnos.length===0) html += "<p>No hay turnos disponibles</p>";
     else {
       profObj.turnos.forEach(t=>{
-        const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
-        html += `<span class="hora ${clase}" ${clase==="bloqueado" ? "" : `onclick="seleccionarTurno('${profId}','${t.hora}')"`}>${t.hora}</span>`;
-      });
+  const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
+  const horaFormateada = t.hora.padStart(5,"0"); // <-- esto es lo nuevo
+  html += `<span class="hora ${clase}" ${clase==="bloqueado" ? "" : `onclick="seleccionarTurno('${profId}','${horaFormateada}')"`}>${horaFormateada}</span>`;
+});
     }
     html += "</div>";
   });
