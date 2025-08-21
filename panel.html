@@ -168,14 +168,8 @@ async function guardarExcepcion(profId) {
   
   <p style="padding:10px;">Usuario: <b id="username"></b></p>
   <ul class="menu">
-    <li onclick="toggleSection('creditos')">Créditos +</li>
-    <div id="creditos" class="submenu">
-  <h3>Gestión de Créditos</h3>
-  <p>Créditos actuales: <b id="creditosActuales">0</b></p>
-  <label>Cantidad a comprar: <input type="number" id="cantidadCreditos" min="1" value="1"></label>
-  <button onclick="comprarCreditos()">Comprar Créditos</button>
-  <div id="linkPago" style="margin-top:10px;"></div>
-</div>
+    <li onclick="toggleSection('credito')">Créditos +</li>
+    
 
     <li onclick="toggleSection('turnos')">Turnos +</li>
     <div id="turnos" class="submenu">
@@ -206,36 +200,6 @@ function toggleSection(id) {
   if (!isVisible) section.style.display = "block";
 }
   </script>
-  <script>
-  // ---------- GESTIÓN DE CRÉDITOS ----------
-async function cargarCreditos() {
-  // Opcional: cargar créditos actuales desde tu App Script
-  const res = await fetch(`${API_URL}?username=${username}&action=getCreditos`);
-  const data = await res.json();
-  if (data.status === "ok") {
-    document.getElementById("creditosActuales").innerText = data.creditos || 0;
-  }
-}
-
-async function comprarCreditos() {
-  const cantidad = parseInt(document.getElementById("cantidadCreditos").value);
-  if (isNaN(cantidad) || cantidad <= 0) { alert("Cantidad inválida"); return; }
-
-  // Llamamos al endpoint de tu App Script que genera la preferencia de Mercado Pago
-  const res = await fetch(`${API_URL}?action=crearPreferencia&email=${username}&cantidad=${cantidad}`);
-  const data = await res.json();
-
-  if (data.status === "ok") {
-    const link = data.init_point; // link de Mercado Pago
-    const div = document.getElementById("linkPago");
-    div.innerHTML = `<a href="${link}" target="_blank">Ir a pagar ${cantidad} créditos</a>`;
-  } else {
-    alert("Error al generar el pago");
-  }
-}
-
-// Llamar al cargar la página
-init().then(cargarCreditos);
-</script>
+ 
 </body>
 </html>
