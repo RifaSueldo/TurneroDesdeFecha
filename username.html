@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderCalendario(year, month) {
+  const today = new Date(); // fecha actual
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
   const calendarDiv = document.getElementById("calendario");
@@ -59,7 +60,14 @@ function renderCalendario(year, month) {
   for (let d=1; d<=lastDay.getDate(); d++) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
-    table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
+
+    // Si es pasado, deshabilitamos
+    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
+    } else {
+      table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
+    }
+
     if (fecha.getDay() === 6 && d!==lastDay.getDate()) table += "</tr><tr>";
   }
   table += "</tr></table>";
