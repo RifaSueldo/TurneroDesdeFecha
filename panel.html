@@ -168,8 +168,9 @@ async function guardarExcepcion(profId) {
   
   <p style="padding:10px;">Usuario: <b id="username"></b></p>
   <ul class="menu">
-    <li onclick="toggleSection('credito')">Créditos +</li>
+    <li onclick="toggleSection('creditos')">Créditos +</li>
     
+<button onclick="window.location.href='creditos.html?username='+encodeURIComponent(username)+'&userId='+encodeURIComponent(userId)">Créditos</button>
 
     <li onclick="toggleSection('turnos')">Turnos +</li>
     <div id="turnos" class="submenu">
