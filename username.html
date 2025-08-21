@@ -9,13 +9,10 @@
     th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
     td:hover { background-color: #f0f0f0; cursor: pointer; }
     .hora { padding:5px; margin:3px; border:1px solid #000; cursor:pointer; display:inline-block;}
-.bloqueado { background:#ccc; cursor:not-allowed;}
-.disponible { background:#aaf;}
-.turnos { margin-bottom:15px;}
+    .bloqueado { background:#ccc; cursor:not-allowed;}
+    .disponible { background:#aaf;}
+    .turnos { margin-bottom:15px;}
   </style>
-
- 
- 
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyZ2PsRsCgFYuzjDAlRVrGRJsBFwStXcYmWTwXtLLAne-5bzPS9mCm1k0YkpiffXwgu/exec";
@@ -25,9 +22,10 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyZ2PsRsCgFYuzjDAlRVrGR
 let params = new URLSearchParams(window.location.search);
 let username = params.get("username");
 
-// 2. Si no existe, lo tomamos de la ruta (para /miweb)
+// 2. Si no existe, lo tomamos de la ruta (para /peluca o /peluca/)
 if (!username) {
-  const path = window.location.pathname; // ej: /miweb
+  let path = window.location.pathname; // ej: /peluca
+  path = path.replace(/\/+$/, ""); // quitar slashes finales
   const lastSegment = path.substring(path.lastIndexOf("/") + 1);
   if (lastSegment && lastSegment !== "username.html") {
     username = lastSegment;
@@ -46,6 +44,7 @@ let selectedHora = "";
 
 // ------------------ RENDER CALENDARIO ------------------
 document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("user").innerText = username;
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
 });
 
@@ -71,14 +70,8 @@ function renderCalendario(year, month) {
   table += "</tr></table>";
   calendarDiv.innerHTML += table;
 
-  document.getElementById("prevMonth").onclick = ()=>{
-    const prev = new Date(year, month-1, 1);
-    renderCalendario(prev.getFullYear(), prev.getMonth());
-  };
-  document.getElementById("nextMonth").onclick = ()=>{
-    const next = new Date(year, month+1, 1);
-    renderCalendario(next.getFullYear(), next.getMonth());
-  };
+  document.getElementById("prevMonth").onclick = ()=>{ renderCalendario(year, month-1); };
+  document.getElementById("nextMonth").onclick = ()=>{ renderCalendario(year, month+1); };
 }
 
 // ------------------ CARGAR TURNOS ------------------
@@ -175,9 +168,6 @@ function seleccionarTurno(prof, hora) {
   };
 }
 </script>
-
-
-  
 </head>
 <body>
   <h1>Turnos Disponibles: <span id="user"></span></h1>
@@ -186,7 +176,7 @@ function seleccionarTurno(prof, hora) {
     <button id="nextMonth">Mes siguiente →</button>
   </div>
   <div id="calendario"></div>
-<div id="turnos"></div>
-<div id="reservaFormContainer" style="display:none;"></div>
+  <div id="turnos"></div>
+  <div id="reservaFormContainer" style="display:none;"></div>
 </body>
 </html>
