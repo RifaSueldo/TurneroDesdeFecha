@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,6 +28,7 @@
       margin: 0.5rem 0;
       border: 1px solid #ccc;
       border-radius: 6px;
+      text-transform: lowercase; /* ⬅ para que se vea en minúsculas mientras escriben */
     }
     button {
       width: 100%;
@@ -57,12 +57,13 @@
   </form>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwkeOMXCBuAWgjJYMSprPMqDx_mG46vJpPWYWtablokwgdSPrckl4KJ6956v6KKmviP/exec"; // 👈 pegá acá tu URL de Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbyZ2PsRsCgFYuzjDAlRVrGRJsBFwStXcYmWTwXtLLAne-5bzPS9mCm1k0YkpiffXwgu/exec";
 
     document.getElementById("registerForm").addEventListener("submit", async (e)=>{
       e.preventDefault();
+
       const email = document.getElementById("email").value.trim();
-      const username = document.getElementById("username").value.trim();
+      let username = document.getElementById("username").value.trim().toLowerCase(); // ⬅ siempre minúsculas
       const password = document.getElementById("password").value.trim();
       const msg = document.getElementById("msg");
       msg.textContent = "Procesando...";
@@ -72,14 +73,17 @@
           method: "POST",
           body: new URLSearchParams({
             action: "register",
-            email, username, password
+            email,
+            username, // envío en minúscula
+            password
           })
         });
+
         const data = await res.json();
 
         if (data.status === "ok") {
           msg.style.color = "green";
-          msg.textContent = `✅ Usuario creado con éxito. Tu página será /${data.username}`;
+          msg.textContent = `✅ Usuario creado con éxito. Tu página será /${data.username.toLowerCase()}`; // ⬅ también en minúscula
         } else {
           msg.style.color = "red";
           msg.textContent = `❌ ${data.msg}`;
