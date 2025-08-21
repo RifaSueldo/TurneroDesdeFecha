@@ -36,7 +36,7 @@
   .hora-checkbox { display:inline-block; margin:2px; }
 </style>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwYyZxhhH5LV0k23fONwZ7INeWz1is4TiqcxHhjz2T3Rwbho_IUwRoumqJbvA8iPXbM/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbz--wdARFa9FPhbk7JzQ2WEScQ82ngzTSd-Nu_WVKp1y3Kvzm8jns-nvedli_g_cjL1/exec";
 let userId = localStorage.getItem("userId");
 let username = localStorage.getItem("username");
 let profesionales = [];
@@ -168,9 +168,10 @@ async function guardarExcepcion(profId) {
   
   <p style="padding:10px;">Usuario: <b id="username"></b></p>
   <ul class="menu">
-    <li onclick="toggleSection('creditos')">Créditos +</li>
     
-<button onclick="window.location.href='creditos.html?username='+encodeURIComponent(username)+'&userId='+encodeURIComponent(userId)">Créditos</button>
+    <li onclick="irACreditos()">Créditos +</li>
+
+
 
     <li onclick="toggleSection('turnos')">Turnos +</li>
     <div id="turnos" class="submenu">
@@ -200,7 +201,11 @@ function toggleSection(id) {
   document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
   if (!isVisible) section.style.display = "block";
 }
-  </script>
  
+ function irACreditos() {
+  // Abrir la página de créditos en una nueva pestaña
+  window.open('creditos.html?username=' + encodeURIComponent(username) + '&userId=' + encodeURIComponent(userId), '_blank');
+}
+     </script>
 </body>
 </html>
