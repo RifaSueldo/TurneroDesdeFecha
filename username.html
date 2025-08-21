@@ -8,10 +8,30 @@
     table { border-collapse: collapse; }
     th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
     td:hover { background-color: #f0f0f0; cursor: pointer; }
-    .hora { padding:5px; margin:3px; border:1px solid #000; cursor:pointer; display:inline-block;}
-    .bloqueado { background:#ccc; cursor:not-allowed;}
-    .disponible { background:#aaf;}
+    
+   
     .turnos { margin-bottom:15px;}
+    .hora {
+  display:inline-block;
+  margin:4px;
+  padding:6px 10px;
+  border:1px solid #ccc;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.hora.disponible {
+  background:#e0ffe0;
+  color:#000;
+}
+
+.hora.bloqueado {
+  background:#f8d7da;
+  color:#721c24;
+  cursor:not-allowed;
+  text-decoration: line-through;
+  opacity:0.6;
+}
   </style>
 
 <script>
