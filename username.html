@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Turnos Disponibles</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding:20px; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+    td:hover { background-color: #f0f0f0; cursor: pointer; }
+    .hora { padding:5px; margin:3px; border:1px solid #000; cursor:pointer; display:inline-block;}
+.bloqueado { background:#ccc; cursor:not-allowed;}
+.disponible { background:#aaf;}
+.turnos { margin-bottom:15px;}
+  </style>
+
+ 
+ 
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwkeOMXCBuAWgjJYMSprPMqDx_mG46vJpPWYWtablokwgdSPrckl4KJ6956v6KKmviP/exec";
+
+// ------------------ OBTENER USERNAME ------------------
+// 1. Intentamos obtenerlo de query string
+let params = new URLSearchParams(window.location.search);
+let username = params.get("username");
+
+// 2. Si no existe, lo tomamos de la ruta (para /miweb)
+if (!username) {
+  const path = window.location.pathname; // ej: /miweb
+  const lastSegment = path.substring(path.lastIndexOf("/") + 1);
+  if (lastSegment && lastSegment !== "username.html") {
+    username = lastSegment;
+  }
+}
+
+if (!username) {
+  alert("Falta username en la URL");
+}
+
+let selectedDate = new Date();
+let profesionales = [];
+let turnosData = {};
+let selectedProf = "";
+let selectedHora = "";
+
+// ------------------ RENDER CALENDARIO ------------------
+document.addEventListener("DOMContentLoaded", () => {
+  renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+});
+
+function renderCalendario(year, month) {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const calendarDiv = document.getElementById("calendario");
+  calendarDiv.innerHTML = `<h2>${firstDay.toLocaleString("es-ES",{month:"long", year:"numeric"})}</h2>`;
+
+  let table = "<table><tr>";
+  const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  diasSemana.forEach(d => table += `<th>${d}</th>`);
+  table += "</tr><tr>";
+
+  for (let i=0;i<firstDay.getDay();i++) table += "<td></td>";
+
+  for (let d=1; d<=lastDay.getDate(); d++) {
+    const fecha = new Date(year, month, d);
+    const fechaStr = fecha.toISOString().split("T")[0];
+    table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
+    if (fecha.getDay() === 6 && d!==lastDay.getDate()) table += "</tr><tr>";
+  }
+  table += "</tr></table>";
+  calendarDiv.innerHTML += table;
+
+  document.getElementById("prevMonth").onclick = ()=>{
+    const prev = new Date(year, month-1, 1);
+    renderCalendario(prev.getFullYear(), prev.getMonth());
+  };
+  document.getElementById("nextMonth").onclick = ()=>{
+    const next = new Date(year, month+1, 1);
+    renderCalendario(next.getFullYear(), next.getMonth());
+  };
+}
+
+// ------------------ CARGAR TURNOS ------------------
+async function cargarTurnos(fechaStr) {
+  selectedDate = new Date(fechaStr+"T00:00:00");
+  document.getElementById("turnos").innerHTML = `<h2>Turnos del ${fechaStr}</h2><p>Cargando...</p>`;
+  document.getElementById("reservaFormContainer").style.display = "none";
+
+  const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
+  const data = await res.json();
+
+  if (data.status !== "ok") {
+    document.getElementById("turnos").innerHTML = "Error al cargar turnos";
+    return;
+  }
+
+  profesionales = data.profesionales;
+  turnosData = data.turnos;
+
+  let html = "";
+  profesionales.forEach(prof=>{
+    html += `<div class="turnos"><h3>${prof.nombre}</h3>`;
+    const turnos = turnosData[prof.nombre] || [];
+    if (turnos.length===0) html += "<p>No hay turnos disponibles</p>";
+    else {
+      turnos.forEach(t=>{
+        const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
+        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${t.hora}')">${t.hora}</span>`;
+      });
+    }
+    html += "</div>";
+  });
+
+  document.getElementById("turnos").innerHTML = html;
+}
+
+// ------------------ SELECCIONAR TURNO ------------------
+function seleccionarTurno(prof, hora) {
+  selectedProf = prof;
+  selectedHora = hora;
+  const fechaStr = selectedDate.toISOString().split("T")[0];
+
+  const formContainer = document.getElementById("reservaFormContainer");
+  formContainer.style.display = "block";
+  formContainer.innerHTML = `
+    <h3>Reservando turno en ${username} con ${prof} a las ${hora}</h3>
+    <form id="reservaForm">
+      <input type="text" name="nombre" placeholder="Nombre" required>
+      <input type="text" name="apellido" placeholder="Apellido" required>
+      <input type="tel" name="telefono" placeholder="Teléfono" required>
+      <input type="text" name="direccion" placeholder="Dirección" required>
+      <input type="date" name="fechaNacimiento" placeholder="Fecha de nacimiento" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="text" name="whatsapp" placeholder="Whatsapp" required>
+      <input type="text" name="dni" placeholder="DNI" required>
+      <textarea name="comentario" placeholder="Comentario (opcional)"></textarea>
+      <input type="text" name="extra1" placeholder="Extra1">
+      <input type="text" name="extra2" placeholder="Extra2">
+      <input type="text" name="extra3" placeholder="Extra3">
+      <button type="submit">Reservar</button>
+    </form>
+    <div id="reservaMsg"></div>
+  `;
+
+  document.getElementById("reservaForm").onsubmit = async function(event){
+    event.preventDefault();
+    const formData = new FormData(this);
+    const dataToSend = {
+      username,
+      profesional: selectedProf,
+      fecha: fechaStr,
+      hora: selectedHora,
+      nombre: formData.get("nombre"),
+      apellido: formData.get("apellido"),
+      telefono: formData.get("telefono"),
+      direccion: formData.get("direccion"),
+      fechaNacimiento: formData.get("fechaNacimiento"),
+      email: formData.get("email"),
+      whatsapp: formData.get("whatsapp"),
+      dni: formData.get("dni"),
+      comentario: formData.get("comentario"),
+      extra1: formData.get("extra1"),
+      extra2: formData.get("extra2"),
+      extra3: formData.get("extra3")
+    };
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: new URLSearchParams({action:"saveReserva", data: JSON.stringify(dataToSend)})
+    });
+    const result = await res.json();
+    document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
+    if(result.status==="ok") cargarTurnos(fechaStr);
+  };
+}
+</script>
+
+
+  
+</head>
+<body>
+  <h1>Turnos Disponibles: <span id="user"></span></h1>
+  <div>
+    <button id="prevMonth">← Mes anterior</button>
+    <button id="nextMonth">Mes siguiente →</button>
+  </div>
+  <div id="calendario"></div>
+<div id="turnos"></div>
+<div id="reservaFormContainer" style="display:none;"></div>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Plataforma de Turnos</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { color: #333; }
+    .profesional { margin-bottom: 20px; }
+    .turno { background: #f4f4f4; padding: 5px 10px; margin: 5px 0; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1 id="titulo">Cargando perfil...</h1>
+  <p id="contenido"></p>
+
+  <div id="profesionales"></div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwkeOMXCBuAWgjJYMSprPMqDx_mG46vJpPWYWtablokwgdSPrckl4KJ6956v6KKmviP/exec"; // 👈 pegá acá la URL de tu Apps Script desplegado
+
+    async function cargarPerfil() {
+      // Obtener username desde la URL: /pepito
+      const path = window.location.pathname.replace("/", "");
+      if (!path) {
+        document.getElementById("titulo").textContent = "Bienvenido a la plataforma";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${scriptURL}?username=${path}`);
+        const data = await res.json();
+
+        if (data.status === "ok") {
+          document.getElementById("titulo").textContent = "Perfil de " + data.username;
+          document.getElementById("contenido").textContent = data.contenido || "Sin descripción";
+
+          const contenedor = document.getElementById("profesionales");
+          if (data.profesionales && data.profesionales.length > 0) {
+            const agrupados = {};
+            // Agrupar por profesional
+            data.profesionales.forEach(p => {
+              if (!agrupados[p.nombre]) agrupados[p.nombre] = [];
+              agrupados[p.nombre].push(p.turno);
+            });
+
+            for (const nombre in agrupados) {
+              const div = document.createElement("div");
+              div.className = "profesional";
+              div.innerHTML = `<h3>${nombre}</h3>`;
+              agrupados[nombre].forEach(t => {
+                const tDiv = document.createElement("div");
+                tDiv.className = "turno";
+                tDiv.textContent = t;
+                div.appendChild(tDiv);
+              });
+              contenedor.appendChild(div);
+            }
+          } else {
+            document.getElementById("profesionales").innerHTML = "<p>No hay turnos visibles aún.</p>";
+          }
+        } else {
+          document.getElementById("titulo").textContent = "Usuario no encontrado";
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("titulo").textContent = "Error al cargar perfil";
+      }
+    }
+
+    cargarPerfil();
+  </script>
+</body>
+</html>

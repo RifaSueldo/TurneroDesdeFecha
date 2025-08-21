@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwkeOMXCBuAWgjJYMSprPMqDx_mG46vJpPWYWtablokwgdSPrckl4KJ6956v6KKmviP/exec";
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "login",
+          email,
+          password
+        })
+      });
+      const data = await res.json();
+
+      if (data.status === "ok") {
+        // 🔹 Primero guardamos en localStorage
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("username", data.username);
+
+        // 🔹 Redirigimos después de guardar
+        window.location.href = "/panel.html";
+      } else {
+        alert("Usuario o contraseña incorrectos");
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>Login</h1>
+  <input type="email" id="email" placeholder="Email"><br>
+  <input type="password" id="password" placeholder="Contraseña"><br>
+  <button onclick="login()">Ingresar</button>
+</body>
+</html>
