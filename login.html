@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <title>Login</title>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwkeOMXCBuAWgjJYMSprPMqDx_mG46vJpPWYWtablokwgdSPrckl4KJ6956v6KKmviP/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyZ2PsRsCgFYuzjDAlRVrGRJsBFwStXcYmWTwXtLLAne-5bzPS9mCm1k0YkpiffXwgu/exec";
 
     async function login() {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
       const res = await fetch(API_URL, {
         method: "POST",
@@ -21,9 +21,9 @@
       const data = await res.json();
 
       if (data.status === "ok") {
-        // 🔹 Primero guardamos en localStorage
+        // 🔹 Guardamos en localStorage
         localStorage.setItem("userId", data.userId);
-        localStorage.setItem("username", data.username);
+        localStorage.setItem("username", data.username.toLowerCase()); // ⬅ siempre minúsculas
 
         // 🔹 Redirigimos después de guardar
         window.location.href = "/panel.html";
