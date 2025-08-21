@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Créditos TurnoX</title>
+<style>
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#eee; }
+  header { display:flex; justify-content:space-between; align-items:center; background:#ddd; padding:10px; }
+  header .logo { font-weight:bold; color:#4b2a72; }
+  header button { background:#444; color:#fff; border:none; padding:8px 15px; cursor:pointer; border-radius:4px; }
+  .container { padding:20px; }
+  label { display:block; margin:10px 0; }
+  input[type=number] { width:60px; padding:5px; }
+  button { padding:8px 15px; cursor:pointer; border-radius:4px; background:#4b2a72; color:#fff; border:none; margin-top:10px; }
+  #linkPago { margin-top:15px; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">TurnoX</div>
+    <button onclick="volverPanel()">Volver al Panel</button>
+  </header>
+
+  <div class="container">
+    <h2>Gestión de Créditos</h2>
+    <p>Créditos actuales: <b id="creditosActuales">0</b></p>
+    <label>
+      Cantidad a comprar:
+      <input type="number" id="cantidadCreditos" min="1" value="1">
+    </label>
+    <button onclick="comprarCreditos()">Comprar Créditos</button>
+    <div id="linkPago"></div>
+  </div>
+
+<script>
+  // ---------- CONFIG ----------
+  const params = new URLSearchParams(window.location.search);
+  const username = params.get("username");
+  const userId = params.get("userId");
+  const API_CREDITOS = "TU_WEB_APP_DE_CREDITOS"; // reemplazar con tu URL de Web App de créditos
+
+  if (!username || !userId) {
+    alert("Usuario no identificado. Volviendo al login.");
+    window.location.href = "/login.html";
+  }
+
+  // ---------- FUNCIONES ----------
+  async function cargarCreditos() {
+    try {
+      const res = await fetch(`${API_CREDITOS}?action=getCreditos&email=${encodeURIComponent(username)}`);
+      const data = await res.json();
+      if (data.status === "ok") {
+        document.getElementById("creditosActuales").innerText = data.creditos || 0;
+      }
+    } catch(err) {
+      console.error(err);
+    }
+  }
+
+  async function comprarCreditos() {
+    const cantidad = parseInt(document.getElementById("cantidadCreditos").value);
+    if (isNaN(cantidad) || cantidad <= 0) { alert("Cantidad inválida"); return; }
+
+    try {
+      const res = await fetch(`${API_CREDITOS}?action=crearPreferencia&email=${encodeURIComponent(username)}&cantidad=${cantidad}`);
+      const data = await res.json();
+      if (data.status === "ok") {
+        document.getElementById("linkPago").innerHTML = `<a href="${data.init_point}" target="_blank">Ir a pagar ${cantidad} créditos</a>`;
+      } else {
+        alert("Error al generar el pago");
+      }
+    } catch(err) {
+      console.error(err);
+      alert("Error al generar el pago");
+    }
+  }
+
+  function volverPanel() {
+    window.location.href = `/panel.html`;
+  }
+
+  // ---------- INIT ----------
+  cargarCreditos();
+</script>
+</body>
+</html>
