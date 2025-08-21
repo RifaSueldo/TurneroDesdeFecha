@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Comprar Créditos</title>
+<title>Créditos</title>
 <style>
-  body { font-family: Arial; padding:20px; text-align:center; }
+  body { font-family: Arial; padding:20px; }
   button { padding:8px 15px; margin:5px; cursor:pointer; }
-  input { padding:5px; width:60px; text-align:center; }
+  input { padding:5px; width:80px; text-align:center; }
 </style>
 </head>
 <body>
@@ -17,48 +17,50 @@
     <input type="number" id="cantidadCreditos" min="1" value="1">
   </label>
   <br><br>
-
   <button onclick="comprarCreditos()">💳 Comprar Créditos</button>
-  <button onclick="window.close()">⬅ Volver</button>
+  <button onclick="volverPanel()">⬅ Volver</button>
 
 <script>
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwkMyai_hfp4s1OKZ1MFqPKMEfKnNhVi3wmlYa8B-CLspbodGD_KBEngK1lZ6ALlxdb5Q/exec"; // <--- reemplazá con la URL de tu Web App de Apps Script
+
 let username, userId;
 
-// Obtiene parámetros de URL
-function getQueryParam(param) {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get(param);
-}
-
-function init() {
-  username = getQueryParam('username') || localStorage.getItem('username');
-  userId = getQueryParam('userId') || localStorage.getItem('userId');
-  if (!username || !userId) return alert("Usuario no identificado");
-
+function init(data) {
+  username = data.username;
+  userId = data.userId;
   document.getElementById("usernameDisplay").innerText = username;
 
-  // Trae créditos actuales desde Apps Script
-  google.script.run.withSuccessHandler(c => {
-    document.getElementById("creditosActuales").innerText = c;
-  }).getCreditos(username);
+  // Trae créditos actuales
+  fetch(`${WEBAPP_URL}?action=getCreditos&username=${encodeURIComponent(username)}`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById("creditosActuales").innerText = data.creditos;
+    });
 }
 
 function comprarCreditos() {
   const cantidad = parseInt(document.getElementById("cantidadCreditos").value, 10);
   if (!cantidad || cantidad <= 0) return alert("Cantidad inválida");
 
-  // Llama a Apps Script para crear preferencia y abrir checkout
-  google.script.run.withSuccessHandler(url => {
-    if (url) {
-      window.open(url, "_blank", "width=500,height=700"); // checkout Mercado Pago
-    } else {
-      alert("Error al generar link de pago");
-    }
-  }).crearPreferencia(username, cantidad);
+  // Crea preferencia en Mercado Pago
+  fetch(`${WEBAPP_URL}?action=crearPreferencia&username=${encodeURIComponent(username)}&cantidad=${cantidad}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.url) window.open(data.url, "_blank");
+      else alert("Error al generar link de pago");
+    });
 }
 
-// Inicializa al cargar
-window.onload = init;
+function volverPanel() {
+  window.history.back();
+}
+
+// Inicializa al cargar la página
+const urlParams = new URLSearchParams(window.location.search);
+init({
+  username: urlParams.get('username'),
+  userId: urlParams.get('userId')
+});
 </script>
 </body>
 </html>
