@@ -37,13 +37,6 @@ let turnosData = {};
 let selectedProf = "";
 let selectedHora = "";
 
-// ------------------ UTIL ------------------
-function mostrarHoraDecimal(horaDecimal) {
-  const horas = Math.floor(horaDecimal);
-  const minutos = Math.round((horaDecimal - horas) * 60);
-  return `${String(horas).padStart(2,'0')}:${String(minutos).padStart(2,'0')}`;
-}
-
 // ------------------ RENDER CALENDARIO ------------------
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("user").innerText = username;
@@ -101,8 +94,8 @@ async function cargarTurnos(fechaStr) {
     else {
       turnos.forEach(t=>{
         const clase = t.estado==="bloqueado"?"bloqueado":"disponible";
-        const horaStr = mostrarHoraDecimal(Number(t.hora));
-        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${t.hora}')">${horaStr}</span>`;
+        const horaStr = t.hora; // <-- ya está en formato "HH:MM"
+        html += `<span class="hora ${clase}" onclick="seleccionarTurno('${prof.nombre}','${horaStr}')">${horaStr}</span>`;
       });
     }
     html += "</div>";
@@ -120,7 +113,7 @@ function seleccionarTurno(prof, hora) {
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
-    <h3>Reservando turno en ${username} con ${prof} a las ${mostrarHoraDecimal(Number(hora))}</h3>
+    <h3>Reservando turno en ${username} con ${prof} a las ${hora}</h3>
     <form id="reservaForm">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="text" name="apellido" placeholder="Apellido" required>
@@ -146,7 +139,7 @@ function seleccionarTurno(prof, hora) {
       username,
       profesional: selectedProf,
       fecha: fechaStr,
-      hora: selectedHora,
+      hora: selectedHora, // <-- ya es "HH:MM"
       nombre: formData.get("nombre"),
       apellido: formData.get("apellido"),
       telefono: formData.get("telefono"),
