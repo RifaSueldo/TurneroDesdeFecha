@@ -52,7 +52,7 @@
     const cantidad = 1; // 💡 o la cantidad de créditos que correspondan
 
     // Llamar a tu Apps Script para sumar créditos
-    fetch("https://script.google.com/macros/s/AKfycbymAcnwDSdSKVhMIKhV8G0nYgGc49QVgYfRL8sfp9Ci-QPjQ47wyugZ-K2lFoeq1NSMJA/exec?action=sumarCreditos&userId=" + userId + "&cantidad=" + cantidad)
+    fetch("https://script.google.com/macros/s/AKfycbwoMrST65VYe0clgWl9jBadBMQBkk-3a8BpU4nC0inmlC3iFvMBdtuajIsXiOplONHB/exec?action=sumarCreditos&userId=" + userId + "&cantidad=" + cantidad)
       .then(r => r.json())
       .then(data => {
         if (data.status === "ok") {
