@@ -4,57 +4,52 @@
 <meta charset="UTF-8">
 <title>Panel de Configuración</title>
 <style>
-  body { font-family: Arial; margin:0; padding:0; background:#eee; }
-  header { display:flex; justify-content:space-between; align-items:center; background:#ddd; padding:10px; }
+  body {
+    font-family: Arial, sans-serif;
+    margin:0; padding:0;
+    background:#eee;
+  }
+  header {
+    display:flex; justify-content:space-between; align-items:center;
+    background:#ddd; padding:10px;
+  }
   header .logo { font-weight:bold; color:#4b2a72; }
-  header button { background:#444; color:#fff; border:none; padding:8px 15px; cursor:pointer; border-radius:4px; }
-  .menu { margin:0; padding:0; list-style:none; }
-  .menu li { background:#4b2a72; color:#fff; padding:15px; cursor:pointer; border-bottom:1px solid #333; font-weight:bold; }
+  header button {
+    background:#444; color:#fff; border:none; padding:8px 15px; cursor:pointer;
+    border-radius:4px;
+  }
+  .menu {
+    margin:0; padding:0; list-style:none;
+  }
+  .menu li {
+    background:#4b2a72; color:#fff; padding:15px;
+    cursor:pointer; border-bottom:1px solid #333;
+    font-weight:bold;
+  }
   .menu li:hover { background:#5e3a8e; }
-  .submenu { display:none; background:#f4f4f4; padding:15px; }
+  .submenu {
+    display:none; background:#f4f4f4; padding:15px;
+  }
   .profesional { border:1px solid #ccc; padding:10px; margin:10px 0; }
   h2,h3,h4 { margin-top:10px; }
   label { margin-right:10px; }
   .hora-checkbox { display:inline-block; margin:2px; }
-  .turnoTicket { background:#fff; color:#333; padding:10px; margin:8px 0; border-radius:6px; border-left:5px solid #4b2a72; }
+
+  /* Turnos estilo ticket */
+  .turnoTicket {
+    background:#fff; color:#333; padding:10px; margin:8px 0; border-radius:6px;
+    border-left:5px solid #4b2a72;
+  }
   .turnoTicket p { margin:2px 0; }
   #calendarioPanel table { width:100%; border-collapse: collapse; text-align:center; margin-top:10px; }
   #calendarioPanel th, #calendarioPanel td { border:1px solid #ccc; padding:5px; }
   #calendarioPanel td:hover { background:#d4d4d4; cursor:pointer; border-radius:50%; }
 </style>
-</head>
-<body>
-<header>
-  <div class="logo">TurnoX</div>
-  <button onclick="window.location.href='index.html'">Volver</button>
-</header>
-
-<p style="padding:10px;">Usuario: <b id="username"></b></p>
-
-<ul class="menu">
-  <li onclick="toggleSection('turnos')">Turnos +</li>
-  <div id="turnos" class="submenu">
-    <h3>Gestión de Turnos</h3>
-    <div id="selectorProfesional"></div>
-    <div id="calendarioPanel"></div>
-    <div id="tablaTurnos" style="margin-top:10px;"></div>
-  </div>
-
-  <li onclick="toggleSection('config')">Configuración +</li>
-  <div id="config" class="submenu">
-    <h3>Configuración de horarios</h3>
-    <div id="profesionales"></div>
-    <button onclick="agregarProfesional()">Agregar Profesional</button>
-  </div>
-</ul>
-
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
 let userId = localStorage.getItem("userId");
 let username = localStorage.getItem("username");
 let profesionales = [];
-let selectedProfId = "";
-let selectedFecha = "";
 
 // ---------------- INIT ----------------
 async function init() {
@@ -65,7 +60,6 @@ async function init() {
   }
   document.getElementById("username").innerText = username;
   await cargarProfesionales();
-  renderCalendarioPanel();
 }
 
 // ---------------- PROFESIONALES ----------------
@@ -74,20 +68,8 @@ async function cargarProfesionales() {
   const data = await res.json();
   if (data.status === "ok") {
     profesionales = data.profesionales;
-    renderSelectorProfesional();
     renderProfesionales();
   }
-}
-
-function renderSelectorProfesional() {
-  const cont = document.getElementById("selectorProfesional");
-  cont.innerHTML = "<b>Selecciona Profesional:</b> ";
-  profesionales.forEach(prof => {
-    const btn = document.createElement("button");
-    btn.innerText = prof.nombre;
-    btn.onclick = ()=>{ selectedProfId = prof.profesionalId; cargarTurnosPanel(); };
-    cont.appendChild(btn);
-  });
 }
 
 function renderProfesionales() {
@@ -96,9 +78,11 @@ function renderProfesionales() {
   profesionales.forEach(prof => {
     const div = document.createElement("div");
     div.className = "profesional";
-    div.innerHTML = `<h3>${prof.nombre}</h3>
+    div.innerHTML = `
+      <h3>${prof.nombre}</h3>
       <button onclick="abrirTurnos('${prof.profesionalId}','${prof.nombre}')">Configurar Turnos</button>
-      <button onclick="abrirExcepciones('${prof.profesionalId}','${prof.nombre}')">Excepciones</button>`;
+      <button onclick="abrirExcepciones('${prof.profesionalId}','${prof.nombre}')">Excepciones</button>
+    `;
     cont.appendChild(div);
   });
 }
@@ -114,10 +98,128 @@ async function agregarProfesional() {
   const data = await res.json();
   if (data.status==="ok") {
     profesionales.push({profesionalId:data.profesionalId, nombre:data.nombre});
-    renderSelectorProfesional();
     renderProfesionales();
   }
 }
+
+// ---------------- TURNOS STANDARD ----------------
+function abrirTurnos(profId, nombre) {
+  const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+  let html = `<h2>Turnos Standard de ${nombre}</h2>`;
+  dias.forEach(d=>{
+    html += `<h4>${d}</h4><div>`;
+    for (let h=0; h<24; h++) {
+      for (let m=0; m<60; m+=15) {
+        const hhmm = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+        const id = `${profId}_${d}_${hhmm}`;
+        html += `<label class="hora-checkbox"><input type="checkbox" id="${id}" data-dia="${d}" data-hora="${hhmm}" data-hhmm="${hhmm}"> ${hhmm}</label> `;
+      }
+    }
+    html += `</div>`;
+  });
+  html += `<br><button onclick="guardarTurnos('${profId}')">Guardar</button>`;
+  document.getElementById("config").innerHTML = html;
+}
+
+async function guardarTurnos(profId) {
+  const checkboxes = document.querySelectorAll(`#config input[type=checkbox]`);
+  const turnos = [];
+  checkboxes.forEach(ch=>{
+    if (ch.checked) {
+      turnos.push({dia: ch.dataset.dia, hora: ch.dataset.hhmm, visible:1});
+    }
+  });
+  const formData = new FormData();
+  formData.append("action","saveTurnosStandard");
+  formData.append("profesionalId", profId);
+  formData.append("turnos", JSON.stringify(turnos));
+  const res = await fetch(API_URL, {method:"POST", body:formData});
+  const data = await res.json();
+  alert("Turnos guardados correctamente.");
+}
+
+// ---------------- EXCEPCIONES ----------------
+function abrirExcepciones(profId, nombre) {
+  document.getElementById("config").innerHTML = `
+    <h2>Excepciones de ${nombre}</h2>
+    <label>Fecha: <input type="date" id="exc_fecha"></label><br>
+    <label>Hora: <input type="time" id="exc_hora" step="900"></label><br>
+    <select id="exc_estado">
+      <option value="bloqueado">Bloquear</option>
+      <option value="habilitado">Habilitar</option>
+    </select><br><br>
+    <button onclick="guardarExcepcion('${profId}')">Guardar Excepción</button>
+  `;
+}
+
+async function guardarExcepcion(profId) {
+  const fecha = document.getElementById("exc_fecha").value;
+  const hhmm = document.getElementById("exc_hora").value;
+  const estado = document.getElementById("exc_estado").value;
+
+  const formData = new FormData();
+  formData.append("action","saveExcepcion");
+  formData.append("profesionalId", profId);
+  formData.append("fecha", fecha);
+  formData.append("hora", hhmm);
+  formData.append("estado", estado);
+  const res = await fetch(API_URL, {method:"POST", body:formData});
+  const data = await res.json();
+  alert("Excepción guardada correctamente.");
+}
+
+</script>
+</head>
+<body onload="init()">
+  
+    
+
+
+  <header>
+  <div class="logo">TurnoX</div>
+  <button onclick="window.location.href='index.html'">Volver</button>
+</header>
+
+<p style="padding:10px;">Usuario: <b id="username"></b></p>
+
+<ul class="menu">
+  <li>
+    <button onclick="
+      window.location.href='/creditos.html?username='
+      + encodeURIComponent(username)
+      + '&userId=' + encodeURIComponent(userId);
+    ">
+      💳 Créditos
+    </button>
+  </li>
+  <li onclick="toggleSection('turnos')">Turnos +</li>
+  <div id="turnos" class="submenu">
+    <h3>Gestión de Turnos</h3>
+    <div id="selectorProfesional"></div>
+    <div id="calendarioPanel"></div>
+    <div id="tablaTurnos" style="margin-top:10px;"></div>
+  </div>
+
+  <li onclick="toggleSection('config')">Configuración +</li>
+  <div id="config" class="submenu">
+    <h3>Configuración de horarios</h3>
+    <p>Agrega profesionales y configura turnos estándar.</p>
+  </div>
+</ul>
+
+ <script>
+// Función para abrir/cerrar secciones
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const isVisible = section.style.display === "block";
+  document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
+  if (!isVisible) section.style.display = "block";
+}
+</script>
+
+<script>
+
+
 
 // ---------------- CALENDARIO ----------------
 function renderCalendarioPanel(year = new Date().getFullYear(), month = new Date().getMonth()) {
@@ -126,10 +228,14 @@ function renderCalendarioPanel(year = new Date().getFullYear(), month = new Date
   const lastDay = new Date(year, month + 1, 0);
   const calendarDiv = document.getElementById("calendarioPanel");
   calendarDiv.innerHTML = `<h4>${firstDay.toLocaleString("es-ES",{month:"long", year:"numeric"})}</h4>`;
+
   let table = "<table><tr>";
   const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-  diasSemana.forEach(d => table += `<th>${d}</th>`); table += "</tr><tr>";
-  for (let i=0;i<firstDay.getDay();i++) table += "<td></td>";
+  diasSemana.forEach(d => table += `<th>${d}</th>`);
+  table += "</tr><tr>";
+
+  for (let i=0; i<firstDay.getDay(); i++) table += "<td></td>";
+
   for (let d=1; d<=lastDay.getDate(); d++) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
@@ -154,36 +260,24 @@ async function cargarTurnosPanel() {
   const data = await res.json();
   const cont = document.getElementById("tablaTurnos");
   cont.innerHTML = `<h4>Turnos del ${selectedFecha}</h4>`;
-  if (data.status !== "ok" || !data.turnos || data.turnos.length===0) { cont.innerHTML += "<p>No hay turnos.</p>"; return; }
+  if (data.status !== "ok" || !data.turnos || data.turnos.length===0) {
+    cont.innerHTML += "<p>No hay turnos.</p>";
+    return;
+  }
   data.turnos.forEach(t => {
-    cont.innerHTML += `<div class="turnoTicket">
-      <p><b>Hora:</b> ${t.hora}</p>
-      <p><b>Nombre:</b> ${t.nombre} ${t.apellido}</p>
-      <p><b>Teléfono:</b> ${t.telefono}</p>
-      <p><b>Email:</b> ${t.email}</p>
-      <p><b>DNI:</b> ${t.dni}</p>
-      <p><b>Comentario:</b> ${t.comentario || "-"}</p>
-    </div>`;
+    cont.innerHTML += `
+      <div class="turnoTicket">
+        <p><b>Hora:</b> ${t.hora}</p>
+        <p><b>Nombre:</b> ${t.nombre} ${t.apellido}</p>
+        <p><b>Teléfono:</b> ${t.telefono}</p>
+        <p><b>Email:</b> ${t.email}</p>
+        <p><b>DNI:</b> ${t.dni}</p>
+        <p><b>Comentario:</b> ${t.comentario || "-"}</p>
+      </div>
+    `;
   });
 }
-
-// ---------------- TURNOS STANDARD / EXCEPCIONES ----------------
-function abrirTurnos(profId, nombre) { /* Mantener código original para checkboxes */ }
-function guardarTurnos(profId) { /* Mantener código original */ }
-function abrirExcepciones(profId, nombre) { /* Mantener código original */ }
-function guardarExcepcion(profId) { /* Mantener código original */ }
-
-// ---------------- UI ----------------
-function toggleSection(id) {
-  const section = document.getElementById(id);
-  const isVisible = section.style.display === "block";
-  document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
-  if (!isVisible) section.style.display = "block";
-}
-
-window.onload = init;
 </script>
+
 </body>
 </html>
-
-
