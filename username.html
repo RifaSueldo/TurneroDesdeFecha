@@ -97,14 +97,7 @@ function renderCalendario(year, month) {
   document.getElementById("prevMonth").onclick = ()=>{ renderCalendario(year, month-1); };
   document.getElementById("nextMonth").onclick = ()=>{ renderCalendario(year, month+1); };
 }
-/ ------------------ CHEQUEAR CRÉDITOS ------------------
-let tieneCreditos = true;
-try {
-  const creditosRes = await fetch(`${https://script.google.com/macros/s/AKfycbyrzgxnSzikePWtUiOJkYL9eyacAXOWrUct1fqsrPj75mNNmx0YDnyFhr970KKZ6qnz/exec}?action=getCreditos&username=${username}`);
-  const creditosData = await creditosRes.json();
-  if (creditosData.creditos <= 0) {
-    tieneCreditos = false;
-  }
+
 // ------------------ CARGAR TURNOS ------------------
 async function cargarTurnos(fechaStr) {
   selectedDate = new Date(fechaStr+"T00:00:00");
