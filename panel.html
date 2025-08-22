@@ -213,6 +213,43 @@ function toggleSection(id) {
   if (!isVisible) section.style.display = "block";
 }
      </script>
+<script>
+// ------------------ CARGAR TURNOS EN EL PANEL ------------------
+async function cargarTurnosPanel() {
+  if (!profesionales.length) return;
+  const turnosDiv = document.getElementById("turnos");
+  turnosDiv.innerHTML = "<h3>Turnos por Profesional</h3>";
+
+  for (const prof of profesionales) {
+    const res = await fetch(`${API_URL}?username=${username}&profId=${prof.profesionalId}`);
+    const data = await res.json();
+    if (data.status !== "ok") continue;
+
+    const turnos = data.turnos[prof.profesionalId].turnos;
+    let html = `<div class="profesional-turnos"><h4>${prof.nombre}</h4>`;
+    if (!turnos.length) html += "<p>No hay turnos disponibles</p>";
+    else {
+      turnos.forEach(t => {
+        const clase = t.estado === "bloqueado" ? "bloqueado" : "disponible";
+        html += `<span class="hora ${clase}">${t.hora.padStart(5,"0")}</span> `;
+      });
+    }
+    html += "</div>";
+    turnosDiv.innerHTML += html;
+  }
+}
+
+// Llamar a cargar turnos después de cargar profesionales
+async function cargarProfesionales() {
+  const res = await fetch(`${API_URL}?username=${username}`);
+  const data = await res.json();
+  if (data.status === "ok") {
+    profesionales = data.profesionales;
+    renderProfesionales();
+    cargarTurnosPanel(); // <-- aquí cargamos los turnos
+  }
+}
+</script>
 
 </body>
 </html>
