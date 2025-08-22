@@ -361,23 +361,30 @@ function mostrarFormReserva() {
   <div id="reservaFormContainer" style="display:none;"></div>
 
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
-  document.getElementById("user").innerText = username;
-
-  // Traer perfil desde la hoja
+async function aplicarPerfil() {
   const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
   const perfil = await res.json();
 
-  // Aplicar color y logo
+  // Aplicar color solo en username.html
   if(perfil.colorPreferido){
-    document.body.style.backgroundColor = perfil.colorPreferido;
-  }
-  if(perfil.logo){
-    document.getElementById("userLogo").src = perfil.logo;
+    // Si usás un contenedor principal:
+    const container = document.querySelector(".container") || document.body;
+    container.style.backgroundColor = perfil.colorPreferido;
   }
 
-  // Renderizar calendario como antes
+  // Aplicar logo
+  if(perfil.logo){
+    const logoImg = document.getElementById("userLogo");
+    if(logoImg) logoImg.src = perfil.logo;
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("user").innerText = username;
+  aplicarPerfil();
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+});
+
 });
 </script>
 </body>
