@@ -40,10 +40,11 @@ async function cargarTurnosUsuario(){
       });
     }
 
-    turnosUsuario.forEach(t=>{
-      if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
-      turnosPorFecha[t.fecha].push(t);
-    });
+   turnosUsuario.forEach(t => {
+  const fechaSolo = t.fecha.split("T")[0]; // quita la hora
+  if(!turnosPorFecha[fechaSolo]) turnosPorFecha[fechaSolo] = [];
+  turnosPorFecha[fechaSolo].push(t);
+});
 
     renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
   }catch(e){ 
