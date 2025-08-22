@@ -104,21 +104,6 @@ async function cargarTurnos(fechaStr) {
   document.getElementById("turnos").innerHTML = `<h2>Turnos del ${fechaStr}</h2><p>Cargando...</p>`;
   document.getElementById("reservaFormContainer").style.display = "none";
 
-  // ------------------ CHEQUEAR CRÉDITOS ANTES DE MOSTRAR TURNOS ------------------
-const creditosRes = await fetch(DESCONTAR_API_URL, {
-  method: "POST",
-  body: new URLSearchParams({
-    action: "getCreditos",
-    username: username
-  })
-});
-const creditosData = await creditosRes.json();
-
-if (creditosData.creditos <= 0) {
-  document.getElementById("turnos").innerHTML = `<p>El usuario ${username} no tiene créditos suficientes para reservar turnos.</p>`;
-  document.getElementById("reservaFormContainer").style.display = "none";
-  return;
-}
 
   const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
   const data = await res.json();
@@ -213,10 +198,6 @@ function mostrarFormReserva() {
 
     if(result.status==="ok") {
   cargarTurnos(fechaStr); // refresca y bloquea la hora reservada
-
-  // Descontar crédito en segundo plano
-  fetch("https://script.google.com/macros/s/AKfycbzPun3x131SfEm4KSxM6JRagms1InxVH3njvtghr3jDiimXvtBY0RmpSpxdm9vpBTEC/exec?action=descontarCredito&username=" + encodeURIComponent(username) + "&cantidad=1")
-    .catch(err => console.error("Error al descontar crédito:", err));
 }
   };
 }
