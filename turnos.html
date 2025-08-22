@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mis Turnos</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+* { box-sizing: border-box; margin:0; padding:0; }
+body {
+  font-family: 'Montserrat', sans-serif;
+  background-color: #533482;
+  color: #fff;
+  padding: 20px;
+  min-height: 100vh;
+}
+h1 { text-align: center; margin-bottom: 20px; font-size: 2rem; }
+
+/* Botones de navegación de mes */
+#prevMonth, #nextMonth {
+  background-color: #fff;
+  color: #533482;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px 5px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+#prevMonth:hover, #nextMonth:hover { background-color: #f2f2f2; transform: translateY(-2px); }
+div { text-align: center; }
+
+/* Calendario */
+#calendario {
+  margin: 20px auto;
+  max-width: 600px;
+  background: #fff;
+  color: #533482;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 15px;
+}
+#calendario h2 { text-align: center; margin-bottom: 10px; text-transform: capitalize; }
+#calendario table { width: 100%; border-collapse: collapse; }
+#calendario th, #calendario td { width: 14.28%; text-align: center; padding: 10px 0; }
+#calendario td:hover { background-color: #f0f0f0; cursor: pointer; border-radius: 50%; }
+#calendario td[style*="not-allowed"] { cursor: not-allowed; color: #999; }
+#calendario td.turno { background-color: #e0ffe0; color: #000; cursor: pointer; border-radius: 50%; }
+
+/* Tickets */
+.ticket {
+  margin: 20px auto;
+  max-width: 500px;
+  background: #fff;
+  color: #333;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  text-align: left;
+}
+.ticket h2 { text-align: center; color: #533482; margin-bottom: 15px; }
+.ticket p { margin: 6px 0; font-size: 0.95rem; }
+.ticket button {
+  margin-top: 15px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #d9534f;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ticket button:hover { background: #c9302c; }
+
+@media(max-width: 650px){
+  #calendario, .ticket { width: 95%; padding: 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="logo-container" style="text-align:center; margin-bottom:20px;">
+  <img id="userLogo" src="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png" alt="Logo" style="max-width:350px; display:block; margin:0 auto 10px;">
+</div>
+
+<div>
+  <button id="prevMonth">← Mes anterior</button>
+  <button id="nextMonth">Mes siguiente →</button>
+</div>
+
+<div id="calendario"></div>
+<div id="ticketsContainer"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyFGGpfszwxPYakYsW-o5H2RPV-5LoHJf1706GJoxzTB63BvLkvTRUI2Bc_LpcQFXjx/exec";
+
+// ------------------ OBTENER USERNAME ------------------
+let params = new URLSearchParams(window.location.search);
+let username = params.get("username");
+let userId = params.get("userId");
+
+if (!username) alert("Falta username en la URL");
+
+let selectedDate = new Date();
+let turnosUsuario = [];
+let turnosPorFecha = {};
+
+// ------------------ CARGAR LOGO ------------------
+async function cargarLogo() {
+  if (!userId) return;
+  try {
+    const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
+    const perfil = await res.json();
+    if (perfil.logo) document.getElementById("userLogo").src = perfil.logo;
+  } catch(e){ console.log(e); }
+}
+
+// ------------------ CARGAR TURNOS DEL USUARIO ------------------
+async function cargarTurnosUsuario() {
+  try {
+    const res = await fetch(`${API_URL}?action=getTurnosUsuario&username=${username}&userId=${userId}`);
+    const data = await res.json();
+    if(data.status !== "ok") return;
+
+    turnosUsuario = data.turnos; // todos los turnos del usuario
+    turnosPorFecha = {};
+    turnosUsuario.forEach(t => {
+      if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
+      turnosPorFecha[t.fecha].push(t);
+    });
+  } catch(e){ console.log(e); }
+}
+
+// ------------------ RENDER CALENDARIO ------------------
+function renderCalendario(year, month) {
+  const today = new Date();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const calendarDiv = document.getElementById("calendario");
+  calendarDiv.innerHTML = `<h2>${firstDay.toLocaleString("es-ES",{month:"long", year:"numeric"})}</h2>`;
+
+  let table = "<table><tr>";
+  const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  diasSemana.forEach(d => table += `<th>${d}</th>`);
+  table += "</tr><tr>";
+
+  for(let i=0;i<firstDay.getDay();i++) table += "<td></td>";
+  for(let d=1; d<=lastDay.getDate(); d++){
+    const fecha = new Date(year, month, d);
+    const fechaStr = fecha.toISOString().split("T")[0];
+    let clase = "";
+    if(turnosPorFecha[fechaStr]) clase = "turno";
+
+    if(fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())){
+      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
+    } else {
+      table += `<td class="${clase}" onclick="renderTickets('${fechaStr}')">${d}</td>`;
+    }
+
+    if(fecha.getDay() === 6 && d!==lastDay.getDate()) table += "</tr><tr>";
+  }
+  table += "</tr></table>";
+  calendarDiv.innerHTML += table;
+
+  document.getElementById("prevMonth").onclick = ()=>{ renderCalendario(year, month-1); };
+  document.getElementById("nextMonth").onclick = ()=>{ renderCalendario(year, month+1); };
+}
+
+// ------------------ RENDER TICKETS ------------------
+function renderTickets(fechaStr){
+  const ticketsDiv = document.getElementById("ticketsContainer");
+  ticketsDiv.innerHTML = `<h2>Turnos del ${fechaStr}</h2>`;
+  const turnos = turnosPorFecha[fechaStr] || [];
+  if(turnos.length === 0){
+    ticketsDiv.innerHTML += "<p>No hay turnos en esta fecha.</p>";
+    return;
+  }
+
+  turnos.forEach(t => {
+    const ticketHTML = `
+      <div class="ticket">
+        <h2>${t.profesional}</h2>
+        <p><strong>Hora:</strong> ${t.hora}</p>
+        <p><strong>Nombre:</strong> ${t.nombre} ${t.apellido}</p>
+        <p><strong>Teléfono:</strong> ${t.telefono}</p>
+        <p><strong>Dirección:</strong> ${t.direccion}</p>
+        <p><strong>Fecha de nacimiento:</strong> ${t.fechaNacimiento}</p>
+        <p><strong>Email:</strong> ${t.email}</p>
+        <p><strong>Whatsapp:</strong> ${t.whatsapp}</p>
+        <p><strong>DNI:</strong> ${t.dni}</p>
+        <p><strong>Comentario:</strong> ${t.comentario}</p>
+        <p><strong>Extra1:</strong> ${t.extra1}</p>
+        <p><strong>Extra2:</strong> ${t.extra2}</p>
+        <p><strong>Extra3:</strong> ${t.extra3}</p>
+        <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button>
+      </div>
+    `;
+    ticketsDiv.innerHTML += ticketHTML;
+  });
+}
+
+// ------------------ ELIMINAR TURNO ------------------
+async function eliminarTurno(fecha, hora, profesionalId, dni){
+  if(!confirm("¿Deseas eliminar este turno?")) return;
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "deleteReserva",
+        username,
+        userId,
+        fecha,
+        hora,
+        profesionalId,
+        dni
+      })
+    });
+    const result = await res.json();
+    if(result.status === "ok"){
+      alert("Turno eliminado correctamente.");
+      await cargarTurnosUsuario();
+      renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+      renderTickets(fecha);
+    } else {
+      alert("Error al eliminar turno: " + (result.msg || ""));
+    }
+  } catch(e){ console.log(e); }
+}
+
+// ------------------ INIT ------------------
+document.addEventListener("DOMContentLoaded", async () => {
+  await cargarLogo();
+  await cargarTurnosUsuario();
+  renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+});
+</script>
+
+</body>
+</html>
