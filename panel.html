@@ -273,11 +273,14 @@ async function guardarExcepcion(profId) {
 
 
 
-  <div id="turnos" class="submenu">
+ <div id="turnos" class="submenu">
   <h3>Gestión de Turnos</h3>
   <p>Selecciona un profesional y un día para ver los turnos reservados:</p>
   <div id="selectorProfesional"></div>
-  
+  <label>Seleccionar día: <input type="date" id="fechaTurnos" onchange="cargarTurnosPanel()"></label>
+  <div id="tablaTurnos"></div>
+</div>
+
   <!-- Contenedor del calendario -->
   <div id="calendarioPanel"></div>
 
