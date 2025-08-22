@@ -97,21 +97,21 @@ function renderCalendario(year, month) {
   document.getElementById("prevMonth").onclick = ()=>{ renderCalendario(year, month-1); };
   document.getElementById("nextMonth").onclick = ()=>{ renderCalendario(year, month+1); };
 }
-
+/ ------------------ CHEQUEAR CRÉDITOS ------------------
+let tieneCreditos = true;
+try {
+  const creditosRes = await fetch(`${https://script.google.com/macros/s/AKfycbyrzgxnSzikePWtUiOJkYL9eyacAXOWrUct1fqsrPj75mNNmx0YDnyFhr970KKZ6qnz/exec}?action=getCreditos&username=${username}`);
+  const creditosData = await creditosRes.json();
+  if (creditosData.creditos <= 0) {
+    tieneCreditos = false;
+  }
 // ------------------ CARGAR TURNOS ------------------
 async function cargarTurnos(fechaStr) {
   selectedDate = new Date(fechaStr+"T00:00:00");
   document.getElementById("turnos").innerHTML = `<h2>Turnos del ${fechaStr}</h2><p>Cargando...</p>`;
   document.getElementById("reservaFormContainer").style.display = "none";
 
-/ ------------------ CHEQUEAR CRÉDITOS ------------------
-let tieneCreditos = true;
-try {
-  const creditosRes = await fetch(`${DESCONTAR_API_URL}?action=getCreditos&username=${username}`);
-  const creditosData = await creditosRes.json();
-  if (creditosData.creditos <= 0) {
-    tieneCreditos = false;
-  }
+
 } catch (err) {
   console.error("Error al obtener créditos", err);
   tieneCreditos = false; // por seguridad, asumir que no tiene
