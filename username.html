@@ -347,6 +347,7 @@ function mostrarFormReserva() {
 </head>
 <body>
 
+<!-- Cabecera donde se verá el logo -->
 <div class="logo-container">
   <img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin-bottom:10px;">
   <h1>Turnos Disponibles: <span id="user"></span></h1>
@@ -363,12 +364,19 @@ function mostrarFormReserva() {
 document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("user").innerText = username;
 
-  // Aplicar color y logo guardados
+  // Traer perfil desde la hoja
   const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
   const perfil = await res.json();
-  if(perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
-  if(perfil.logo) document.getElementById("userLogo").src = perfil.logo;
 
+  // Aplicar color y logo
+  if(perfil.colorPreferido){
+    document.body.style.backgroundColor = perfil.colorPreferido;
+  }
+  if(perfil.logo){
+    document.getElementById("userLogo").src = perfil.logo;
+  }
+
+  // Renderizar calendario como antes
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
 });
 </script>
