@@ -99,34 +99,28 @@
   transition: all 0.2s;
 }
 
-.profesional-turnos .hora.disponible {
-  background: #e0ffe0;
-  color: #000;
+#turnos table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+  color: #333;
 }
 
-.profesional-turnos .hora.disponible:hover {
-  background: #c4ffc4;
-  cursor: pointer;
-  transform: translateY(-2px);
+#turnos th, #turnos td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+  font-size: 0.9rem;
 }
 
-.profesional-turnos .hora.bloqueado {
-  background: #f8d7da;
-  color: #721c24;
-  cursor: not-allowed;
-  text-decoration: line-through;
-  opacity: 0.6;
+#turnos th {
+  background-color: #4b2a72;
+  color: #fff;
 }
 
-@media(max-width: 650px){
-  #calendarioPanel, .profesional-turnos {
-    width: 95%;
-    padding: 6px;
-  }
-  .profesional-turnos .hora {
-    padding: 4px 6px;
-    font-size: 0.85rem;
-  }
+#turnos tr:nth-child(even) {
+  background-color: #f4f4f4;
 }
 
 </style>
@@ -311,72 +305,44 @@ function toggleSection(id) {
      </script>
 <script>
 // ------------------ CARGAR TURNOS EN EL PANEL ------------------
-function renderCalendarioPanel(year, month) {
-  const calendarDiv = document.getElementById("calendarioPanel");
-  const today = new Date();
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
+async function cargarTurnosPanel(profId) {
+  // Pedimos la fecha a mostrar (puedes poner un input date o default a hoy)
+  const fecha = new Date().toISOString().split("T")[0];
 
-  calendarDiv.innerHTML = `<h4>${firstDay.toLocaleString("es-ES",{month:"long", year:"numeric"})}</h4>`;
-  let table = "<table><tr>";
-  const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-  diasSemana.forEach(d => table += `<th>${d}</th>`);
-  table += "</tr><tr>";
+  // Llamada a la API
+  const res = await fetch(`${API_URL}?action=getTurnos&profesionalId=${profId}&fecha=${fecha}`);
+  const data = await res.json();
 
-  for (let i=0;i<firstDay.getDay();i++) table += "<td></td>";
-
-  for (let d=1; d<=lastDay.getDate(); d++) {
-    const fecha = new Date(year, month, d);
-    const fechaStr = fecha.toISOString().split("T")[0];
-
-    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
-    } else {
-      table += `<td onclick="cargarTurnosPanel('${fechaStr}')">${d}</td>`;
-    }
-
-    if (fecha.getDay() === 6 && d !== lastDay.getDate()) table += "</tr><tr>";
+  if(data.status !== "ok") {
+    document.getElementById("turnos").innerHTML = "Error al cargar turnos";
+    return;
   }
-  table += "</tr></table>";
-  calendarDiv.innerHTML += table;
-}
 
-async function cargarTurnosPanel(fecha = null) {
-  if (!profesionales.length) return;
-  const container = document.getElementById("turnosContainerPanel");
-  container.innerHTML = "<p>Cargando turnos...</p>";
-
-  // Fecha por defecto: hoy
-  const today = new Date();
-  const fechaStr = fecha || today.toISOString().split("T")[0];
-
-  container.innerHTML = ""; // limpiar
-
-  for (const prof of profesionales) {
-    const res = await fetch(`${API_URL}?username=${username}&profId=${prof.profesionalId}&fecha=${fechaStr}`);
-    const data = await res.json();
-    if (data.status !== "ok") continue;
-
-    const turnos = data.turnos[prof.profesionalId].turnos || [];
-    let html = `<div class="profesional-turnos"><h4>${prof.nombre} (${fechaStr})</h4>`;
-    if (!turnos.length) html += "<p>No hay turnos disponibles</p>";
-    else {
-      turnos.forEach(t => {
-        const clase = t.estado === "bloqueado" ? "bloqueado" : "disponible";
-        html += `<span class="hora ${clase}">${t.hora.padStart(5,"0")}</span> `;
-      });
-    }
-    html += "</div>";
-    container.innerHTML += html;
+  let html = `<h3>Turnos de ${profId} para ${fecha}</h3>`;
+  if(data.turnos.length === 0){
+    html += "<p>No hay turnos reservados</p>";
+  } else {
+    html += `<table border="1" style="width:100%; border-collapse:collapse;">
+      <tr>
+        <th>Hora</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Email</th><th>WhatsApp</th><th>DNI</th><th>Comentario</th>
+      </tr>`;
+    data.turnos.forEach(t => {
+      html += `<tr>
+        <td>${t.hora}</td>
+        <td>${t.nombre}</td>
+        <td>${t.apellido}</td>
+        <td>${t.telefono}</td>
+        <td>${t.email}</td>
+        <td>${t.whatsapp}</td>
+        <td>${t.dni}</td>
+        <td>${t.comentario || ''}</td>
+      </tr>`;
+    });
+    html += "</table>";
   }
-}
 
-// Inicializar calendario y turnos al cargar el panel
-document.addEventListener("DOMContentLoaded", () => {
-  const today = new Date();
-  renderCalendarioPanel(today.getFullYear(), today.getMonth());
-  cargarTurnosPanel();
-});
+  document.getElementById("turnos").innerHTML = html;
+}
 
 </script>
 
