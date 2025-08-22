@@ -105,11 +105,6 @@ async function cargarTurnos(fechaStr) {
   document.getElementById("reservaFormContainer").style.display = "none";
 
 
-} catch (err) {
-  console.error("Error al obtener créditos", err);
-  tieneCreditos = false; // por seguridad, asumir que no tiene
-}
-
   const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
   const data = await res.json();
 
