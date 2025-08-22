@@ -30,99 +30,21 @@
   .submenu {
     display:none; background:#f4f4f4; padding:15px;
   }
-  .profesional { border:1px solid #ccc; padding:10px; margin:10px 0; }
-  h2 { margin-top:20px; }
+
+ .profesional { border:1px solid #ccc; padding:10px; margin:10px 0; }
+  h2,h3,h4 { margin-top:10px; }
   label { margin-right:10px; }
   .hora-checkbox { display:inline-block; margin:2px; }
 
-  /* Calendario Panel */
-#calendarioPanel {
-  margin: 10px auto;
-  max-width: 600px;
-  background: #fff;
-  color: #533482;
-  border-radius: 10px;
-  overflow: hidden;
-  padding: 10px;
-}
-
-#calendarioPanel h4 {
-  text-align: center;
-  margin-bottom: 8px;
-  text-transform: capitalize;
-}
-
-#calendarioPanel table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 10px;
-}
-
-#calendarioPanel th, #calendarioPanel td {
-  width: 14.28%;
-  text-align: center;
-  padding: 6px 0;
-}
-
-#calendarioPanel td:hover {
-  background-color: #f0f0f0;
-  cursor: pointer;
-  border-radius: 50%;
-}
-
-#calendarioPanel td[style*="not-allowed"] {
-  cursor: not-allowed;
-  color: #999;
-}
-
-/* Turnos Panel */
-.profesional-turnos {
-  margin: 10px auto;
-  max-width: 600px;
-  text-align: center;
-  background: #fff;
-  color: #533482;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.profesional-turnos h4 {
-  margin-bottom: 8px;
-}
-
-.profesional-turnos .hora {
-  display: inline-block;
-  margin: 3px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-#turnos table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: #fff;
-  color: #333;
-}
-
-#turnos th, #turnos td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
-  font-size: 0.9rem;
-}
-
-#turnos th {
-  background-color: #4b2a72;
-  color: #fff;
-}
-
-#turnos tr:nth-child(even) {
-  background-color: #f4f4f4;
-}
-
+  /* Turnos estilo ticket */
+  .turnoTicket {
+    background:#fff; color:#333; padding:10px; margin:8px 0; border-radius:6px;
+    border-left:5px solid #4b2a72;
+  }
+  .turnoTicket p { margin:2px 0; }
+  #calendarioPanel table { width:100%; border-collapse: collapse; text-align:center; margin-top:10px; }
+  #calendarioPanel th, #calendarioPanel td { border:1px solid #ccc; padding:5px; }
+  #calendarioPanel td:hover { background:#d4d4d4; cursor:pointer; border-radius:50%; }
 </style>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
