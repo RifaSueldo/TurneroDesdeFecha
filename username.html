@@ -360,19 +360,17 @@ function mostrarFormReserva() {
   <div id="reservaFormContainer" style="display:none;"></div>
 
 <script>
+document.addEventListener("DOMContentLoaded", async () => {
+  document.getElementById("user").innerText = username;
 
-  async function aplicarPerfil() {
+  // Aplicar color y logo guardados
   const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
   const perfil = await res.json();
   if(perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
   if(perfil.logo) document.getElementById("userLogo").src = perfil.logo;
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("user").innerText = username;
-  aplicarPerfil();  // aplica color y logo
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
 });
-  </script>
+</script>
 </body>
 </html>
