@@ -169,7 +169,14 @@ async function guardarExcepcion(profId) {
   <p style="padding:10px;">Usuario: <b id="username"></b></p>
   <ul class="menu">
     
-   
+  <li onclick="toggleSection('personalizacion')">🎨 Personalización +</li>
+<div id="personalizacion" class="submenu">
+  <h3>Configura tu perfil</h3>
+  <label>Color de fondo: <input type="color" id="colorPicker"></label><br><br>
+  <label>Logo: <input type="file" id="logoInput" accept="image/*"></label><br><br>
+  <img id="previewLogo" src="" alt="Logo actual" style="max-width:150px; display:block; margin:10px 0;">
+  <button onclick="guardarPerfil()">Guardar cambios</button>
+</div> 
 <li>
     <button onclick="
       window.location.href='/creditos.html?username='
@@ -210,8 +217,49 @@ function toggleSection(id) {
   document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
   if (!isVisible) section.style.display = "block";
 }
- 
- 
      </script>
+<script>
+  // Al cargar la página, traemos datos de perfil
+async function cargarPerfil() {
+  const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
+  const perfil = await res.json();
+  if (perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
+  if (perfil.logo) document.getElementById("previewLogo").src = perfil.logo;
+  document.getElementById("colorPicker").value = perfil.colorPreferido || "#533482";
+}
+
+// Guardar cambios
+async function guardarPerfil() {
+  const color = document.getElementById("colorPicker").value;
+  const fileInput = document.getElementById("logoInput");
+  let logoUrl = document.getElementById("previewLogo").src;
+
+  if (fileInput.files.length > 0) {
+    // Subida de archivo a AppSheet / Google Drive u otra API
+    const formData = new FormData();
+    formData.append("action","uploadLogo");
+    formData.append("userId", userId);
+    formData.append("file", fileInput.files[0]);
+    const res = await fetch(API_URL, {method:"POST", body:formData});
+    const data = await res.json();
+    if(data.status==="ok") logoUrl = data.url;
+  }
+
+  // Guardar color y logo en PerfilUsuarios
+  const updateData = new FormData();
+  updateData.append("action","updatePerfil");
+  updateData.append("userId", userId);
+  updateData.append("color", color);
+  updateData.append("logo", logoUrl);
+  const res2 = await fetch(API_URL, {method:"POST", body:updateData});
+  const data2 = await res2.json();
+  if(data2.status==="ok") alert("Perfil actualizado");
+  document.body.style.backgroundColor = color;
+  document.getElementById("previewLogo").src = logoUrl;
+}
+
+// Llamar al cargar
+cargarPerfil();
+</script>
 </body>
 </html>
