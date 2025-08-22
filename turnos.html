@@ -40,11 +40,12 @@ async function cargarTurnosUsuario(){
       });
     }
 
-   turnosUsuario.forEach(t => {
-  const fechaSolo = t.fecha.split("T")[0]; // quita la hora
-  if(!turnosPorFecha[fechaSolo]) turnosPorFecha[fechaSolo] = [];
-  turnosPorFecha[fechaSolo].push(t);
-});
+    // Agrupar por fecha sin hora
+    turnosUsuario.forEach(t=>{
+      const fechaSolo = t.fecha.split("T")[0];
+      if(!turnosPorFecha[fechaSolo]) turnosPorFecha[fechaSolo] = [];
+      turnosPorFecha[fechaSolo].push(t);
+    });
 
     renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
   }catch(e){ 
@@ -62,31 +63,33 @@ function renderCalendario(year, month){
 
   let html = "<table border='1' cellspacing='0' cellpadding='5'><tr>";
   const diasSemana=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-  diasSemana.forEach(d=>html+=`<th>${d}</th>`); html+="</tr><tr>";
+  diasSemana.forEach(d=>html+=`<th>${d}</th>`); 
+  html+="</tr><tr>";
 
-  for(let i=0;i<firstDay.getDay();i++) html+="<td></td>";
   for(let d=1; d<=lastDay.getDate(); d++){
-  const fecha = new Date(year, month, d);
-  const fechaStr = fecha.toISOString().split("T")[0];
-  const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
+    const fecha = new Date(year, month, d);
+    const fechaStr = fecha.toISOString().split("T")[0];
+    const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
 
-  const td = document.createElement("td");
-  td.textContent = d;
+    const td = document.createElement("td");
+    td.textContent = d;
 
-  // Si el día ya pasó, lo mostramos gris
-  if(d<today.getDate() && month===today.getMonth()) td.style.color = "#999";
+    // Días pasados no clickeables
+    if(fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())){
+      td.style.color="#999";
+      td.style.cursor="default";
+    } else if(tieneTurnos){ 
+      td.style.cursor="pointer";
+      td.addEventListener("click", ()=> renderTickets(fechaStr));
+    } else {
+      td.style.cursor="pointer";
+      td.addEventListener("click", ()=> renderTickets(fechaStr));
+    }
 
-  // Si hay turnos en ese día, hacemos clickable
-  if(tieneTurnos){
-    td.style.cursor = "pointer";
-    td.addEventListener("click", ()=> renderTickets(fechaStr));
+    html += td.outerHTML;
+
+    if(fecha.getDay()===6 && d!==lastDay.getDate()) html+="</tr><tr>";
   }
-
-  html += td.outerHTML;
-
-  // Salto de semana
-  if(fecha.getDay() === 6 && d !== lastDay.getDate()) html += "</tr><tr>";
-}
   html+="</tr></table>";
   container.innerHTML += html;
 }
@@ -94,9 +97,13 @@ function renderCalendario(year, month){
 function renderTickets(fechaStr){
   const ticketsDiv = document.getElementById("ticketsContainer");
   const turnos = turnosPorFecha[fechaStr] || [];
-  if(turnos.length===0){ ticketsDiv.innerHTML="<p>No hay turnos en esta fecha.</p>"; return; }
-
   ticketsDiv.innerHTML=`<h2>Turnos del ${fechaStr}</h2>`;
+
+  if(turnos.length===0){
+    ticketsDiv.innerHTML += `<p>En esta fecha no hay turnos.</p>`;
+    return;
+  }
+
   turnos.forEach(t=>{
     const div = document.createElement("div");
     div.innerHTML=`<strong>${t.profesional}</strong> ${t.hora} - ${t.nombre} ${t.apellido} <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button><hr>`;
@@ -126,3 +133,5 @@ document.addEventListener("DOMContentLoaded", cargarTurnosUsuario);
 
 </body>
 </html>
+
+
