@@ -176,7 +176,9 @@ async function guardarExcepcion(profId) {
   <label>Logo: <input type="file" id="logoInput" accept="image/*"></label><br><br>
   <img id="previewLogo" src="" alt="Logo actual" style="max-width:150px; display:block; margin:10px 0;">
   <button onclick="guardarPerfil()">Guardar cambios</button>
-</div> 
+</div>
+
+    
 <li>
     <button onclick="
       window.location.href='/creditos.html?username='
@@ -219,23 +221,21 @@ function toggleSection(id) {
 }
      </script>
 <script>
-  // Al cargar la página, traemos datos de perfil
 async function cargarPerfil() {
   const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
   const perfil = await res.json();
-  if (perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
-  if (perfil.logo) document.getElementById("previewLogo").src = perfil.logo;
+  if(perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
+  if(perfil.logo) document.getElementById("previewLogo").src = perfil.logo;
   document.getElementById("colorPicker").value = perfil.colorPreferido || "#533482";
 }
 
-// Guardar cambios
 async function guardarPerfil() {
   const color = document.getElementById("colorPicker").value;
   const fileInput = document.getElementById("logoInput");
   let logoUrl = document.getElementById("previewLogo").src;
 
-  if (fileInput.files.length > 0) {
-    // Subida de archivo a AppSheet / Google Drive u otra API
+  if(fileInput.files.length > 0){
+    // Subida de archivo a Drive o AppSheet (según tu configuración)
     const formData = new FormData();
     formData.append("action","uploadLogo");
     formData.append("userId", userId);
@@ -245,7 +245,7 @@ async function guardarPerfil() {
     if(data.status==="ok") logoUrl = data.url;
   }
 
-  // Guardar color y logo en PerfilUsuarios
+  // Guardar color y logo
   const updateData = new FormData();
   updateData.append("action","updatePerfil");
   updateData.append("userId", userId);
@@ -254,11 +254,7 @@ async function guardarPerfil() {
   const res2 = await fetch(API_URL, {method:"POST", body:updateData});
   const data2 = await res2.json();
   if(data2.status==="ok") alert("Perfil actualizado");
-  document.body.style.backgroundColor = color;
-  document.getElementById("previewLogo").src = logoUrl;
 }
-
-// Llamar al cargar
 cargarPerfil();
 </script>
 </body>
