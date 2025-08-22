@@ -4,33 +4,45 @@
 <meta charset="UTF-8">
 <title>Pago Exitoso</title>
 <style>
-  body { font-family: Arial; text-align:center; padding:50px; }
-  h2 { color: green; }
+  body { font-family: Arial; text-align: center; padding: 40px; background:#f4f4f4; }
+  h1 { color: #4CAF50; }
+  p { font-size: 18px; }
+  button { padding: 10px 20px; margin: 10px; cursor: pointer; }
 </style>
 </head>
 <body>
-<h2>✅ ¡Pago realizado con éxito!</h2>
-<p>Estamos acreditando tus créditos...</p>
+  <h1>✅ ¡Pago realizado con éxito!</h1>
+  <p id="mensaje">Estamos acreditando tus créditos...</p>
+  <button id="volver">⬅ Volver al panel</button>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const externalRef = params.get('external_reference');
+  // Obtener parámetros de URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const username = urlParams.get('username');
+  const cantidad = parseInt(urlParams.get('cantidad'), 10);
 
-if(externalRef){
-  const [username, cantidadStr] = externalRef.split("|");
-  const cantidad = parseInt(cantidadStr, 10);
+  const API_URL = "https://script.google.com/macros/s/AKfycby_X3TI_Fz5PPVrmOYNJ2CvUQyBpVN-CoewUD3s1BoaPjELY_Fc-hH9U1-iAzqRysCs/exec"; // <- Poné aquí tu URL de Apps Script
 
-  fetch(`https://script.google.com/macros/s/AKfycbxhH4xPu4hhu3hD63AWz1LSMzq6exTSjFB7roCpwQZSFAN3IDtwRJY7b3X3MphgLzql/exec?action=sumaCreditos&username=${username}&cantidad=${cantidad}`)
-    .then(res => res.text())
-    .then(() => {
-      document.body.innerHTML += "<p>Créditos sumados correctamente.</p>";
-      setTimeout(()=> window.close(), 2000);
-    })
-    .catch(err => {
-      document.body.innerHTML += "<p>⚠ Error al sumar créditos.</p>";
-      console.error(err);
-    });
-}
+  async function acreditarCreditos() {
+    try {
+      const res = await fetch(`${API_URL}?action=sumaCreditos&username=${encodeURIComponent(username)}&cantidad=${cantidad}`);
+      const data = await res.json();
+      if(data.ok){
+        document.getElementById('mensaje').innerText = `Se acreditaron ${cantidad} créditos correctamente a tu cuenta, ${username}.`;
+      } else {
+        document.getElementById('mensaje').innerText = `Error al acreditar créditos: ${data.error || "desconocido"}`;
+      }
+    } catch(err){
+      document.getElementById('mensaje').innerText = `Error en la conexión: ${err}`;
+    }
+  }
+
+  document.getElementById('volver').onclick = () => {
+    window.location.href = "/panel.html?username=" + encodeURIComponent(username);
+  }
+
+  // Ejecutar al cargar
+  acreditarCreditos();
 </script>
 </body>
 </html>
