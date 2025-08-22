@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Listado de Reservas</title>
+<title>Listado de Clientes Únicos</title>
 <style>
   body { font-family: Arial, sans-serif; margin: 20px; background: #f5f6fa; }
   table { border-collapse: collapse; width: 100%; margin-top: 20px; }
@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<h1>Listado de Reservas</h1>
+<h1>Listado de Clientes (sin duplicados por DNI)</h1>
 <div id="tablaReservas"></div>
 
 <script>
@@ -41,7 +41,15 @@ async function cargarReservas(){
       });
     }
 
-    renderTabla(turnos);
+    // 🔹 Filtrar por DNI (solo un registro por cliente)
+    const unicos = {};
+    turnos.forEach(t => {
+      if(t.dni){   // si tiene campo dni
+        unicos[t.dni] = t; // si ya existe se reemplaza por el último turno
+      }
+    });
+
+    renderTabla(Object.values(unicos));
   } catch (e) {
     console.error(e);
     document.getElementById("tablaReservas").innerHTML = "<p>Error al cargar reservas.</p>";
@@ -52,7 +60,7 @@ function renderTabla(turnos){
   const cont = document.getElementById("tablaReservas");
 
   if(turnos.length === 0){
-    cont.innerHTML = "<p>No hay reservas para mostrar.</p>";
+    cont.innerHTML = "<p>No hay clientes para mostrar.</p>";
     return;
   }
 
