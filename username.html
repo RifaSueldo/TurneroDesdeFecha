@@ -68,14 +68,7 @@
     border-radius: 10px;
   }
   .turnos h3 { margin-bottom: 10px; }
-  .hora {
-    display: inline-block;
-    margin: 5px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-weight: 600;
-    transition: all 0.2s;
-  }
+  .hora { display: inline-block; margin: 5px; padding: 8px 12px; border-radius: 6px; font-weight: 600; transition: all 0.2s; }
   .hora.disponible { background: #e0ffe0; color: #000; }
   .hora.disponible:hover { background: #c4ffc4; cursor: pointer; transform: translateY(-2px); }
   .hora.bloqueado { background: #f8d7da; color: #721c24; cursor: not-allowed; text-decoration: line-through; opacity: 0.6; }
@@ -90,71 +83,53 @@
     border-radius: 10px;
   }
   #reservaForm input, #reservaForm textarea, #reservaForm button {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-family: 'Montserrat', sans-serif;
+    width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; font-family: 'Montserrat', sans-serif;
   }
   #reservaForm button {
-    background-color: #533482;
-    color: #fff;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+    background-color: #533482; color: #fff; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;
   }
-  #reservaForm button:hover {
-    background-color: #452a7a;
-    transform: translateY(-2px);
-  }
-
-  /* Mensaje de reserva */
+  #reservaForm button:hover { background-color: #452a7a; transform: translateY(-2px); }
   #reservaMsg { margin-top: 10px; text-align: center; font-weight: 600; }
 
   @media(max-width: 650px){
     #calendario, .turnos, #reservaFormContainer { width: 95%; padding: 10px; }
     .hora { padding: 6px 10px; font-size: 0.9rem; }
   }
-
-  .logo-container { text-align: center; margin-bottom: 15px; }
-  .logo-container img { max-width: 150px; display: block; margin: 0 auto 10px; }
 </style>
 
 </head>
 <body>
 
-<!-- Logo del usuario -->
-<div class="logo-container">
-  <img id="userLogo" src="" alt="Logo">
-  <h1>Turnos Disponibles: <span id="user"></span></h1>
-</div>
+  <!-- Logo del usuario -->
+  <div class="logo-container" style="text-align:center; margin-bottom:20px;">
+    <img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin:0 auto 10px;">
+  </div>
 
-<div>
-  <button id="prevMonth">← Mes anterior</button>
-  <button id="nextMonth">Mes siguiente →</button>
-</div>
-<div id="calendario"></div>
-<div id="turnos"></div>
-<div id="reservaFormContainer" style="display:none;"></div>
+  <div>
+    <button id="prevMonth">← Mes anterior</button>
+    <button id="nextMonth">Mes siguiente →</button>
+  </div>
+
+  <div id="calendario"></div>
+  <div id="turnos"></div>
+  <div id="reservaFormContainer" style="display:none;"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
 
-// Obtener username de URL
+// ------------------ OBTENER USERNAME ------------------
 let params = new URLSearchParams(window.location.search);
 let username = params.get("username");
+let userId = params.get("userId"); // opcional si lo pasás por URL
+
 if (!username) {
-  const path = window.location.pathname.replace(/\/+$/, "");
+  let path = window.location.pathname.replace(/\/+$/, "");
   const lastSegment = path.substring(path.lastIndexOf("/") + 1);
   if (lastSegment && lastSegment !== "username.html") username = lastSegment;
 }
 if (!username) alert("Falta username en la URL");
 
-// Obtener userId de localStorage o URL
-let userId = localStorage.getItem("userId") || params.get("userId");
-
+// Variables globales
 let selectedDate = new Date();
 let profesionales = [];
 let turnosData = {};
@@ -162,12 +137,14 @@ let selectedProf = "";
 let selectedProfId = "";
 let selectedHora = "";
 
-// Aplicar logo del perfil
-async function aplicarPerfil() {
+// ------------------ CARGAR LOGO ------------------
+async function cargarLogo() {
   if (!userId) return;
-  const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
-  const perfil = await res.json();
-  if (perfil.logo) document.getElementById("userLogo").src = perfil.logo;
+  try {
+    const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
+    const perfil = await res.json();
+    if (perfil.logo) document.getElementById("userLogo").src = perfil.logo;
+  } catch(e){ console.log(e); }
 }
 
 // ------------------ RENDER CALENDARIO ------------------
@@ -184,7 +161,6 @@ function renderCalendario(year, month) {
   table += "</tr><tr>";
 
   for (let i=0;i<firstDay.getDay();i++) table += "<td></td>";
-
   for (let d=1; d<=lastDay.getDate(); d++) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
@@ -233,7 +209,6 @@ async function cargarTurnos(fechaStr) {
     }
     html += "</div>";
   });
-
   document.getElementById("turnos").innerHTML = html;
 }
 
@@ -290,32 +265,22 @@ function mostrarFormReserva() {
       extra2: formData.get("extra2"),
       extra3: formData.get("extra3")
     };
-
     const res = await fetch(API_URL, {
       method: "POST",
       body: new URLSearchParams({action:"saveReserva", data: JSON.stringify(dataToSend)})
     });
     const result = await res.json();
     document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
-
-    if(result.status==="ok") {
-  cargarTurnos(fechaStr); // refresca y bloquea la hora reservada
-}
+    if(result.status==="ok") cargarTurnos(fechaStr);
   };
 }
+
+// ------------------ INIT ------------------
+document.addEventListener("DOMContentLoaded", () => {
+  cargarLogo();
+  renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+});
 </script>
-</head>
-<body>
-
-
-  <div>
-    <button id="prevMonth">← Mes anterior</button>
-    <button id="nextMonth">Mes siguiente →</button>
-  </div>
-  <div id="calendario"></div>
-  <div id="turnos"></div>
-  <div id="reservaFormContainer" style="display:none;"></div>
-
 
 </body>
 </html>
