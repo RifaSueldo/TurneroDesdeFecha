@@ -41,141 +41,18 @@
     border-left:5px solid #4b2a72;
   }
   .turnoTicket p { margin:2px 0; }
+
+  /* Calendario */
   #calendarioPanel table { width:100%; border-collapse: collapse; text-align:center; margin-top:10px; }
   #calendarioPanel th, #calendarioPanel td { border:1px solid #ccc; padding:5px; }
   #calendarioPanel td:hover { background:#d4d4d4; cursor:pointer; border-radius:50%; }
+
+  button.prof-btn { margin:2px; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; background:#4b2a72; color:#fff; }
 </style>
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
-let userId = localStorage.getItem("userId");
-let username = localStorage.getItem("username");
-let profesionales = [];
-
-// ---------------- INIT ----------------
-async function init() {
-  if (!userId || !username) {
-    alert("Debes iniciar sesión primero.");
-    window.location.href = "/login.html";
-    return;
-  }
-  document.getElementById("username").innerText = username;
-  await cargarProfesionales();
-}
-
-// ---------------- PROFESIONALES ----------------
-async function cargarProfesionales() {
-  const res = await fetch(`${API_URL}?username=${username}`);
-  const data = await res.json();
-  if (data.status === "ok") {
-    profesionales = data.profesionales;
-    renderProfesionales();
-  }
-}
-
-function renderProfesionales() {
-  const cont = document.getElementById("profesionales");
-  cont.innerHTML = "";
-  profesionales.forEach(prof => {
-    const div = document.createElement("div");
-    div.className = "profesional";
-    div.innerHTML = `
-      <h3>${prof.nombre}</h3>
-      <button onclick="abrirTurnos('${prof.profesionalId}','${prof.nombre}')">Configurar Turnos</button>
-      <button onclick="abrirExcepciones('${prof.profesionalId}','${prof.nombre}')">Excepciones</button>
-    `;
-    cont.appendChild(div);
-  });
-}
-
-async function agregarProfesional() {
-  const nombre = prompt("Nombre del profesional:");
-  if (!nombre) return;
-  const formData = new FormData();
-  formData.append("action","addProfessional");
-  formData.append("userId", userId);
-  formData.append("nombre", nombre);
-  const res = await fetch(API_URL, {method:"POST", body:formData});
-  const data = await res.json();
-  if (data.status==="ok") {
-    profesionales.push({profesionalId:data.profesionalId, nombre:data.nombre});
-    renderProfesionales();
-  }
-}
-
-// ---------------- TURNOS STANDARD ----------------
-function abrirTurnos(profId, nombre) {
-  const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
-  let html = `<h2>Turnos Standard de ${nombre}</h2>`;
-  dias.forEach(d=>{
-    html += `<h4>${d}</h4><div>`;
-    for (let h=0; h<24; h++) {
-      for (let m=0; m<60; m+=15) {
-        const hhmm = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-        const id = `${profId}_${d}_${hhmm}`;
-        html += `<label class="hora-checkbox"><input type="checkbox" id="${id}" data-dia="${d}" data-hora="${hhmm}" data-hhmm="${hhmm}"> ${hhmm}</label> `;
-      }
-    }
-    html += `</div>`;
-  });
-  html += `<br><button onclick="guardarTurnos('${profId}')">Guardar</button>`;
-  document.getElementById("config").innerHTML = html;
-}
-
-async function guardarTurnos(profId) {
-  const checkboxes = document.querySelectorAll(`#config input[type=checkbox]`);
-  const turnos = [];
-  checkboxes.forEach(ch=>{
-    if (ch.checked) {
-      turnos.push({dia: ch.dataset.dia, hora: ch.dataset.hhmm, visible:1});
-    }
-  });
-  const formData = new FormData();
-  formData.append("action","saveTurnosStandard");
-  formData.append("profesionalId", profId);
-  formData.append("turnos", JSON.stringify(turnos));
-  const res = await fetch(API_URL, {method:"POST", body:formData});
-  const data = await res.json();
-  alert("Turnos guardados correctamente.");
-}
-
-// ---------------- EXCEPCIONES ----------------
-function abrirExcepciones(profId, nombre) {
-  document.getElementById("config").innerHTML = `
-    <h2>Excepciones de ${nombre}</h2>
-    <label>Fecha: <input type="date" id="exc_fecha"></label><br>
-    <label>Hora: <input type="time" id="exc_hora" step="900"></label><br>
-    <select id="exc_estado">
-      <option value="bloqueado">Bloquear</option>
-      <option value="habilitado">Habilitar</option>
-    </select><br><br>
-    <button onclick="guardarExcepcion('${profId}')">Guardar Excepción</button>
-  `;
-}
-
-async function guardarExcepcion(profId) {
-  const fecha = document.getElementById("exc_fecha").value;
-  const hhmm = document.getElementById("exc_hora").value;
-  const estado = document.getElementById("exc_estado").value;
-
-  const formData = new FormData();
-  formData.append("action","saveExcepcion");
-  formData.append("profesionalId", profId);
-  formData.append("fecha", fecha);
-  formData.append("hora", hhmm);
-  formData.append("estado", estado);
-  const res = await fetch(API_URL, {method:"POST", body:formData});
-  const data = await res.json();
-  alert("Excepción guardada correctamente.");
-}
-
-</script>
 </head>
-<body onload="init()">
-  
-    
+<body>
 
-
-  <header>
+<header>
   <div class="logo">TurnoX</div>
   <button onclick="window.location.href='index.html'">Volver</button>
 </header>
@@ -204,22 +81,67 @@ async function guardarExcepcion(profId) {
   <div id="config" class="submenu">
     <h3>Configuración de horarios</h3>
     <p>Agrega profesionales y configura turnos estándar.</p>
+    <div id="profesionales"></div>
   </div>
 </ul>
 
- <script>
-// Función para abrir/cerrar secciones
-function toggleSection(id) {
-  const section = document.getElementById(id);
-  const isVisible = section.style.display === "block";
-  document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
-  if (!isVisible) section.style.display = "block";
-}
-</script>
-
 <script>
+const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
+let userId = localStorage.getItem("userId");
+let username = localStorage.getItem("username");
+let profesionales = [];
+let selectedProfId = "";
+let selectedFecha = "";
 
+// ---------------- INIT ----------------
+async function init() {
+  if (!userId || !username) {
+    alert("Debes iniciar sesión primero.");
+    window.location.href = "/login.html";
+    return;
+  }
+  document.getElementById("username").innerText = username;
+  await cargarProfesionales();
+  renderCalendarioPanel();
+}
 
+// ---------------- PROFESIONALES ----------------
+async function cargarProfesionales() {
+  const res = await fetch(`${API_URL}?username=${username}`);
+  const data = await res.json();
+  if (data.status === "ok") {
+    profesionales = data.profesionales;
+    renderProfesionales();
+    renderSelectorProfesional();
+  }
+}
+
+function renderProfesionales() {
+  const cont = document.getElementById("profesionales");
+  cont.innerHTML = "";
+  profesionales.forEach(prof => {
+    const div = document.createElement("div");
+    div.className = "profesional";
+    div.innerHTML = `
+      <h3>${prof.nombre}</h3>
+      <button onclick="abrirTurnos('${prof.profesionalId}','${prof.nombre}')">Configurar Turnos</button>
+      <button onclick="abrirExcepciones('${prof.profesionalId}','${prof.nombre}')">Excepciones</button>
+    `;
+    cont.appendChild(div);
+  });
+}
+
+function renderSelectorProfesional() {
+  const cont = document.getElementById("selectorProfesional");
+  cont.innerHTML = "<b>Selecciona Profesional:</b> ";
+  profesionales.forEach(prof => {
+    const btn = document.createElement("button");
+    btn.innerText = prof.nombre;
+    btn.className = "prof-btn";
+    btn.onclick = ()=>{ selectedProfId = prof.profesionalId; cargarTurnosPanel(); };
+    cont.appendChild(btn);
+  });
+}
 
 // ---------------- CALENDARIO ----------------
 function renderCalendarioPanel(year = new Date().getFullYear(), month = new Date().getMonth()) {
@@ -277,7 +199,83 @@ async function cargarTurnosPanel() {
     `;
   });
 }
+
+// ---------------- TURNOS STANDARD ----------------
+function abrirTurnos(profId, nombre) {
+  const dias = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+  let html = `<h2>Turnos Standard de ${nombre}</h2>`;
+  dias.forEach(d=>{
+    html += `<h4>${d}</h4><div>`;
+    for (let h=0; h<24; h++) {
+      for (let m=0; m<60; m+=15) {
+        const hhmm = `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+        const id = `${profId}_${d}_${hhmm}`;
+        html += `<label class="hora-checkbox"><input type="checkbox" id="${id}" data-dia="${d}" data-hora="${hhmm}" data-hhmm="${hhmm}"> ${hhmm}</label> `;
+      }
+    }
+    html += `</div>`;
+  });
+  html += `<br><button onclick="guardarTurnos('${profId}')">Guardar</button>`;
+  document.getElementById("config").innerHTML = html;
+}
+
+async function guardarTurnos(profId) {
+  const checkboxes = document.querySelectorAll(`#config input[type=checkbox]`);
+  const turnos = [];
+  checkboxes.forEach(ch=>{
+    if (ch.checked) turnos.push({dia: ch.dataset.dia, hora: ch.dataset.hhmm, visible:1});
+  });
+  const formData = new FormData();
+  formData.append("action","saveTurnosStandard");
+  formData.append("profesionalId", profId);
+  formData.append("turnos", JSON.stringify(turnos));
+  const res = await fetch(API_URL, {method:"POST", body:formData});
+  const data = await res.json();
+  alert("Turnos guardados correctamente.");
+}
+
+// ---------------- EXCEPCIONES ----------------
+function abrirExcepciones(profId, nombre) {
+  document.getElementById("config").innerHTML = `
+    <h2>Excepciones de ${nombre}</h2>
+    <label>Fecha: <input type="date" id="exc_fecha"></label><br>
+    <label>Hora: <input type="time" id="exc_hora" step="900"></label><br>
+    <select id="exc_estado">
+      <option value="bloqueado">Bloquear</option>
+      <option value="habilitado">Habilitar</option>
+    </select><br><br>
+    <button onclick="guardarExcepcion('${profId}')">Guardar Excepción</button>
+  `;
+}
+
+async function guardarExcepcion(profId) {
+  const fecha = document.getElementById("exc_fecha").value;
+  const hhmm = document.getElementById("exc_hora").value;
+  const estado = document.getElementById("exc_estado").value;
+
+  const formData = new FormData();
+  formData.append("action","saveExcepcion");
+  formData.append("profesionalId", profId);
+  formData.append("fecha", fecha);
+  formData.append("hora", hhmm);
+  formData.append("estado", estado);
+  const res = await fetch(API_URL, {method:"POST", body:formData});
+  const data = await res.json();
+  alert("Excepción guardada correctamente.");
+}
+
+// ---------------- TOGGLE SECCIONES ----------------
+function toggleSection(id) {
+  const section = document.getElementById(id);
+  const isVisible = section.style.display === "block";
+  document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
+  if (!isVisible) section.style.display = "block";
+}
+
+window.onload = init;
 </script>
 
 </body>
 </html>
+
+
