@@ -36,6 +36,8 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxWObLHOJLPbWaeickDqA4-Q3j-jVocswx4CC0r5uTfFADRRR_X16K9ms-RapTVd-uh/exec";
+const DESCONTAR_API_URL = "https://script.google.com/macros/s/AKfycby7xmnHgfdguF19kkj8fWb02jgQDXikPh1iIrZ4iazdaoSUXPUsWQLxj3sXjKwe1WU/exec"; // <- URL de descontar.gs
+
 
 // ------------------ OBTENER USERNAME ------------------
 let params = new URLSearchParams(window.location.search);
@@ -101,6 +103,22 @@ async function cargarTurnos(fechaStr) {
   selectedDate = new Date(fechaStr+"T00:00:00");
   document.getElementById("turnos").innerHTML = `<h2>Turnos del ${fechaStr}</h2><p>Cargando...</p>`;
   document.getElementById("reservaFormContainer").style.display = "none";
+
+  // ------------------ CHEQUEAR CRÉDITOS ANTES DE MOSTRAR TURNOS ------------------
+const creditosRes = await fetch(DESCONTAR_API_URL, {
+  method: "POST",
+  body: new URLSearchParams({
+    action: "getCreditos",
+    username: username
+  })
+});
+const creditosData = await creditosRes.json();
+
+if (creditosData.creditos <= 0) {
+  document.getElementById("turnos").innerHTML = `<p>El usuario ${username} no tiene créditos suficientes para reservar turnos.</p>`;
+  document.getElementById("reservaFormContainer").style.display = "none";
+  return;
+}
 
   const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
   const data = await res.json();
