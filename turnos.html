@@ -65,12 +65,27 @@ function renderCalendario(year, month){
 
   for(let i=0;i<firstDay.getDay();i++) html+="<td></td>";
   for(let d=1; d<=lastDay.getDate(); d++){
-    const fechaStr = new Date(year,month,d).toISOString().split("T")[0];
-    const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
-    const estilo = d<today.getDate() && month===today.getMonth() ? "color:#999" : "";
-    html+=`<td style="${estilo}; cursor:${tieneTurnos?'pointer':'default'}" onclick="${tieneTurnos?`renderTickets('${fechaStr}')`:''}">${d}</td>`;
-    if(new Date(year,month,d).getDay()===6 && d!==lastDay.getDate()) html+="</tr><tr>";
+  const fecha = new Date(year, month, d);
+  const fechaStr = fecha.toISOString().split("T")[0];
+  const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
+
+  const td = document.createElement("td");
+  td.textContent = d;
+
+  // Si el día ya pasó, lo mostramos gris
+  if(d<today.getDate() && month===today.getMonth()) td.style.color = "#999";
+
+  // Si hay turnos en ese día, hacemos clickable
+  if(tieneTurnos){
+    td.style.cursor = "pointer";
+    td.addEventListener("click", ()=> renderTickets(fechaStr));
   }
+
+  html += td.outerHTML;
+
+  // Salto de semana
+  if(fecha.getDay() === 6 && d !== lastDay.getDate()) html += "</tr><tr>";
+}
   html+="</tr></table>";
   container.innerHTML += html;
 }
