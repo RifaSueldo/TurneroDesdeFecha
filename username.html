@@ -177,7 +177,7 @@
 </style>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbydjOAunQE0ESRu8HbdTBcJ3BxBjxteH_wgsyHOmsXJQ0lAiKd_u9ue1jNkD4VByddX/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
 
 
 
@@ -346,11 +346,7 @@ function mostrarFormReserva() {
 </head>
 <body>
 
-<!-- Cabecera donde se verá el logo -->
-<div class="logo-container">
-  <img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin-bottom:10px;">
-  <h1>Turnos Disponibles: <span id="user"></span></h1>
-</div>
+
   <div>
     <button id="prevMonth">← Mes anterior</button>
     <button id="nextMonth">Mes siguiente →</button>
@@ -359,32 +355,6 @@ function mostrarFormReserva() {
   <div id="turnos"></div>
   <div id="reservaFormContainer" style="display:none;"></div>
 
-<script>
-async function aplicarPerfil() {
-  const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
-  const perfil = await res.json();
 
-  // Aplicar color solo en username.html
-  if(perfil.colorPreferido){
-    // Si usás un contenedor principal:
-    const container = document.querySelector(".container") || document.body;
-    container.style.backgroundColor = perfil.colorPreferido;
-  }
-
-  // Aplicar logo
-  if(perfil.logo){
-    const logoImg = document.getElementById("userLogo");
-    if(logoImg) logoImg.src = perfil.logo;
-  }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("user").innerText = username;
-  aplicarPerfil();
-  renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
-});
-
-
-</script>
 </body>
 </html>
