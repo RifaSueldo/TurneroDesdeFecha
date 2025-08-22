@@ -95,6 +95,41 @@
     #calendario, .turnos, #reservaFormContainer { width: 95%; padding: 10px; }
     .hora { padding: 6px 10px; font-size: 0.9rem; }
   }
+    .ticket {
+  margin: 20px auto;
+  max-width: 500px;
+  background: #fff;
+  color: #333;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  text-align: left;
+}
+.ticket h2 {
+  text-align: center;
+  color: #533482;
+  margin-bottom: 15px;
+}
+.ticket p {
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+.ticket button {
+  margin-top: 15px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: #533482;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ticket button:hover {
+  background: #452a7a;
+}
+
 </style>
 
 </head>
@@ -270,10 +305,23 @@ function mostrarFormReserva() {
       body: new URLSearchParams({action:"saveReserva", data: JSON.stringify(dataToSend)})
     });
     const result = await res.json();
-    document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
-    if(result.status==="ok") cargarTurnos(fechaStr);
-  };
+
+if (result.status === "ok") {
+  document.getElementById("reservaMsg").innerHTML = `
+    <div class="ticket">
+      ${result.ticketHTML}
+      <button onclick="window.print()">Imprimir Ticket</button>
+    </div>
+  `;
+  // Oculto el formulario para que no vuelva a enviar
+  document.getElementById("reservaFormContainer").style.display = "none";
+  // Actualizo turnos
+  cargarTurnos(fechaStr);
+} else {
+  document.getElementById("reservaMsg").innerText = "Error al reservar: " + (result.msg || "");
 }
+  };
+
 
 // ------------------ INIT ------------------
 document.addEventListener("DOMContentLoaded", () => {
