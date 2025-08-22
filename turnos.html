@@ -3,6 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <title>Mis Turnos</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  table { border-collapse: collapse; }
+  th, td { padding: 5px 10px; text-align: center; }
+  td { border: 1px solid #ccc; width: 40px; height: 40px; }
+  td:hover { background-color: #f0f0f0; }
+  #ticketsContainer div { background-color: #fafafa; }
+</style>
 </head>
 <body>
 
@@ -61,7 +69,7 @@ function renderCalendario(year, month){
   const container = document.getElementById("calendarioContainer");
   container.innerHTML = `<h2>${firstDay.toLocaleString("es-ES",{month:"long",year:"numeric"})}</h2>`;
 
-  let html = "<table border='1' cellspacing='0' cellpadding='5'><tr>";
+  let html = "<table><tr>";
   const diasSemana=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
   diasSemana.forEach(d=>html+=`<th>${d}</th>`); 
   html+="</tr><tr>";
@@ -69,7 +77,6 @@ function renderCalendario(year, month){
   for(let d=1; d<=lastDay.getDate(); d++){
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
-    const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
 
     const td = document.createElement("td");
     td.textContent = d;
@@ -78,10 +85,7 @@ function renderCalendario(year, month){
     if(fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())){
       td.style.color="#999";
       td.style.cursor="default";
-    } else if(tieneTurnos){ 
-      td.style.cursor="pointer";
-      td.addEventListener("click", ()=> renderTickets(fechaStr));
-    } else {
+    } else { 
       td.style.cursor="pointer";
       td.addEventListener("click", ()=> renderTickets(fechaStr));
     }
@@ -106,7 +110,17 @@ function renderTickets(fechaStr){
 
   turnos.forEach(t=>{
     const div = document.createElement("div");
-    div.innerHTML=`<strong>${t.profesional}</strong> ${t.hora} - ${t.nombre} ${t.apellido} <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button><hr>`;
+    div.style.border = "1px solid #ccc";
+    div.style.padding = "10px";
+    div.style.margin = "10px 0";
+    div.style.borderRadius = "8px";
+    div.innerHTML=`
+      <strong>${t.profesional}</strong> - ${t.nombre} ${t.apellido} <br>
+      <b>Hora:</b> ${t.hora} <br>
+      <b>DNI:</b> ${t.dni} <br>
+      <b>Tel:</b> ${t.telefono || '-'} <br>
+      <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button>
+    `;
     ticketsDiv.appendChild(div);
   });
 }
@@ -133,5 +147,3 @@ document.addEventListener("DOMContentLoaded", cargarTurnosUsuario);
 
 </body>
 </html>
-
-
