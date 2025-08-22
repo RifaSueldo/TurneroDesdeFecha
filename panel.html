@@ -34,6 +34,101 @@
   h2 { margin-top:20px; }
   label { margin-right:10px; }
   .hora-checkbox { display:inline-block; margin:2px; }
+
+  /* Calendario Panel */
+#calendarioPanel {
+  margin: 10px auto;
+  max-width: 600px;
+  background: #fff;
+  color: #533482;
+  border-radius: 10px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+#calendarioPanel h4 {
+  text-align: center;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+
+#calendarioPanel table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+#calendarioPanel th, #calendarioPanel td {
+  width: 14.28%;
+  text-align: center;
+  padding: 6px 0;
+}
+
+#calendarioPanel td:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+#calendarioPanel td[style*="not-allowed"] {
+  cursor: not-allowed;
+  color: #999;
+}
+
+/* Turnos Panel */
+.profesional-turnos {
+  margin: 10px auto;
+  max-width: 600px;
+  text-align: center;
+  background: #fff;
+  color: #533482;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.profesional-turnos h4 {
+  margin-bottom: 8px;
+}
+
+.profesional-turnos .hora {
+  display: inline-block;
+  margin: 3px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.profesional-turnos .hora.disponible {
+  background: #e0ffe0;
+  color: #000;
+}
+
+.profesional-turnos .hora.disponible:hover {
+  background: #c4ffc4;
+  cursor: pointer;
+  transform: translateY(-2px);
+}
+
+.profesional-turnos .hora.bloqueado {
+  background: #f8d7da;
+  color: #721c24;
+  cursor: not-allowed;
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+@media(max-width: 650px){
+  #calendarioPanel, .profesional-turnos {
+    width: 95%;
+    padding: 6px;
+  }
+  .profesional-turnos .hora {
+    padding: 4px 6px;
+    font-size: 0.85rem;
+  }
+}
+
 </style>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
@@ -184,12 +279,13 @@ async function guardarExcepcion(profId) {
 
 
 
-    <li onclick="toggleSection('turnos')">Turnos +</li>
-    <div id="turnos" class="submenu">
-      <h3>Gestión de Turnos</h3>
-      <p>Aquí mostraremos y configuraremos los turnos por profesional.</p>
-    </div>
-
+   <li onclick="toggleSection('turnos')">Turnos +</li>
+<div id="turnos" class="submenu">
+  <h3>Gestión de Turnos</h3>
+  <div id="calendarioPanel"></div>
+  <div id="turnosContainerPanel"></div>
+</div>
+    
     <li onclick="toggleSection('clientes')">Clientes +</li>
     <div id="clientes" class="submenu">
       <h3>Listado de Clientes</h3>
@@ -215,18 +311,54 @@ function toggleSection(id) {
      </script>
 <script>
 // ------------------ CARGAR TURNOS EN EL PANEL ------------------
-async function cargarTurnosPanel() {
+function renderCalendarioPanel(year, month) {
+  const calendarDiv = document.getElementById("calendarioPanel");
+  const today = new Date();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+
+  calendarDiv.innerHTML = `<h4>${firstDay.toLocaleString("es-ES",{month:"long", year:"numeric"})}</h4>`;
+  let table = "<table><tr>";
+  const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  diasSemana.forEach(d => table += `<th>${d}</th>`);
+  table += "</tr><tr>";
+
+  for (let i=0;i<firstDay.getDay();i++) table += "<td></td>";
+
+  for (let d=1; d<=lastDay.getDate(); d++) {
+    const fecha = new Date(year, month, d);
+    const fechaStr = fecha.toISOString().split("T")[0];
+
+    if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
+      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
+    } else {
+      table += `<td onclick="cargarTurnosPanel('${fechaStr}')">${d}</td>`;
+    }
+
+    if (fecha.getDay() === 6 && d !== lastDay.getDate()) table += "</tr><tr>";
+  }
+  table += "</tr></table>";
+  calendarDiv.innerHTML += table;
+}
+
+async function cargarTurnosPanel(fecha = null) {
   if (!profesionales.length) return;
-  const turnosDiv = document.getElementById("turnos");
-  turnosDiv.innerHTML = "<h3>Turnos por Profesional</h3>";
+  const container = document.getElementById("turnosContainerPanel");
+  container.innerHTML = "<p>Cargando turnos...</p>";
+
+  // Fecha por defecto: hoy
+  const today = new Date();
+  const fechaStr = fecha || today.toISOString().split("T")[0];
+
+  container.innerHTML = ""; // limpiar
 
   for (const prof of profesionales) {
-    const res = await fetch(`${API_URL}?username=${username}&profId=${prof.profesionalId}`);
+    const res = await fetch(`${API_URL}?username=${username}&profId=${prof.profesionalId}&fecha=${fechaStr}`);
     const data = await res.json();
     if (data.status !== "ok") continue;
 
-    const turnos = data.turnos[prof.profesionalId].turnos;
-    let html = `<div class="profesional-turnos"><h4>${prof.nombre}</h4>`;
+    const turnos = data.turnos[prof.profesionalId].turnos || [];
+    let html = `<div class="profesional-turnos"><h4>${prof.nombre} (${fechaStr})</h4>`;
     if (!turnos.length) html += "<p>No hay turnos disponibles</p>";
     else {
       turnos.forEach(t => {
@@ -235,20 +367,17 @@ async function cargarTurnosPanel() {
       });
     }
     html += "</div>";
-    turnosDiv.innerHTML += html;
+    container.innerHTML += html;
   }
 }
 
-// Llamar a cargar turnos después de cargar profesionales
-async function cargarProfesionales() {
-  const res = await fetch(`${API_URL}?username=${username}`);
-  const data = await res.json();
-  if (data.status === "ok") {
-    profesionales = data.profesionales;
-    renderProfesionales();
-    cargarTurnosPanel(); // <-- aquí cargamos los turnos
-  }
-}
+// Inicializar calendario y turnos al cargar el panel
+document.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
+  renderCalendarioPanel(today.getFullYear(), today.getMonth());
+  cargarTurnosPanel();
+});
+
 </script>
 
 </body>
