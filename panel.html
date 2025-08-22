@@ -274,7 +274,31 @@ function toggleSection(id) {
 
 window.onload = init;
 </script>
-
+  <script>
+async function cargarTurnosPanel() {
+  if (!selectedProfId || !selectedFecha) return;
+  const res = await fetch(`${API_URL}?action=getTurnosTomados&profesionalId=${selectedProfId}&fecha=${selectedFecha}`);
+  const data = await res.json();
+  const cont = document.getElementById("tablaTurnos");
+  cont.innerHTML = `<h4>Turnos del ${selectedFecha}</h4>`;
+  if (data.status !== "ok" || !data.turnos || data.turnos.length===0) {
+    cont.innerHTML += "<p>No hay turnos reservados.</p>";
+    return;
+  }
+  data.turnos.forEach(t => {
+    cont.innerHTML += `
+      <div class="turnoTicket">
+        <p><b>Hora:</b> ${t.hora}</p>
+        <p><b>Nombre:</b> ${t.nombre} ${t.apellido}</p>
+        <p><b>Teléfono:</b> ${t.telefono}</p>
+        <p><b>Email:</b> ${t.email}</p>
+        <p><b>DNI:</b> ${t.dni}</p>
+        <p><b>Comentario:</b> ${t.comentario || "-"}</p>
+      </div>
+    `;
+  });
+}
+</script>
 </body>
 </html>
 
