@@ -36,7 +36,7 @@
   .hora-checkbox { display:inline-block; margin:2px; }
 </style>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyHpfP-feBj4oZS_w9Dapi1aVweZrXe57TKFxtkopQ97Eyy4ECinVXfhLabRpmcly2N/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
 let userId = localStorage.getItem("userId");
 let username = localStorage.getItem("username");
 let profesionales = [];
@@ -169,15 +169,7 @@ async function guardarExcepcion(profId) {
   <p style="padding:10px;">Usuario: <b id="username"></b></p>
   <ul class="menu">
     
-  <!-- Sección Personalización dentro del menú -->
-<li onclick="toggleSection('personalizacion')">🎨 Personalización +</li>
-<div id="personalizacion" class="submenu">
-  <h3>Configura tu perfil</h3>
-  <label>Color de fondo: <input type="color" id="colorPicker"></label><br><br>
-  <label>Logo: <input type="file" id="logoInput" accept="image/*"></label><br><br>
-  <img id="previewLogo" src="" alt="Logo actual" style="max-width:150px; display:block; margin:10px 0;">
-  <button onclick="guardarPerfil()">Guardar cambios</button>
-</div>
+  
 
     
 <li>
@@ -221,36 +213,6 @@ function toggleSection(id) {
   if (!isVisible) section.style.display = "block";
 }
      </script>
-<script>
-async function cargarPerfil() {
-  const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
-  const perfil = await res.json();
-  if(perfil.colorPreferido) document.getElementById("colorPicker").value = perfil.colorPreferido;
-  if(perfil.logo) document.getElementById("previewLogo").src = perfil.logo;
-}
 
-async function guardarPerfil() {
-  const color = document.getElementById("colorPicker").value;
-  const logoUrl = document.getElementById("logoInput").value;
-
-  const updateData = new FormData();
-  updateData.append("action","updatePerfil");
-  updateData.append("userId", userId);
-  updateData.append("color", color);
-  updateData.append("logo", logoUrl);
-
-  const res = await fetch(API_URL, {method:"POST", body:updateData});
-  const data = await res.json();
-  if(data.status==="ok") {
-    alert("Perfil actualizado");
-    document.getElementById("previewLogo").src = logoUrl;
-  } else {
-    alert("Error al guardar perfil");
-  }
-}
-
-
-cargarPerfil();
-</script>
 </body>
 </html>
