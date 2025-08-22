@@ -231,30 +231,24 @@ async function cargarPerfil() {
 
 async function guardarPerfil() {
   const color = document.getElementById("colorPicker").value;
-  const fileInput = document.getElementById("logoInput");
-  let logoUrl = document.getElementById("previewLogo").src;
+  const logoUrl = document.getElementById("logoInput").value;
 
-  if(fileInput.files.length > 0){
-    // Subir archivo a hosting accesible (AppSheet, Drive, Netlify, etc.)
-    const formData = new FormData();
-    formData.append("action","uploadLogo");
-    formData.append("userId", userId);
-    formData.append("file", fileInput.files[0]);
-    const res = await fetch(API_URL, {method:"POST", body:formData});
-    const data = await res.json();
-    if(data.status==="ok") logoUrl = data.url; // URL real de la imagen
-  }
-
-  // Guardar color y logo en PerfilUsuarios
   const updateData = new FormData();
   updateData.append("action","updatePerfil");
   updateData.append("userId", userId);
   updateData.append("color", color);
   updateData.append("logo", logoUrl);
-  const res2 = await fetch(API_URL, {method:"POST", body:updateData});
-  const data2 = await res2.json();
-  if(data2.status==="ok") alert("Perfil actualizado");
+
+  const res = await fetch(API_URL, {method:"POST", body:updateData});
+  const data = await res.json();
+  if(data.status==="ok") {
+    alert("Perfil actualizado");
+    document.getElementById("previewLogo").src = logoUrl;
+  } else {
+    alert("Error al guardar perfil");
+  }
 }
+
 
 cargarPerfil();
 </script>
