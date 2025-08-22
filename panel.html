@@ -172,18 +172,19 @@ async function guardarExcepcion(profId) {
 </script>
 </head>
 <body onload="init()">
-  <header>
-    <div class="logo">TurnoX</div>
-    <button onclick="window.location.href='index.html'">Volver</button>
-  </header>
   
-  <p style="padding:10px;">Usuario: <b id="username"></b></p>
-  <ul class="menu">
     
-  
 
-    
-<li>
+
+  <header>
+  <div class="logo">TurnoX</div>
+  <button onclick="window.location.href='index.html'">Volver</button>
+</header>
+
+<p style="padding:10px;">Usuario: <b id="username"></b></p>
+
+<ul class="menu">
+  <li>
     <button onclick="
       window.location.href='/creditos.html?username='
       + encodeURIComponent(username)
@@ -192,7 +193,6 @@ async function guardarExcepcion(profId) {
       💳 Créditos
     </button>
   </li>
-
   <li onclick="toggleSection('turnos')">Turnos +</li>
   <div id="turnos" class="submenu">
     <h3>Gestión de Turnos</h3>
@@ -208,27 +208,6 @@ async function guardarExcepcion(profId) {
   </div>
 </ul>
 
-  <!-- Contenedor del calendario -->
-  <div id="calendarioPanel"></div>
-
-  <div id="tablaTurnos" style="margin-top:10px;"></div>
-</div>
-
-    
-    <li onclick="toggleSection('clientes')">Clientes +</li>
-    <div id="clientes" class="submenu">
-      <h3>Listado de Clientes</h3>
-      <p>Buscador por DNI y listado de datos personales de cada cliente.</p>
-    </div>
-
-    <li onclick="toggleSection('config')">Configuración +</li>
-    <div id="config" class="submenu">
-      <h3>Configuración de horarios</h3>
-      <button onclick="agregarProfesional()">Agregar Profesional</button>
-  <div id="profesionales"></div>
-  <div id="config"></div>
-    </div>
-  </ul>
   <script>
   // Función para abrir/cerrar secciones
 function toggleSection(id) {
