@@ -346,7 +346,11 @@ function mostrarFormReserva() {
 </script>
 </head>
 <body>
+
+<div class="logo-container">
+  <img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin-bottom:10px;">
   <h1>Turnos Disponibles: <span id="user"></span></h1>
+</div>
   <div>
     <button id="prevMonth">← Mes anterior</button>
     <button id="nextMonth">Mes siguiente →</button>
@@ -354,5 +358,21 @@ function mostrarFormReserva() {
   <div id="calendario"></div>
   <div id="turnos"></div>
   <div id="reservaFormContainer" style="display:none;"></div>
+
+<script>
+
+  async function aplicarPerfil() {
+  const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
+  const perfil = await res.json();
+  if(perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
+  if(perfil.logo) document.getElementById("userLogo").src = perfil.logo;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("user").innerText = username;
+  aplicarPerfil();  // aplica color y logo
+  renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+});
+  </script>
 </body>
 </html>
