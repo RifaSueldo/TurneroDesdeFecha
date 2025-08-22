@@ -11,7 +11,7 @@
 <div id="ticketsContainer"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwoI9Ey36cVlK_gYsN7wBARQvu7-wwEIdM7Sodjw_b6jhHF9HnzSddvvvA8z7kZG67H/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzzCb8frraC1MJ9ks8oD4Rr-hoGs1_GWdbpR7RGL6bSvQDX9ukvdzP8Zn0_p_DeOK4V/exec";
 
 let username = localStorage.getItem("username");
 
@@ -61,22 +61,16 @@ function renderCalendario(year, month){
 
   let html = "<table border='1' cellspacing='0' cellpadding='5'><tr>";
   const diasSemana=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
-  diasSemana.forEach(d=>html+=`<th>${d}</th>`); 
-  html+="</tr><tr>";
+  diasSemana.forEach(d=>html+=`<th>${d}</th>`); html+="</tr><tr>";
 
   for(let i=0;i<firstDay.getDay();i++) html+="<td></td>";
-
   for(let d=1; d<=lastDay.getDate(); d++){
-    const fecha = new Date(year,month,d);
-    const fechaStr = fecha.toISOString().split("T")[0];
+    const fechaStr = new Date(year,month,d).toISOString().split("T")[0];
     const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
-
-    const estilo = (fecha < today) ? "color:#999" : "cursor:pointer;";
-    html += `<td style="${estilo}" ${tieneTurnos ? `onclick="renderTickets('${fechaStr}')"` : ""}>${d}</td>`;
-
-    if(fecha.getDay()===6 && d!==lastDay.getDate()) html+="</tr><tr>";
+    const estilo = d<today.getDate() && month===today.getMonth() ? "color:#999" : "";
+    html+=`<td style="${estilo}; cursor:${tieneTurnos?'pointer':'default'}" onclick="${tieneTurnos?`renderTickets('${fechaStr}')`:''}">${d}</td>`;
+    if(new Date(year,month,d).getDay()===6 && d!==lastDay.getDate()) html+="</tr><tr>";
   }
-
   html+="</tr></table>";
   container.innerHTML += html;
 }
@@ -89,19 +83,7 @@ function renderTickets(fechaStr){
   ticketsDiv.innerHTML=`<h2>Turnos del ${fechaStr}</h2>`;
   turnos.forEach(t=>{
     const div = document.createElement("div");
-    div.innerHTML=`
-      <strong>Profesional:</strong> ${t.profesional} <br>
-      <strong>Hora:</strong> ${t.hora} <br>
-      <strong>Nombre:</strong> ${t.nombre} ${t.apellido} <br>
-      <strong>Teléfono:</strong> ${t.telefono} <br>
-      <strong>Dirección:</strong> ${t.direccion} <br>
-      <strong>Fecha Nacimiento:</strong> ${t.fechaNacimiento} <br>
-      <strong>Email:</strong> ${t.email} <br>
-      <strong>Whatsapp:</strong> ${t.whatsapp} <br>
-      <strong>DNI:</strong> ${t.dni} <br>
-      <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button>
-      <hr>
-    `;
+    div.innerHTML=`<strong>${t.profesional}</strong> ${t.hora} - ${t.nombre} ${t.apellido} <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button><hr>`;
     ticketsDiv.appendChild(div);
   });
 }
