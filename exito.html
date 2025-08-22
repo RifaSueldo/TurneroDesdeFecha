@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pago Exitoso</title>
+<style>
+  body { font-family: Arial; padding:20px; text-align:center; }
+  h1 { color: green; }
+  button { padding:8px 15px; margin-top:20px; cursor:pointer; }
+</style>
+</head>
+<body>
+  <h1>✅ ¡Pago realizado con éxito!</h1>
+  <p>Se han acreditado <span id="cantidad">0</span> créditos a tu cuenta.</p>
+  <button onclick="volverPanel()">⬅ Volver al Panel</button>
+
+<script>
+const urlParams = new URLSearchParams(window.location.search);
+document.getElementById("cantidad").innerText = urlParams.get("cantidad") || 0;
+
+function volverPanel() {
+  window.location.href = '/panel.html'; // o la ruta correcta de tu panel
+}
+</script>
+</body>
+</html>
