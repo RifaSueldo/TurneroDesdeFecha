@@ -169,7 +169,8 @@ async function guardarExcepcion(profId) {
   <p style="padding:10px;">Usuario: <b id="username"></b></p>
   <ul class="menu">
     
-  <li onclick="toggleSection('personalizacion')">🎨 Personalización +</li>
+  <!-- Sección Personalización dentro del menú -->
+<li onclick="toggleSection('personalizacion')">🎨 Personalización +</li>
 <div id="personalizacion" class="submenu">
   <h3>Configura tu perfil</h3>
   <label>Color de fondo: <input type="color" id="colorPicker"></label><br><br>
@@ -224,9 +225,8 @@ function toggleSection(id) {
 async function cargarPerfil() {
   const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
   const perfil = await res.json();
-  if(perfil.colorPreferido) document.body.style.backgroundColor = perfil.colorPreferido;
+  if(perfil.colorPreferido) document.getElementById("colorPicker").value = perfil.colorPreferido;
   if(perfil.logo) document.getElementById("previewLogo").src = perfil.logo;
-  document.getElementById("colorPicker").value = perfil.colorPreferido || "#533482";
 }
 
 async function guardarPerfil() {
@@ -235,17 +235,17 @@ async function guardarPerfil() {
   let logoUrl = document.getElementById("previewLogo").src;
 
   if(fileInput.files.length > 0){
-    // Subida de archivo a Drive o AppSheet (según tu configuración)
+    // Subir archivo a hosting accesible (AppSheet, Drive, Netlify, etc.)
     const formData = new FormData();
     formData.append("action","uploadLogo");
     formData.append("userId", userId);
     formData.append("file", fileInput.files[0]);
     const res = await fetch(API_URL, {method:"POST", body:formData});
     const data = await res.json();
-    if(data.status==="ok") logoUrl = data.url;
+    if(data.status==="ok") logoUrl = data.url; // URL real de la imagen
   }
 
-  // Guardar color y logo
+  // Guardar color y logo en PerfilUsuarios
   const updateData = new FormData();
   updateData.append("action","updatePerfil");
   updateData.append("userId", userId);
@@ -255,6 +255,7 @@ async function guardarPerfil() {
   const data2 = await res2.json();
   if(data2.status==="ok") alert("Perfil actualizado");
 }
+
 cargarPerfil();
 </script>
 </body>
