@@ -194,8 +194,12 @@ function mostrarFormReserva() {
     document.getElementById("reservaMsg").innerText = result.status==="ok"?"Turno reservado con éxito":"Error al reservar";
 
     if(result.status==="ok") {
-      cargarTurnos(fechaStr); // refresca y bloquea la hora reservada
-    }
+  cargarTurnos(fechaStr); // refresca y bloquea la hora reservada
+
+  // Descontar crédito en segundo plano
+  fetch("https://script.google.com/macros/s/AKfycbxyHS8mxWwANn5bxXXFI0ywqzuYX6rTC5OALJrUeZZkv1nJb_f8qjDPttw1-3l7Gd_V/exec?action=descontarCredito&username=" + encodeURIComponent(username) + "&cantidad=1")
+    .catch(err => console.error("Error al descontar crédito:", err));
+}
   };
 }
 </script>
