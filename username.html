@@ -38,9 +38,7 @@
     background-color: #f2f2f2;
     transform: translateY(-2px);
   }
-  #prevMonth, #nextMonth {
-    display: inline-block;
-  }
+  #prevMonth, #nextMonth { display: inline-block; }
   div { text-align: center; }
 
   /* Calendario */
@@ -53,34 +51,11 @@
     overflow: hidden;
     padding: 15px;
   }
-
-  #calendario h2 {
-    text-align: center;
-    margin-bottom: 10px;
-    text-transform: capitalize;
-  }
-
-  #calendario table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  #calendario th, #calendario td {
-    width: 14.28%;
-    text-align: center;
-    padding: 10px 0;
-  }
-
-  #calendario td:hover {
-    background-color: #f0f0f0;
-    cursor: pointer;
-    border-radius: 50%;
-  }
-
-  #calendario td[style*="not-allowed"] {
-    cursor: not-allowed;
-    color: #999;
-  }
+  #calendario h2 { text-align: center; margin-bottom: 10px; text-transform: capitalize; }
+  #calendario table { width: 100%; border-collapse: collapse; }
+  #calendario th, #calendario td { width: 14.28%; text-align: center; padding: 10px 0; }
+  #calendario td:hover { background-color: #f0f0f0; cursor: pointer; border-radius: 50%; }
+  #calendario td[style*="not-allowed"] { cursor: not-allowed; color: #999; }
 
   /* Turnos */
   .turnos {
@@ -92,11 +67,7 @@
     padding: 15px;
     border-radius: 10px;
   }
-
-  .turnos h3 {
-    margin-bottom: 10px;
-  }
-
+  .turnos h3 { margin-bottom: 10px; }
   .hora {
     display: inline-block;
     margin: 5px;
@@ -105,24 +76,9 @@
     font-weight: 600;
     transition: all 0.2s;
   }
-
-  .hora.disponible {
-    background: #e0ffe0;
-    color: #000;
-  }
-  .hora.disponible:hover {
-    background: #c4ffc4;
-    cursor: pointer;
-    transform: translateY(-2px);
-  }
-
-  .hora.bloqueado {
-    background: #f8d7da;
-    color: #721c24;
-    cursor: not-allowed;
-    text-decoration: line-through;
-    opacity: 0.6;
-  }
+  .hora.disponible { background: #e0ffe0; color: #000; }
+  .hora.disponible:hover { background: #c4ffc4; cursor: pointer; transform: translateY(-2px); }
+  .hora.bloqueado { background: #f8d7da; color: #721c24; cursor: not-allowed; text-decoration: line-through; opacity: 0.6; }
 
   /* Formulario de reserva */
   #reservaFormContainer {
@@ -133,7 +89,6 @@
     padding: 20px;
     border-radius: 10px;
   }
-
   #reservaForm input, #reservaForm textarea, #reservaForm button {
     width: 100%;
     padding: 10px;
@@ -142,7 +97,6 @@
     border: 1px solid #ccc;
     font-family: 'Montserrat', sans-serif;
   }
-
   #reservaForm button {
     background-color: #533482;
     color: #fff;
@@ -151,48 +105,55 @@
     cursor: pointer;
     transition: all 0.2s;
   }
-
   #reservaForm button:hover {
     background-color: #452a7a;
     transform: translateY(-2px);
   }
 
   /* Mensaje de reserva */
-  #reservaMsg {
-    margin-top: 10px;
-    text-align: center;
-    font-weight: 600;
-  }
+  #reservaMsg { margin-top: 10px; text-align: center; font-weight: 600; }
 
   @media(max-width: 650px){
-    #calendario, .turnos, #reservaFormContainer {
-      width: 95%;
-      padding: 10px;
-    }
-    .hora {
-      padding: 6px 10px;
-      font-size: 0.9rem;
-    }
+    #calendario, .turnos, #reservaFormContainer { width: 95%; padding: 10px; }
+    .hora { padding: 6px 10px; font-size: 0.9rem; }
   }
+
+  .logo-container { text-align: center; margin-bottom: 15px; }
+  .logo-container img { max-width: 150px; display: block; margin: 0 auto 10px; }
 </style>
+
+</head>
+<body>
+
+<!-- Logo del usuario -->
+<div class="logo-container">
+  <img id="userLogo" src="" alt="Logo">
+  <h1>Turnos Disponibles: <span id="user"></span></h1>
+</div>
+
+<div>
+  <button id="prevMonth">← Mes anterior</button>
+  <button id="nextMonth">Mes siguiente →</button>
+</div>
+<div id="calendario"></div>
+<div id="turnos"></div>
+<div id="reservaFormContainer" style="display:none;"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyxb4NVrMmUa3b5W-Or9T0JHZJ8XMLZKpq3_P9NWX15EO7RfuVRwabM_wJqmPjhfqN4/exec";
 
-
-
-// ------------------ OBTENER USERNAME ------------------
+// Obtener username de URL
 let params = new URLSearchParams(window.location.search);
 let username = params.get("username");
-
 if (!username) {
-  let path = window.location.pathname;
-  path = path.replace(/\/+$/, "");
+  const path = window.location.pathname.replace(/\/+$/, "");
   const lastSegment = path.substring(path.lastIndexOf("/") + 1);
   if (lastSegment && lastSegment !== "username.html") username = lastSegment;
 }
-
 if (!username) alert("Falta username en la URL");
+
+// Obtener userId de localStorage o URL
+let userId = localStorage.getItem("userId") || params.get("userId");
 
 let selectedDate = new Date();
 let profesionales = [];
@@ -201,12 +162,15 @@ let selectedProf = "";
 let selectedProfId = "";
 let selectedHora = "";
 
-// ------------------ RENDER CALENDARIO ------------------
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("user").innerText = username;
-  renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
-});
+// Aplicar logo del perfil
+async function aplicarPerfil() {
+  if (!userId) return;
+  const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
+  const perfil = await res.json();
+  if (perfil.logo) document.getElementById("userLogo").src = perfil.logo;
+}
 
+// ------------------ RENDER CALENDARIO ------------------
 function renderCalendario(year, month) {
   const today = new Date();
   const firstDay = new Date(year, month, 1);
@@ -224,13 +188,11 @@ function renderCalendario(year, month) {
   for (let d=1; d<=lastDay.getDate(); d++) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
-
     if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
       table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
     } else {
       table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
     }
-
     if (fecha.getDay() === 6 && d!==lastDay.getDate()) table += "</tr><tr>";
   }
   table += "</tr></table>";
@@ -265,7 +227,7 @@ async function cargarTurnos(fechaStr) {
     else {
       profObj.turnos.forEach(t => {
         const clase = t.estado === "bloqueado" ? "bloqueado" : "disponible";
-        const horaFormateada = t.hora.padStart(5, "0"); // <-- esto es lo nuevo
+        const horaFormateada = t.hora.padStart(5, "0");
         html += `<span class="hora ${clase}" ${clase === "bloqueado" ? "" : `onclick="seleccionarTurno('${profId}','${horaFormateada}')"`}>${horaFormateada}</span>`;
       });
     }
@@ -306,7 +268,6 @@ function mostrarFormReserva() {
     </form>
     <div id="reservaMsg"></div>
   `;
-
   document.getElementById("reservaForm").onsubmit = async function(event){
     event.preventDefault();
     const formData = new FormData(this);
