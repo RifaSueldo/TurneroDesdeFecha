@@ -273,12 +273,17 @@ async function guardarExcepcion(profId) {
 
 
 
-   <li onclick="toggleSection('turnos')">Turnos +</li>
-<div id="turnos" class="submenu">
+  <div id="turnos" class="submenu">
   <h3>Gestión de Turnos</h3>
+  <p>Selecciona un profesional y un día para ver los turnos reservados:</p>
+  <div id="selectorProfesional"></div>
+  
+  <!-- Contenedor del calendario -->
   <div id="calendarioPanel"></div>
-  <div id="turnosContainerPanel"></div>
+
+  <div id="tablaTurnos" style="margin-top:10px;"></div>
 </div>
+
     
     <li onclick="toggleSection('clientes')">Clientes +</li>
     <div id="clientes" class="submenu">
@@ -305,44 +310,107 @@ function toggleSection(id) {
      </script>
 <script>
 // ------------------ CARGAR TURNOS EN EL PANEL ------------------
-async function cargarTurnosPanel(profId) {
-  // Pedimos la fecha a mostrar (puedes poner un input date o default a hoy)
-  const fecha = new Date().toISOString().split("T")[0];
 
-  // Llamada a la API
+  function renderCalendarioPanel(year = new Date().getFullYear(), month = new Date().getMonth()) {
+  const today = new Date();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const calendarDiv = document.getElementById("calendarioPanel");
+  calendarDiv.innerHTML = `<h4>${firstDay.toLocaleString("es-ES",{month:"long", year:"numeric"})}</h4>`;
+
+  let table = "<table border='1' style='border-collapse:collapse;width:100%;'><tr>";
+  const diasSemana = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  diasSemana.forEach(d => table += `<th>${d}</th>`);
+  table += "</tr><tr>";
+
+  for (let i=0; i<firstDay.getDay(); i++) table += "<td></td>";
+
+  for (let d=1; d<=lastDay.getDate(); d++) {
+    const fecha = new Date(year, month, d);
+    const fechaStr = fecha.toISOString().split("T")[0];
+    const clase = fecha < today ? "style='color:#999;cursor:not-allowed;'" : `onclick="seleccionarDiaPanel('${fechaStr}')" style='cursor:pointer;'`;
+
+    table += `<td ${clase}>${d}</td>`;
+
+    if (fecha.getDay() === 6 && d!==lastDay.getDate()) table += "</tr><tr>";
+  }
+
+  table += "</tr></table>";
+  calendarDiv.innerHTML += table;
+
+  // Botones de mes
+  calendarDiv.innerHTML = `<button onclick="renderCalendarioPanel(${year},${month-1})">← Mes anterior</button>` 
+                          + calendarDiv.innerHTML 
+                          + `<button onclick="renderCalendarioPanel(${year},${month+1})">Mes siguiente →</button>`;
+}
+
+// Función al seleccionar día
+function seleccionarDiaPanel(fechaStr) {
+  document.getElementById("fechaTurnos").value = fechaStr;
+  cargarTurnosPanel();
+}
+
+// Inicializar calendario al cargar panel
+document.addEventListener("DOMContentLoaded", () => {
+  renderSelectorProfesional();
+  renderCalendarioPanel();
+});
+
+// Cargar listado de profesionales en selector dentro de Turnos
+function renderSelectorProfesional() {
+  const cont = document.getElementById("selectorProfesional");
+  cont.innerHTML = '';
+  profesionales.forEach(prof => {
+    const btn = document.createElement("button");
+    btn.innerText = prof.nombre;
+    btn.style.margin = "5px";
+    btn.onclick = () => {
+      cont.querySelectorAll("button").forEach(b => b.style.fontWeight = "normal");
+      btn.style.fontWeight = "bold";
+      cont.dataset.profId = prof.profesionalId;
+      cargarTurnosPanel();
+    };
+    cont.appendChild(btn);
+  });
+}
+
+// Función para cargar turnos por profesional y fecha
+async function cargarTurnosPanel() {
+  const profId = document.getElementById("selectorProfesional").dataset.profId;
+  const fecha = document.getElementById("fechaTurnos").value;
+  if (!profId || !fecha) return;
+
   const res = await fetch(`${API_URL}?action=getTurnos&profesionalId=${profId}&fecha=${fecha}`);
   const data = await res.json();
-
-  if(data.status !== "ok") {
-    document.getElementById("turnos").innerHTML = "Error al cargar turnos";
+  if (data.status !== "ok") {
+    document.getElementById("tablaTurnos").innerHTML = "Error al cargar turnos";
     return;
   }
 
-  let html = `<h3>Turnos de ${profId} para ${fecha}</h3>`;
-  if(data.turnos.length === 0){
-    html += "<p>No hay turnos reservados</p>";
+  let html = "<table border='1' style='border-collapse:collapse;width:100%;margin-top:10px;'>";
+  html += "<tr><th>Hora</th><th>Nombre</th><th>Teléfono</th><th>Email</th></tr>";
+
+  if (data.turnos.length === 0) {
+    html += "<tr><td colspan='4' style='text-align:center;'>No hay turnos reservados</td></tr>";
   } else {
-    html += `<table border="1" style="width:100%; border-collapse:collapse;">
-      <tr>
-        <th>Hora</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Email</th><th>WhatsApp</th><th>DNI</th><th>Comentario</th>
-      </tr>`;
     data.turnos.forEach(t => {
       html += `<tr>
         <td>${t.hora}</td>
-        <td>${t.nombre}</td>
-        <td>${t.apellido}</td>
+        <td>${t.nombre} ${t.apellido}</td>
         <td>${t.telefono}</td>
         <td>${t.email}</td>
-        <td>${t.whatsapp}</td>
-        <td>${t.dni}</td>
-        <td>${t.comentario || ''}</td>
       </tr>`;
     });
-    html += "</table>";
   }
 
-  document.getElementById("turnos").innerHTML = html;
+  html += "</table>";
+  document.getElementById("tablaTurnos").innerHTML = html;
 }
+
+// Inicializar selector de profesionales al cargar el panel
+document.addEventListener("DOMContentLoaded", () => {
+  renderSelectorProfesional();
+});
 
 </script>
 
