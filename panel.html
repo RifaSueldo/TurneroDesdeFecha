@@ -207,15 +207,15 @@ async function guardarExcepcion(profId) {
   </div>
 </ul>
 
-  <script>
-  // Función para abrir/cerrar secciones
+ <script>
+// Función para abrir/cerrar secciones
 function toggleSection(id) {
   const section = document.getElementById(id);
   const isVisible = section.style.display === "block";
   document.querySelectorAll(".submenu").forEach(s => s.style.display="none");
   if (!isVisible) section.style.display = "block";
 }
-     </script>
+</script>
 
 <script>
 const res = await fetch(`${API_URL}?action=getTurnos&profesionalId=${selectedProfId}&fecha=${selectedFecha}`);
