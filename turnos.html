@@ -24,6 +24,13 @@ let selectedDate = new Date();
 
 // ---------------- CARGAR TURNOS ----------------
 async function cargarTurnosUsuario(){
+  if(Object.keys(data.turnos).length === 0){
+  // Datos de prueba
+  data.turnos = {
+    "1": [
+      {fecha:"2025-08-22", hora:"10:00", nombre:"Pedro", apellido:"Pérez", dni:"12345678", profesional:"Juan", profesionalId:"1"}
+    ]
+  };
   try{
     const res = await fetch(`${API_URL}?action=getTurnosUsuario&username=${username}&userId=${userId}`);
     const data = await res.json();
