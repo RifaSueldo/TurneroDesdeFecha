@@ -36,7 +36,7 @@
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxWObLHOJLPbWaeickDqA4-Q3j-jVocswx4CC0r5uTfFADRRR_X16K9ms-RapTVd-uh/exec";
-const DESCONTAR_API_URL = "https://script.google.com/macros/s/AKfycbxYyv8uc2JH1qF-yRjxTNLxeDJHJMn1v68DiFN3lgW2L7x0yZmksIlOubkikvOmVwxl/exec"; // <- URL de descontar.gs
+const DESCONTAR_API_URL = "https://script.google.com/macros/s/AKfycbzPun3x131SfEm4KSxM6JRagms1InxVH3njvtghr3jDiimXvtBY0RmpSpxdm9vpBTEC/exec"; // <- URL de descontar.gs
 
 
 // ------------------ OBTENER USERNAME ------------------
@@ -215,7 +215,7 @@ function mostrarFormReserva() {
   cargarTurnos(fechaStr); // refresca y bloquea la hora reservada
 
   // Descontar crédito en segundo plano
-  fetch("https://script.google.com/macros/s/AKfycbxYyv8uc2JH1qF-yRjxTNLxeDJHJMn1v68DiFN3lgW2L7x0yZmksIlOubkikvOmVwxl/exec?action=descontarCredito&username=" + encodeURIComponent(username) + "&cantidad=1")
+  fetch("https://script.google.com/macros/s/AKfycbzPun3x131SfEm4KSxM6JRagms1InxVH3njvtghr3jDiimXvtBY0RmpSpxdm9vpBTEC/exec?action=descontarCredito&username=" + encodeURIComponent(username) + "&cantidad=1")
     .catch(err => console.error("Error al descontar crédito:", err));
 }
   };
