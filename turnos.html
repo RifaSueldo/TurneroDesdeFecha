@@ -127,12 +127,20 @@ async function cargarTurnosUsuario() {
     const data = await res.json();
     console.log("Respuesta API turnosUsuario:", data);
 
-    turnosUsuario = Array.isArray(data.turnos) ? data.turnos : [];
-    turnosPorFecha = {};
-    turnosUsuario.forEach(t => {
-      if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
-      turnosPorFecha[t.fecha].push(t);
-    });
+   // Convertir objeto de turnos en array
+turnosUsuario = [];
+if(data.turnos && typeof data.turnos === "object") {
+  Object.keys(data.turnos).forEach(profId => {
+    // cada valor es un array de turnos de ese profesional
+    turnosUsuario.push(...data.turnos[profId]);
+  });
+}
+
+turnosPorFecha = {};
+turnosUsuario.forEach(t => {
+  if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
+  turnosPorFecha[t.fecha].push(t);
+});
   } catch(e){ console.log(e); }
 }
 
