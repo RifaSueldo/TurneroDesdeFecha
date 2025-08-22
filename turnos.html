@@ -7,32 +7,31 @@
 <body>
 
 <h1>Mis Turnos</h1>
-<div id="ticketsContainer">Cargando...</div>
+<div id="calendarioContainer"></div>
+<div id="ticketsContainer"></div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyFGGpfszwxPYakYsW-o5H2RPV-5LoHJf1706GJoxzTB63BvLkvTRUI2Bc_LpcQFXjx/exec";
 
-// Obtener usuario logueado
+// Usuario logueado
 let username = localStorage.getItem("username");
 let userId = localStorage.getItem("userId");
+if(!username){ alert("No hay usuario logueado"); window.location.href="login.html"; }
 
-if(!username){
-  alert("No hay usuario logueado");
-  window.location.href = "login.html";
-}
+let turnosUsuario = [];
+let turnosPorFecha = {};
+let selectedDate = new Date();
 
-// Cargar turnos del usuario
+// ---------------- CARGAR TURNOS ----------------
 async function cargarTurnosUsuario(){
-  const ticketsDiv = document.getElementById("ticketsContainer");
-  ticketsDiv.innerHTML = "Cargando...";
-  
-  try {
+  try{
     const res = await fetch(`${API_URL}?action=getTurnosUsuario&username=${username}&userId=${userId}`);
     const data = await res.json();
     console.log("Respuesta API:", data);
 
-    // Verificar si hay turnos
-    let turnosUsuario = [];
+    // Convertir objeto en array
+    turnosUsuario = [];
+    turnosPorFecha = {};
     if(data.turnos && typeof data.turnos === "object"){
       Object.keys(data.turnos).forEach(profId => {
         if(Array.isArray(data.turnos[profId])){
@@ -41,61 +40,71 @@ async function cargarTurnosUsuario(){
       });
     }
 
-    if(turnosUsuario.length === 0){
-      ticketsDiv.innerHTML = "<p>No hay turnos reservados.</p>";
-      return;
-    }
-
-    // Mostrar turnos
-    ticketsDiv.innerHTML = "";
-    turnosUsuario.forEach(t => {
-      const div = document.createElement("div");
-      div.innerHTML = `
-        <h2>${t.profesional}</h2>
-        <p>${t.fecha} ${t.hora}</p>
-        <p>${t.nombre} ${t.apellido}</p>
-        <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button>
-        <hr>
-      `;
-      ticketsDiv.appendChild(div);
+    // Agrupar por fecha
+    turnosUsuario.forEach(t=>{
+      if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
+      turnosPorFecha[t.fecha].push(t);
     });
 
-  } catch(e){
-    console.error(e);
-    ticketsDiv.innerHTML = "<p>Error al cargar turnos.</p>";
-  }
+    renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+  }catch(e){ console.error(e); }
 }
 
-// Función para eliminar turno
-async function eliminarTurno(fecha, hora, profesionalId, dni){
-  if(!confirm("Deseas eliminar este turno?")) return;
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      body: new URLSearchParams({
-        action: "deleteReserva",
-        username,
-        userId,
-        fecha,
-        hora,
-        profesionalId,
-        dni
-      })
+// ---------------- RENDER CALENDARIO ----------------
+function renderCalendario(year, month){
+  const today = new Date();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month+1, 0);
+  const container = document.getElementById("calendarioContainer");
+  container.innerHTML = `<h2>${firstDay.toLocaleString("es-ES",{month:"long",year:"numeric"})}</h2>`;
+
+  let html = "<table><tr>";
+  const diasSemana=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+  diasSemana.forEach(d=>html+=`<th>${d}</th>`); html+="</tr><tr>";
+
+  for(let i=0;i<firstDay.getDay();i++) html+="<td></td>";
+  for(let d=1; d<=lastDay.getDate(); d++){
+    const fechaStr = new Date(year,month,d).toISOString().split("T")[0];
+    const tieneTurnos = turnosPorFecha[fechaStr] ? true : false;
+    const estilo = d<today.getDate() && month===today.getMonth() ? "color:#999" : "";
+    html+=`<td style="${estilo}; cursor:${tieneTurnos?'pointer':'default'}" onclick="${tieneTurnos?`renderTickets('${fechaStr}')`:''}">${d}</td>`;
+    if(new Date(year,month,d).getDay()===6 && d!==lastDay.getDate()) html+="</tr><tr>";
+  }
+  html+="</tr></table>";
+  container.innerHTML += html;
+}
+
+// ---------------- RENDER TICKETS ----------------
+function renderTickets(fechaStr){
+  const ticketsDiv = document.getElementById("ticketsContainer");
+  const turnos = turnosPorFecha[fechaStr] || [];
+  if(turnos.length===0){ ticketsDiv.innerHTML="<p>No hay turnos en esta fecha.</p>"; return; }
+
+  ticketsDiv.innerHTML=`<h2>Turnos del ${fechaStr}</h2>`;
+  turnos.forEach(t=>{
+    const div = document.createElement("div");
+    div.innerHTML=`<strong>${t.profesional}</strong> ${t.hora} - ${t.nombre} ${t.apellido} <button onclick="eliminarTurno('${t.fecha}','${t.hora}','${t.profesionalId}','${t.dni}')">Eliminar turno</button>`;
+    ticketsDiv.appendChild(div);
+  });
+}
+
+// ---------------- ELIMINAR TURNO ----------------
+async function eliminarTurno(fecha,hora,profId,dni){
+  if(!confirm("Desea eliminar este turno?")) return;
+  try{
+    const res=await fetch(API_URL,{
+      method:"POST",
+      body:new URLSearchParams({action:"deleteReserva",username,userId,fecha,hora,profesionalId:profId,dni})
     });
-    const result = await res.json();
-    if(result.status === "ok"){
-      alert("Turno eliminado correctamente");
-      cargarTurnosUsuario();
-    } else {
-      alert("Error al eliminar turno: " + (result.msg || ""));
-    }
-  } catch(e){
-    console.error(e);
-  }
+    const result=await res.json();
+    if(result.status==="ok"){ alert("Turno eliminado"); await cargarTurnosUsuario(); renderTickets(fecha); }
+    else alert("Error: "+(result.msg||""));
+  }catch(e){ console.error(e); }
 }
 
+// ---------------- INIT ----------------
 document.addEventListener("DOMContentLoaded", cargarTurnosUsuario);
-</script>
 
+</script>
 </body>
 </html>
