@@ -11,17 +11,20 @@
 <div id="ticketsContainer"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwoI9Ey36cVlK_gYsN7wBARQvu7-wwEIdM7Sodjw_b6jhHF9HnzSddvvvA8z7kZG67H/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwRgmY_nWJ6kGcpB_D0Ej85gUsKUmwjIUnJkiO80ghCV6LBT5rOQxWF2xb7ZQY97h23/exec";
 
-// Usuario logueado
 let username = localStorage.getItem("username");
 let userId = localStorage.getItem("userId");
 
-if(!username){ alert("No hay usuario logueado"); window.location.href="login.html"; }
+if (!username) {
+  alert("No hay usuario logueado");
+  window.location.href = "login.html";
+}
 
 let turnosUsuario = [];
 let turnosPorFecha = {};
 let selectedDate = new Date();
+
 
 // ---------------- CARGAR TURNOS ----------------
 async function cargarTurnosUsuario(){
