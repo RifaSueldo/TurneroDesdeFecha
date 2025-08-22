@@ -109,6 +109,7 @@ if(!username){
 let selectedDate = new Date();
 let turnosUsuario = [];
 let turnosPorFecha = {};
+let diasConTurnos = new Set();
 
 // ------------------ CARGAR LOGO ------------------
 async function cargarLogo() {
@@ -127,20 +128,25 @@ async function cargarTurnosUsuario() {
     const data = await res.json();
     console.log("Respuesta API turnosUsuario:", data);
 
-   // Convertir objeto de turnos en array
-turnosUsuario = [];
-if(data.turnos && typeof data.turnos === "object") {
-  Object.keys(data.turnos).forEach(profId => {
-    // cada valor es un array de turnos de ese profesional
-    turnosUsuario.push(...data.turnos[profId]);
-  });
-}
+    // Convertir objeto de turnos en array seguro
+    turnosUsuario = [];
+    turnosPorFecha = {};
+    diasConTurnos.clear();
 
-turnosPorFecha = {};
-turnosUsuario.forEach(t => {
-  if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
-  turnosPorFecha[t.fecha].push(t);
-});
+    if(data.turnos && typeof data.turnos === "object"){
+      Object.keys(data.turnos).forEach(profId => {
+        const turnosProf = Array.isArray(data.turnos[profId]) ? data.turnos[profId] : [];
+        turnosUsuario.push(...turnosProf);
+      });
+    }
+
+    // Agrupar por fecha
+    turnosUsuario.forEach(t => {
+      if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
+      turnosPorFecha[t.fecha].push(t);
+      diasConTurnos.add(t.fecha);
+    });
+
   } catch(e){ console.log(e); }
 }
 
@@ -161,7 +167,7 @@ function renderCalendario(year, month) {
   for(let d=1; d<=lastDay.getDate(); d++){
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
-    let clase = turnosPorFecha[fechaStr] ? "turno" : "";
+    let clase = diasConTurnos.has(fechaStr) ? "turno" : "";
 
     if(fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())){
       table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
