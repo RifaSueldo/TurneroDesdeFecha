@@ -4,35 +4,175 @@
   <meta charset="UTF-8">
   <title>Turnos Disponibles</title>
   <style>
-    body { font-family: Arial, sans-serif; padding:20px; }
-    table { border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
-    td:hover { background-color: #f0f0f0; cursor: pointer; }
-    
-   
-    .turnos { margin-bottom:15px;}
+  /* Reset y tipografía */
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #533482;
+    color: #fff;
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+
+  /* Botones de navegación de mes */
+  #prevMonth, #nextMonth {
+    background-color: #fff;
+    color: #533482;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 5px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  #prevMonth:hover, #nextMonth:hover {
+    background-color: #f2f2f2;
+    transform: translateY(-2px);
+  }
+  #prevMonth, #nextMonth {
+    display: inline-block;
+  }
+  div { text-align: center; }
+
+  /* Calendario */
+  #calendario {
+    margin: 20px auto;
+    max-width: 600px;
+    background: #fff;
+    color: #533482;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 15px;
+  }
+
+  #calendario h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+  }
+
+  #calendario table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  #calendario th, #calendario td {
+    width: 14.28%;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  #calendario td:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  #calendario td[style*="not-allowed"] {
+    cursor: not-allowed;
+    color: #999;
+  }
+
+  /* Turnos */
+  .turnos {
+    margin: 15px auto;
+    max-width: 600px;
+    text-align: center;
+    background: #fff;
+    color: #533482;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .turnos h3 {
+    margin-bottom: 10px;
+  }
+
+  .hora {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .hora.disponible {
+    background: #e0ffe0;
+    color: #000;
+  }
+  .hora.disponible:hover {
+    background: #c4ffc4;
+    cursor: pointer;
+    transform: translateY(-2px);
+  }
+
+  .hora.bloqueado {
+    background: #f8d7da;
+    color: #721c24;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+
+  /* Formulario de reserva */
+  #reservaFormContainer {
+    margin: 20px auto;
+    max-width: 600px;
+    background: #fff;
+    color: #533482;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  #reservaForm input, #reservaForm textarea, #reservaForm button {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-family: 'Montserrat', sans-serif;
+  }
+
+  #reservaForm button {
+    background-color: #533482;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  #reservaForm button:hover {
+    background-color: #452a7a;
+    transform: translateY(-2px);
+  }
+
+  /* Mensaje de reserva */
+  #reservaMsg {
+    margin-top: 10px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  @media(max-width: 650px){
+    #calendario, .turnos, #reservaFormContainer {
+      width: 95%;
+      padding: 10px;
+    }
     .hora {
-  display:inline-block;
-  margin:4px;
-  padding:6px 10px;
-  border:1px solid #ccc;
-  border-radius:4px;
-  cursor:pointer;
-}
-
-.hora.disponible {
-  background:#e0ffe0;
-  color:#000;
-}
-
-.hora.bloqueado {
-  background:#f8d7da;
-  color:#721c24;
-  cursor:not-allowed;
-  text-decoration: line-through;
-  opacity:0.6;
-}
-  </style>
+      padding: 6px 10px;
+      font-size: 0.9rem;
+    }
+  }
+</style>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwOyUZPcCsuqEmN_NJUH513zs2XNg4q3GkoMveC-V7E5MTwTC32kL4Fm1lPzFeGwkqu/exec";
