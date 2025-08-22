@@ -305,7 +305,7 @@ function mostrarFormReserva() {
       body: new URLSearchParams({action:"saveReserva", data: JSON.stringify(dataToSend)})
     });
     const result = await res.json();
-
+console.log("Respuesta del backend:", result);
 if (result.status === "ok") {
   document.getElementById("reservaMsg").innerHTML = `
     <div class="ticket">
