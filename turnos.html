@@ -11,29 +11,25 @@
 <div id="ticketsContainer"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwRgmY_nWJ6kGcpB_D0Ej85gUsKUmwjIUnJkiO80ghCV6LBT5rOQxWF2xb7ZQY97h23/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzzCb8frraC1MJ9ks8oD4Rr-hoGs1_GWdbpR7RGL6bSvQDX9ukvdzP8Zn0_p_DeOK4V/exec";
 
 let username = localStorage.getItem("username");
-let userId = localStorage.getItem("userId");
 
-if (!username) {
-  alert("No hay usuario logueado");
-  window.location.href = "login.html";
+if(!username){ 
+  alert("No hay usuario logueado"); 
+  window.location.href="login.html"; 
 }
 
 let turnosUsuario = [];
 let turnosPorFecha = {};
 let selectedDate = new Date();
 
-
-// ---------------- CARGAR TURNOS ----------------
 async function cargarTurnosUsuario(){
   try{
-    const res = await fetch(`${API_URL}?action=getTurnosUsuario&username=${username}&userId=${userId}`);
+    const res = await fetch(`${API_URL}?action=getTurnosUsuario&username=${username}`);
     const data = await res.json();
     console.log("Respuesta API:", data);
 
-    // Convertir objeto en array seguro
     turnosUsuario = [];
     turnosPorFecha = {};
     if(data.turnos && typeof data.turnos === "object"){
@@ -44,17 +40,18 @@ async function cargarTurnosUsuario(){
       });
     }
 
-    // Agrupar por fecha
     turnosUsuario.forEach(t=>{
       if(!turnosPorFecha[t.fecha]) turnosPorFecha[t.fecha] = [];
       turnosPorFecha[t.fecha].push(t);
     });
 
     renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
-  }catch(e){ console.error(e); document.getElementById("ticketsContainer").innerHTML="<p>Error al cargar turnos.</p>"; }
+  }catch(e){ 
+    console.error(e); 
+    document.getElementById("ticketsContainer").innerHTML="<p>Error al cargar turnos.</p>"; 
+  }
 }
 
-// ---------------- RENDER CALENDARIO ----------------
 function renderCalendario(year, month){
   const today = new Date();
   const firstDay = new Date(year, month, 1);
@@ -78,7 +75,6 @@ function renderCalendario(year, month){
   container.innerHTML += html;
 }
 
-// ---------------- RENDER TICKETS ----------------
 function renderTickets(fechaStr){
   const ticketsDiv = document.getElementById("ticketsContainer");
   const turnos = turnosPorFecha[fechaStr] || [];
@@ -92,18 +88,16 @@ function renderTickets(fechaStr){
   });
 }
 
-// ---------------- ELIMINAR TURNO ----------------
 async function eliminarTurno(fecha,hora,profId,dni){
   if(!confirm("Desea eliminar este turno?")) return;
   try{
     const res=await fetch(API_URL,{
       method:"POST",
-      body:new URLSearchParams({action:"deleteReserva",username,userId,fecha,hora,profesionalId:profId,dni})
+      body:new URLSearchParams({action:"deleteReserva",username,fecha,hora,profesionalId:profId,dni})
     });
     const result=await res.json();
     if(result.status==="ok"){ 
       alert("Turno eliminado");
-      // Refrescar datos
       await cargarTurnosUsuario();
       renderTickets(fecha);
     }
@@ -111,9 +105,8 @@ async function eliminarTurno(fecha,hora,profId,dni){
   }catch(e){ console.error(e); }
 }
 
-// ---------------- INIT ----------------
 document.addEventListener("DOMContentLoaded", cargarTurnosUsuario);
-
 </script>
+
 </body>
 </html>
