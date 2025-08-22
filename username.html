@@ -149,6 +149,9 @@
   <div id="turnos"></div>
   <div id="reservaFormContainer" style="display:none;"></div>
 
+
+<!-- Nuevo: ticket fijo -->
+<div id="ticketContainer"></div>
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyFGGpfszwxPYakYsW-o5H2RPV-5LoHJf1706GJoxzTB63BvLkvTRUI2Bc_LpcQFXjx/exec";
 
@@ -311,12 +314,12 @@ if (result.status === "ok") {
   document.getElementById("reservaForm").remove();
 
   // muestro el ticket en reservaMsg
-  document.getElementById("reservaMsg").innerHTML = `
-    <div class="ticket">
-      ${result.ticketHTML}
-      <button onclick="window.print()">Imprimir Ticket</button>
-    </div>
-  `;
+  document.getElementById("ticketContainer").innerHTML = `
+  <div class="ticket">
+    ${result.ticketHTML}
+    <button onclick="window.print()">Imprimir Ticket</button>
+  </div>
+`;
 
   // actualizo turnos
   cargarTurnos(fechaStr);
