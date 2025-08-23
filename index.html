@@ -85,13 +85,15 @@
     background-size: 200% 100%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shine 3s infinite linear;
+    animation: shine 5s infinite linear;
   }
 
-  @keyframes shine {
-    0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+ @keyframes shine {
+  0%   { background-position: 200% 0; }
+  40%  { background-position: -200% 0; } /* destello en 2s */
+  100% { background-position: -200% 0; } /* pausa hasta que reinicia */
+}
+
 
 
     .subtitle {
