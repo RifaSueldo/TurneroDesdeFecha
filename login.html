@@ -255,31 +255,50 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyPQ3FCCUIGJPzsC7CepvT9BISkBqL_4exc2-Ukrb1rMX9scdryBvZdjJ11rznkUMvE-A/exec";
 
     async function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-document.getElementById("spinnerIngresar").style.display = "block"; // antes de enviar
-      const res = await fetch(API_URL, {
-        method: "POST",
-        body: new URLSearchParams({
-          action: "login",
-          email,
-          password
-        })
-      });
-      const data = await res.json();
-document.getElementById("spinnerIngresar").style.display = "none";  // después de recibir respuesta
-      if (data.status === "ok") {
-        // 🔹 Guardamos en localStorage
-        localStorage.setItem("userId", data.userId);
-        localStorage.setItem("username", data.username.toLowerCase()); // ⬅ siempre minúsculas
-        
-       
-        // 🔹 Redirigimos después de guardar
-        window.location.href = "/panel.html";
-      } else {
-        alert("Usuario o contraseña incorrectos");
-      }
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!email || !password) {
+    showToast("Por favor, completa todos los campos.");
+    return;
+  }
+
+  const spinner = document.getElementById("spinnerIngresar");
+  spinner.style.display = "block"; // mostramos spinner
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "login",
+        email,
+        password
+      })
+    });
+    const data = await res.json();
+    spinner.style.display = "none"; // ocultamos spinner
+
+    if (data.status === "ok") {
+      // Guardamos en localStorage
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("username", data.username.toLowerCase());
+
+      // Mostramos toast de éxito
+      showToast("¡Vamos! Bienvenido 😎");
+      setTimeout(() => {
+        window.location.href = "/panel.html"; // redirigimos después de 1 seg
+      }, 1000);
+    } else {
+      // Toast de error
+      showToast("¡UPS! Fijate bien el mail y la clave 😅");
     }
+  } catch (error) {
+    spinner.style.display = "none"; // ocultamos spinner si hay error
+    showToast("Ocurrió un error de conexión 😢");
+    console.error(error);
+  }
+}
+
     function mostrarRecuperar(){
   document.getElementById("recuperarDiv").style.display = "block";
 }
