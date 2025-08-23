@@ -325,7 +325,13 @@ document.getElementById("spinnerRecuperar").style.display = "block"; // antes de
 } else {
   showToast(data.msg || "No encontramos tu email."); 
 } 
-  } 
+  } catch (error) {
+    showToast("Ocurrió un error de conexión");
+    console.error(error);
+  } finally {
+    spinner.style.display = "none"; // ✅ siempre ocultamos spinner
+  }
+}
     
 
 
