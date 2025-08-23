@@ -231,6 +231,7 @@
       <label for="email">Recupera tu contraseña:</label>
       <input type="email" id="recuperarEmail" placeholder="Tu email">
       <button onclick="recuperarClave()">Enviar</button>
+      <div class="spinner" id="spinnerRecuperar"></div>
     </div>
   </div>
 <div id="toast"></div>
@@ -272,7 +273,7 @@ async function recuperarClave(){
     alert("Ingresá tu email");
     return;
   }
-
+document.getElementById("spinnerRecuperar").style.display = "block"; // antes de enviar
   const res = await fetch(`${API_URL}`, {
     method: "POST",
     body: new URLSearchParams({
@@ -283,11 +284,15 @@ async function recuperarClave(){
 
   const data = await res.json();
   if (data.status === "ok") {
-  showToast("Te enviamos tu contraseña al correo ingresado."); // verde éxito
+    document.getElementById("spinnerRecuperar").style.display = "none";  // después de recibir respuesta
+  showToast("Te enviamos tu contraseña al correo ingresado."); 
 } else {
-  showToast(data.msg || "No encontramos tu email.", "#f44336"); // rojo error
+  showToast(data.msg || "No encontramos tu email."); 
 }
   }
+    
+
+
 function showToast(message) {
   const toast = document.getElementById("toast");
   toast.innerText = message;
