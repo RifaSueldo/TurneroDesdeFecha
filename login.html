@@ -327,9 +327,9 @@ async function recuperarClave() {
     const data = await res.json();
 
     if (data.status === "ok") {
-      showToast("Ya enviamos la contraseña al mail");
+      showToast("Enviamos la contraseña al mail..");
     } else {
-      showToast("Ups! No encontramos tu email.");
+      showToast("Ups! No encontramos tu email..");
     }
 
   } catch (error) {
