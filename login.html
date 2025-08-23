@@ -277,6 +277,7 @@ async function recuperarClave(){
 } else {
   showToast(data.msg || "No encontramos tu email.", "#f44336"); // rojo error
 }
+  }
 function showToast(message, color = "#4CAF50") {
   const toast = document.getElementById("toast");
   toast.innerText = message;
