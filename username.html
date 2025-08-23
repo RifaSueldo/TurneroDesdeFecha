@@ -64,7 +64,11 @@
   #calendario th, #calendario td { width: 14.28%; text-align: center; padding: 10px 0; }
   #calendario td:hover { background-color: #575757; cursor: pointer; border-radius: 0%; }
   #calendario td[style*="not-allowed"] { cursor: not-allowed; color: #999; }
-
+#calendario td.bloqueado {
+  cursor: not-allowed;
+  color: #999;
+  pointer-events: none; /* esto evita cualquier click */
+}
   /* Turnos */
   .turnos {
     margin: 15px auto;
@@ -229,7 +233,7 @@ function renderCalendario(year, month) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
     if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-  table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
+  table += `<td class="bloqueado">${d}</td>`;
 } else {
   table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
 }
