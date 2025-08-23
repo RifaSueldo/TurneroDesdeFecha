@@ -45,6 +45,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
+       margin: 0;
+      min-height: 100vh; /* ocupa toda la pantalla */
+    transition: background-color 1s ease-in-out; /* transición suave del fondo */
     }
 
     /* Contenedor principal */
@@ -64,34 +67,24 @@
       letter-spacing: -1px; /* valor negativo junta más las letras */
   position: relative;
   display: inline-block;
-  background: linear-gradient(
-    90deg,
-    #C7B4FA,
-  #C7B4FA,
-    #D9D9D9,
-    #fff,
-    #fff,
-    #fff,
-    #D9D9D9,
-    #D9D9D9,
-    #C7B4FA,
-    #C7B4FA,
-    #D9D9D9
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shine 5s linear infinite;
-}
+  /* efecto brillo */
+  .logo::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+    animation: shine 3s infinite;
+  }
 
-@keyframes shine {
-  from {
-    background-position: 200% center;
+  @keyframes shine {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
   }
-  to {
-    background-position: -200% center;
-  }
-}
+
     .subtitle {
       font-size: 0.9rem;
       font-weight: 400;
@@ -121,15 +114,11 @@
       transform: translateY(-2px);
     }
 .dynamic-text {
-    margin-top: 20px;
-    height: 100%; /* ocupa 1/3 de la pantalla */
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 2rem;
     font-weight: 600;
-    text-align: center;
-    transition: color 2s ease; /* transición suave del color del texto */
+    opacity: 1;
+    transition: opacity 1s ease-in-out, color 1s ease-in-out;
+  }
   </style>
 </head>
 <body>
@@ -142,30 +131,40 @@
     <div id="dynamicText" class="dynamic-text">PRE-PAGO</div>
   </div>
 
-  <script>
-  const textElement = document.getElementById("dynamicText");
-
-  const states = [
-    { text: "PRE-PAGO", bg: "#533482", color: "white" },
+ <script>
+  const texts = [
+    { text: "PRE-PAGO", bg: "#533482", color: "#FFFFFF" },
     { text: "INFINITO", bg: "#C1C7CC", color: "#2A3B54" },
-    { text: "GOLD", bg: "#FFD700", color: "#533482" }
+    { text: "GOLD", bg: "#FFD700", color: "#2A3B54" }
   ];
 
-  let index = 0;
+  let currentIndex = 0;
+  const textElement = document.getElementById("dynamicText");
 
-  function changeState() {
-    const state = states[index];
-    document.body.style.backgroundColor = state.bg;
-    textElement.textContent = state.text;
-    textElement.style.color = state.color;
+  function changeText() {
+    // fade out
+    textElement.style.opacity = 0;
 
-    index = (index + 1) % states.length; // ciclo infinito
+    setTimeout(() => {
+      currentIndex = (currentIndex + 1) % texts.length;
+      const { text, bg, color } = texts[currentIndex];
+
+      // cambio de fondo y texto
+      document.body.style.backgroundColor = bg;
+      textElement.textContent = text;
+      textElement.style.color = color;
+
+      // fade in
+      textElement.style.opacity = 1;
+    }, 1000); // espera el fade out
   }
 
-  // inicial
-  changeState();
-  // cada 3 segundos
-  setInterval(changeState, 4000);
+  // primer set
+  document.body.style.backgroundColor = texts[0].bg;
+  textElement.style.color = texts[0].color;
+
+  // cambio cada 3 segundos
+  setInterval(changeText, 3000);
 </script>
 </body>
 </html>
