@@ -142,6 +142,12 @@
         if (data.status === "ok") {
           msg.style.color = "white";
           msg.textContent = `✅ Cuenta creada con éxito. Tu página será wwww.turnox.pro/${data.username.toLowerCase()}`; // ⬅ también en minúscula
+          <button id="ingresarPanel" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Ingresar a mi panel de administrador</button>
+  `;
+  document.getElementById("ingresarPanel").onclick = () => {
+    window.location.href = `/panel.html?username=${encodeURIComponent(data.username.toLowerCase())}`;
+  };
+
         } else {
           msg.style.color = "white";
           msg.textContent = `❌ ${data.msg}`;
