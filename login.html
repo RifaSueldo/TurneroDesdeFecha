@@ -210,19 +210,22 @@
 }
 
 .spinner {
-  display: none;          /* empieza oculto */
+  display: none;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700; /* Bold */
+  font-size: 40px;
+  color: white;
   margin: 10px auto;
-  width: 30px;
-  height: 30px;
-  border: 4px solid #fff;       /* color del borde */
-  border-top: 4px solid #533482; /* color del giro */
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  text-align: center;
+  animation: spinX 1s linear infinite;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.2); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
 }
 
 
@@ -237,7 +240,7 @@
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Contraseña">
     <button onclick="login()">Ingresar</button>
-    <div class="spinner" id="spinnerIngresar"></div>
+    <div class="spinner" id="spinnerIngresar">X</div>
 
     <div class="recuperar">
       <a href="#" onclick="mostrarRecuperar()">¿Olvidaste tu contraseña?</a>
@@ -247,7 +250,7 @@
       <label for="email">Recupera tu contraseña:</label>
       <input type="email" id="recuperarEmail" placeholder="Tu email">
       <button onclick="recuperarClave()">Enviar</button>
-      <div class="spinner" id="spinnerRecuperar"></div>
+      <div class="spinner" id="spinnerRecuperar">X</div>
     </div>
   </div>
 <div id="toast"></div>
