@@ -237,6 +237,7 @@
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Contraseña">
     <button onclick="login()">Ingresar</button>
+    <div class="spinner" id="spinnerIngresar"></div>
 
     <div class="recuperar">
       <a href="#" onclick="mostrarRecuperar()">¿Olvidaste tu contraseña?</a>
@@ -256,7 +257,7 @@
     async function login() {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-
+document.getElementById("spinnerIngresar").style.display = "block"; // antes de enviar
       const res = await fetch(API_URL, {
         method: "POST",
         body: new URLSearchParams({
@@ -271,7 +272,9 @@
         // 🔹 Guardamos en localStorage
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("username", data.username.toLowerCase()); // ⬅ siempre minúsculas
-
+        
+document.getElementById("spinnerIngresar").style.display = "none";  // después de recibir respuesta
+       
         // 🔹 Redirigimos después de guardar
         window.location.href = "/panel.html";
       } else {
