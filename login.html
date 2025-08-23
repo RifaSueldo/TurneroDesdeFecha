@@ -186,6 +186,21 @@
       background-color: #f2f2f2;
       transform: translateY(-2px);
     }
+    #toast {
+  display: none;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #4CAF50; /* verde por defecto para éxito */
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  font-weight: 600;
+  z-index: 1000;
+  transition: opacity 0.3s;
+}
+
   </style>
 </head>
 <body>
@@ -203,12 +218,12 @@
     </div>
 
     <div id="recuperarDiv" style="display:none;">
-      <h3>Recuperar Contraseña</h3>
+      <label for="email">Recupera tu contraseña:</label>
       <input type="email" id="recuperarEmail" placeholder="Tu email">
       <button onclick="recuperarClave()">Enviar</button>
     </div>
   </div>
-
+<div id="toast"></div>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyPQ3FCCUIGJPzsC7CepvT9BISkBqL_4exc2-Ukrb1rMX9scdryBvZdjJ11rznkUMvE-A/exec";
 
@@ -262,6 +277,21 @@ async function recuperarClave(){
   } else {
     alert(data.msg || "No encontramos tu email.");
   }
+}
+function showToast(message, color = "#4CAF50") {
+  const toast = document.getElementById("toast");
+  toast.innerText = message;
+  toast.style.background = color;
+  toast.style.display = "block";
+  toast.style.opacity = "1";
+
+  // Desaparece después de 3 segundos
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 300); // espera a que termine la transición
+  }, 3000);
 }
 
   </script>
