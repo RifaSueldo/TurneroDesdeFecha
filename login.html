@@ -267,13 +267,12 @@ document.getElementById("spinnerIngresar").style.display = "block"; // antes de 
         })
       });
       const data = await res.json();
-
+document.getElementById("spinnerIngresar").style.display = "none";  // después de recibir respuesta
       if (data.status === "ok") {
         // 🔹 Guardamos en localStorage
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("username", data.username.toLowerCase()); // ⬅ siempre minúsculas
         
-document.getElementById("spinnerIngresar").style.display = "none";  // después de recibir respuesta
        
         // 🔹 Redirigimos después de guardar
         window.location.href = "/panel.html";
