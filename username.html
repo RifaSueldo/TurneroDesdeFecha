@@ -24,8 +24,8 @@
 
   /* Botones de navegación de mes */
   #prevMonth, #nextMonth {
-    background-color: #fff;
-    color: #533482;
+    background-color: #575757;
+    color: #f8f8f8;
     border: none;
     padding: 10px 20px;
     margin: 10px 5px;
@@ -45,8 +45,23 @@
   #calendario {
     margin: 20px auto;
     max-width: 600px;
-    background: #fff;
-    color: #533482;
+    background: linear-gradient(
+            135deg,
+            #d0d0d0 0%, 
+            #f0f0f0 25%, 
+            #c0c0c0 50%, 
+            #e0e0e0 75%, 
+            #d0d0d0 100%
+        ),
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.05) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+    background-blend-mode: overlay;
+    color: #575757;
     border-radius: 10px;
     overflow: hidden;
     padding: 15px;
