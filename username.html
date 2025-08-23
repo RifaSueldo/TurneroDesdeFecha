@@ -185,10 +185,10 @@
   
 
   <div id="calendario"></div>
- <div style="display:flex; gap:10px; align-items:center;">
+<div style="display:flex; gap:20px; align-items:center; justify-content:center;">
   <!-- Botón Mes anterior -->
-  <button id="prevMonth" style="display:flex; align-items:center; gap:6px; padding:8px 12px; background:#fff; border:1px solid #ccc; border-radius:6px; cursor:pointer;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="18" viewBox="0 0 60 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter">
+  <button id="prevMonth" style="display:flex; align-items:center; gap:6px; padding:0; background:none; border:none; color:#aaa; cursor:pointer; font-size:16px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="18" viewBox="0 0 60 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter">
       <line x1="58" y1="12" x2="8" y2="12"></line>
       <polyline points="16,4 2,12 16,20"></polyline>
     </svg>
@@ -196,14 +196,15 @@
   </button>
 
   <!-- Botón Mes siguiente -->
-  <button id="nextMonth" style="display:flex; align-items:center; gap:6px; padding:8px 12px; background:#fff; border:1px solid #ccc; border-radius:6px; cursor:pointer;">
+  <button id="nextMonth" style="display:flex; align-items:center; gap:6px; padding:0; background:none; border:none; color:#aaa; cursor:pointer; font-size:16px;">
     Mes siguiente
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="18" viewBox="0 0 60 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter">
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="18" viewBox="0 0 60 24" fill="none" stroke="#aaa" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter">
       <line x1="2" y1="12" x2="52" y2="12"></line>
       <polyline points="44,4 58,12 44,20"></polyline>
     </svg>
   </button>
 </div>
+
 
   <div id="turnos"></div>
   <div id="reservaFormContainer" style="display:none;"></div>
