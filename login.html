@@ -186,20 +186,21 @@
       background-color: #f2f2f2;
       transform: translateY(-2px);
     }
-  #toast {
-  display: none;
+ #toast {
+  display: flex; /* lo dejamos flex para centrar el texto siempre */
+  opacity: 0; /* invisible al inicio */
+  pointer-events: none; /* no bloquea clicks */
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(83, 52, 130, 0.85); /* violeta semitransparente tipo esmerilado */
+  background: rgba(83, 52, 130, 0.85); /* violeta semitransparente */
   backdrop-filter: blur(5px); /* efecto esmerilado */
-  color: white; /* texto blanco */
-  display: flex;
+  color: white;
   justify-content: center;
   align-items: center;
-  font-size: 1.2rem; /* tamaño del texto */
+  font-size: 1.2rem;
   font-weight: 600;
   z-index: 1000;
   text-align: center;
@@ -207,6 +208,7 @@
   box-sizing: border-box;
   transition: opacity 0.3s;
 }
+
 
 
   </style>
@@ -289,15 +291,13 @@ async function recuperarClave(){
 function showToast(message) {
   const toast = document.getElementById("toast");
   toast.innerText = message;
-  toast.style.display = "flex";
   toast.style.opacity = "1";
+  toast.style.pointerEvents = "auto"; // ahora sí puede interactuar si hace falta
 
   setTimeout(() => {
     toast.style.opacity = "0";
-    setTimeout(() => {
-      toast.style.display = "none";
-    }, 300);
-  }, 3000); // desaparece después de 3 segundos
+    toast.style.pointerEvents = "none"; // vuelve a no bloquear
+  }, 3000);
 }
 
   </script>
