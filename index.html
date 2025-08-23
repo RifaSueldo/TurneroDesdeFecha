@@ -88,10 +88,9 @@
     animation: shine 5s infinite linear;
   }
 
- @keyframes shine {
-  0%   { background-position: 200% 0; }
-  40%  { background-position: -200% 0; } /* destello en 2s */
-  100% { background-position: -200% 0; } /* pausa hasta que reinicia */
+@keyframes shine {
+  0%   { background-position: 200% 0; }   /* 👉 arranca a la derecha */
+  100% { background-position: -200% 0; }  /* 👉 termina a la izquierda */
 }
 
 
