@@ -286,10 +286,10 @@ async function login() {
 
     if (data.status === "ok") {
       spinner.style.display = "none"; 
-      showToast("¡Vamos! Logueado con éxito 😎");
+      showToast("¡Vamos!");
       window.location.href = "/panel.html";
     } else {
-      showToast("Ups 😕<br>Fijate bien el mail y la clave");
+      showToast("Ups<br>Fijate bien el email y la clave");
     }
   } catch (error) {
     showToast("Error de conexión");
