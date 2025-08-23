@@ -131,7 +131,11 @@
   .hora.disponible { background: #F7F7F7; color: #533482; }
   .hora.disponible:hover { background: #533482; color: #fff;  cursor: pointer; transform: translateY(-2px); }
   .hora.bloqueado { background: #D2B8FF95; color: #F7F7F7; cursor: not-allowed; text-decoration: line-through; opacity: 0.6; }
-
+.hora.selected {
+  background-color: #533482; /* fondo del seleccionado */
+  color: #fff;               /* texto */
+  transform: translateY(-2px);
+}
   /* Formulario de reserva */
   #reservaFormContainer {
     margin: 20px auto;
@@ -398,6 +402,14 @@ function seleccionarTurno(profId, hora) {
   selectedProfId = profId;
   selectedProf = turnosData[profId].nombre;
   selectedHora = hora;
+
+  // Quitar clase selected de cualquier hora previamente seleccionada
+  document.querySelectorAll(".hora.disponible").forEach(el => el.classList.remove("selected"));
+
+  // Agregar clase selected a la hora clickeada
+  const span = document.querySelector(`.hora.disponible[onclick*="${hora}"]`);
+  if(span) span.classList.add("selected");
+
   mostrarFormReserva();
 }
 
