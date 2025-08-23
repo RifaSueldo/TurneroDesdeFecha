@@ -273,10 +273,9 @@ async function recuperarClave(){
 
   const data = await res.json();
   if (data.status === "ok") {
-    alert("Te enviamos tu contraseña al correo ingresado.");
-  } else {
-    alert(data.msg || "No encontramos tu email.");
-  }
+  showToast("Te enviamos tu contraseña al correo ingresado."); // verde éxito
+} else {
+  showToast(data.msg || "No encontramos tu email.", "#f44336"); // rojo error
 }
 function showToast(message, color = "#4CAF50") {
   const toast = document.getElementById("toast");
