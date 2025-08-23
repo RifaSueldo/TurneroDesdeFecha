@@ -209,23 +209,42 @@
   transition: opacity 0.3s;
 }
 
-.spinner {
-  display: none;
+.spinnerX {
+  display: none; /* oculto por defecto */
   font-family: 'Montserrat', sans-serif;
-  font-weight: 700; /* Bold */
-  font-size: 40px;
-  color: white;
-  margin: 10px auto;
+  font-weight: 700;  /* Bold */
+  font-size: 48px;
+  margin: 20px auto;
   text-align: center;
-  animation: spinX 1s linear infinite;
+
+  /* Gradiente animado */
+  background: linear-gradient(
+    90deg,
+    #ff416c,
+    #ff4b2b,
+    #1a73e8,
+    #00c6ff,
+    #ff416c
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 300% 300%;
+
+  animation: spinX 1.2s linear infinite, shine 3s ease infinite;
 }
 
-@keyframes spin {
+@keyframes spinX {
   0% { transform: rotate(0deg) scale(1); }
   25% { transform: rotate(90deg) scale(1.2); }
   50% { transform: rotate(180deg) scale(1); }
   75% { transform: rotate(270deg) scale(1.2); }
   100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes shine {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 
@@ -240,7 +259,7 @@
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Contraseña">
     <button onclick="login()">Ingresar</button>
-    <div class="spinner" id="spinnerIngresar">X</div>
+    <div class="spinnerX" id="spinnerIngresar">X</div>
 
     <div class="recuperar">
       <a href="#" onclick="mostrarRecuperar()">¿Olvidaste tu contraseña?</a>
@@ -256,52 +275,38 @@
 <div id="toast"></div>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyPQ3FCCUIGJPzsC7CepvT9BISkBqL_4exc2-Ukrb1rMX9scdryBvZdjJ11rznkUMvE-A/exec";
-
-    async function login() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-
-  if (!email || !password) {
-    showToast("Por favor, completa todos los campos.");
-    return;
-  }
-
+async function login() {
   const spinner = document.getElementById("spinnerIngresar");
-  spinner.style.display = "block"; // mostramos spinner
+  spinner.style.display = "block"; // mostrar spinner
 
   try {
     const res = await fetch(API_URL, {
       method: "POST",
       body: new URLSearchParams({
         action: "login",
-        email,
-        password
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value.trim()
       })
     });
+
     const data = await res.json();
-    spinner.style.display = "none"; // ocultamos spinner
 
     if (data.status === "ok") {
-      // Guardamos en localStorage
-      localStorage.setItem("userId", data.userId);
-      localStorage.setItem("username", data.username.toLowerCase());
-
-      // Mostramos toast de éxito
-      showToast("¡Vamos!");
-      setTimeout(() => {
-        window.location.href = "/panel.html"; // redirigimos después de 1 seg
-      }, 1000);
+      spinner.style.display = "none"; 
+      showToast("¡Vamos! Logueado con éxito 😎");
+      window.location.href = "/panel.html";
     } else {
-      // Toast de error
-      showToast("¡UPS! Fijate bien el mail y la clave");
+      showToast("Ups 😕<br>Fijate bien el mail y la clave");
     }
   } catch (error) {
-    spinner.style.display = "none"; // ocultamos spinner si hay error
-    showToast("Ocurrió un error de conexión");
+    showToast("Error de conexión");
     console.error(error);
+  } finally {
+    spinner.style.display = "none"; // ✅ se oculta siempre
   }
 }
 
+    
     function mostrarRecuperar(){
   document.getElementById("recuperarDiv").style.display = "block";
 }
