@@ -168,7 +168,7 @@
     </form>
     <div id="msg"></div> 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyPQ3FCCUIGJPzsC7CepvT9BISkBqL_4exc2-Ukrb1rMX9scdryBvZdjJ11rznkUMvE-A/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbyKkZ7kfPjLg6I0fRwgv5M_d3b-9efLuhA3A_ktM8-f41zLVRrIN7ztHzvEre6_GDX4sQ/exec";
 // 🔹 Transformar el username en tiempo real
   document.getElementById("username").addEventListener("input", function(e) {
     this.value = this.value
@@ -214,13 +214,13 @@
           
   msg.style.color = "white";
   msg.innerHTML = `
-    Cuenta creada con éxito. Tu página será www.turnox.pro/${data.username.toLowerCase()}<br>
-    Tu Usuario es: ${data.email}<br>
-    Tu Contraseña es: ${data.password}<br>
-    <button id="ingresarPanel" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Ingresa a tu panel</button>
+    Cuenta creada con éxito. Tu página será: <strong>www.turnox.pro/${data.username.toLowerCase()}</strong><br>
+    <strong>Tu Usuario es: ${data.email}</strong><br>
+    
+    <button id="ingresarPanel" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Ingresa a tu sitio</button>
   `;
   document.getElementById("ingresarPanel").onclick = () => {
-    window.location.href = `/panel.html?username=${encodeURIComponent(data.username.toLowerCase())}`;
+    window.location.href = `https://www.turnox.pro/${encodeURIComponent(data.username.toLowerCase())}`;
   };
 
 
