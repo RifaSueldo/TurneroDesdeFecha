@@ -162,13 +162,19 @@
       <input type="email" id="email" placeholder="Email" required> 
       <input type="password" id="password" placeholder="Contraseña" required> 
       <input type="text" id="username" placeholder="nombreDeTuNegocio" required> 
-      <span class="web">Tu NOMBRE DE NEGOCIO será el link de tuTurnero ej: www.turnox.pro/DraBruzera o www.turnox.pro/HairStudio.</span>
-      <span class="web">NO USES ESPACIOS para que sea más fácil de recordar.</span>
+      <span class="web">Tu "nombre de negocio" será "tu link" ej: www.turnox.pro/peluquitos o www.turnox.pro/hair-studio.</span>
       <button type="submit">Registrarme</button> 
       <div id="msg"></div> 
     </form>
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyPQ3FCCUIGJPzsC7CepvT9BISkBqL_4exc2-Ukrb1rMX9scdryBvZdjJ11rznkUMvE-A/exec";
+// 🔹 Transformar el username en tiempo real
+  document.getElementById("username").addEventListener("input", function(e) {
+    this.value = this.value
+      .replace(/\s+/g, "-")      // reemplaza espacios por guiones
+      .replace(/[^a-zA-Z0-9-]/g, "") // elimina símbolos raros
+      .toLowerCase();            // pasa todo a minúsculas
+  });
 
     document.getElementById("registerForm").addEventListener("submit", async (e)=>{
       e.preventDefault();
