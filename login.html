@@ -324,7 +324,9 @@ document.getElementById("spinnerRecuperar").style.display = "block"; // antes de
   showToast("Te enviamos tu contraseña al correo ingresado."); 
 } else {
   showToast(data.msg || "No encontramos tu email."); 
-}
+} finally {
+    spinner.style.display = "none";
+  }
   }
     
 
