@@ -136,45 +136,85 @@
   color: #fff;               /* texto */
   transform: translateY(-2px);
 }
-  /* Formulario de reserva */
-  #reservaFormContainer {
-    margin: 20px auto;
-    max-width: 600px;
-    background: 
-        linear-gradient(
-            135deg,
-            #D2B8FF 0%, 
-            #fff 25%, 
-            #F4EDFF 50%, 
-            #fff 75%, 
-            #D2B8FF 100%
-        ),
-        repeating-linear-gradient(
-            0deg,
-            rgba(255,255,255,0.05) 0px,
-            rgba(255,255,255,0.05) 2px,
-            transparent 2px,
-            transparent 4px
-        );
-   
-    background-blend-mode: overlay;
-    color: #533482;
-    padding: 20px;
-    border-radius: 10px;
-  }
-  #reservaForm input, #reservaForm textarea, #reservaForm button {
-    width: 90%; padding: 10px; margin: 8px 0; border-radius: 0px; border: 1px solid #ccc; font-family: 'Montserrat', sans-serif; text-align: center;
-  }
-  #reservaForm button {
-    background-color: #533482; color: #fff; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s;
-  }
-  #reservaForm button:hover { background-color: #452a7a; transform: translateY(-2px); }
-  #reservaMsg { margin-top: 10px; text-align: center; font-weight: 600; }
+ /* Formulario de reserva */
+#reservaFormContainer {
+  margin: 20px auto;
+  max-width: 600px;
+  background: 
+      linear-gradient(
+          135deg,
+          #D2B8FF 0%, 
+          #fff 25%, 
+          #F4EDFF 50%, 
+          #fff 75%, 
+          #D2B8FF 100%
+      ),
+      repeating-linear-gradient(
+          0deg,
+          rgba(255,255,255,0.05) 0px,
+          rgba(255,255,255,0.05) 2px,
+          transparent 2px,
+          transparent 4px
+      );
+  background-blend-mode: overlay;
+  color: #533482;
+  padding: 20px;
+  border-radius: 0px; /* sin bordes redondeados */
+  text-align: center; /* todo centrado */
+}
 
-  @media(max-width: 650px){
-    #calendario, .turnos, #reservaFormContainer { width: 95%; padding: 10px; }
-    .hora { padding: 6px 10px; font-size: 0.9rem; }
+#reservaForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centra inputs y botones */
+}
+
+#reservaForm input,
+#reservaForm textarea,
+#reservaForm button {
+  width: 90%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 0px; /* sin bordes redondeados */
+  border: 1px solid #ccc;
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+#reservaForm button {
+  background-color: #533482;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#reservaForm button:hover {
+  background-color: #452a7a;
+  transform: translateY(-2px);
+}
+
+#reservaMsg {
+  margin-top: 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+@media(max-width: 650px){
+  #calendario,
+  .turnos,
+  #reservaFormContainer {
+    width: 95%;
+    padding: 10px;
   }
+  .hora {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+  }
+}
+
     .ticket {
   margin: 20px auto;
   max-width: 500px;
