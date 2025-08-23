@@ -207,9 +207,13 @@
         const data = await res.json();
 
         if (data.status === "ok") {
+          
+          // 🔹 Ocultamos el formulario
+        document.getElementById("registerForm").style.display = "none";
+          
   msg.style.color = "white";
   msg.innerHTML = `
-    ✅ Cuenta creada con éxito. Tu página será www.turnox.pro/${data.username.toLowerCase()}<br>
+    Cuenta creada con éxito. Tu página será www.turnox.pro/${data.username.toLowerCase()}<br>
     <button id="ingresarPanel" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Ingresar a mi panel de administrador</button>
   `;
   document.getElementById("ingresarPanel").onclick = () => {
