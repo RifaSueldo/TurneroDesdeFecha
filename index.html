@@ -113,12 +113,7 @@
       background-color: #f2f2f2;
       transform: translateY(-2px);
     }
-.dynamic-text {
-    font-size: 2rem;
-    font-weight: 600;
-    opacity: 1;
-    transition: opacity 1s ease-in-out, color 1s ease-in-out;
-  }
+
   </style>
 </head>
 <body>
@@ -131,40 +126,6 @@
     <div id="dynamicText" class="dynamic-text">PRE-PAGO</div>
   </div>
 
- <script>
-  const texts = [
-    { text: "PRE-PAGO", bg: "#533482", color: "#FFFFFF" },
-    { text: "INFINITO", bg: "#C1C7CC", color: "#2A3B54" },
-    { text: "GOLD", bg: "#FFD700", color: "#2A3B54" }
-  ];
 
-  let currentIndex = 0;
-  const textElement = document.getElementById("dynamicText");
-
-  function changeText() {
-    // fade out
-    textElement.style.opacity = 0;
-
-    setTimeout(() => {
-      currentIndex = (currentIndex + 1) % texts.length;
-      const { text, bg, color } = texts[currentIndex];
-
-      // cambio de fondo y texto
-      document.body.style.backgroundColor = bg;
-      textElement.textContent = text;
-      textElement.style.color = color;
-
-      // fade in
-      textElement.style.opacity = 1;
-    }, 1000); // espera el fade out
-  }
-
-  // primer set
-  document.body.style.backgroundColor = texts[0].bg;
-  textElement.style.color = texts[0].color;
-
-  // cambio cada 3 segundos
-  setInterval(changeText, 3000);
-</script>
 </body>
 </html>
