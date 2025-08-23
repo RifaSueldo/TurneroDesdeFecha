@@ -38,10 +38,17 @@
   font-style: normal;
   margin: 0;
   padding: 0;
-  background: #533482;
+  
+     background: linear-gradient(-90deg, #533482, #533482, #533482, #533482, #D14DEB, #533482, #533482, #533482, #533482);
+      background-size: 400% 400%;
+      animation: gradienteMovimiento 6s ease infinite;
   color: #f8f8f8;
 }
-
+@keyframes gradienteMovimiento {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
   h1 {
     text-align: center;
     margin-bottom: 20px;
