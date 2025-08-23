@@ -284,17 +284,17 @@
       localStorage.setItem("username", data.username.toLowerCase());
 
       // Mostramos toast de éxito
-      showToast("¡Vamos! Bienvenido 😎");
+      showToast("¡Vamos!");
       setTimeout(() => {
         window.location.href = "/panel.html"; // redirigimos después de 1 seg
       }, 1000);
     } else {
       // Toast de error
-      showToast("¡UPS! Fijate bien el mail y la clave 😅");
+      showToast("¡UPS! Fijate bien el mail y la clave");
     }
   } catch (error) {
     spinner.style.display = "none"; // ocultamos spinner si hay error
-    showToast("Ocurrió un error de conexión 😢");
+    showToast("Ocurrió un error de conexión");
     console.error(error);
   }
 }
