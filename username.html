@@ -62,7 +62,7 @@
   #calendario h2 { text-align: center; margin-bottom: 10px; text-transform: capitalize; }
   #calendario table { width: 100%; border-collapse: collapse; }
   #calendario th, #calendario td { width: 14.28%; text-align: center; padding: 10px 0; }
-  #calendario td:hover { background-color: #f0f0f0; cursor: pointer; border-radius: 0%; }
+  #calendario td:hover { background-color: #575757; cursor: pointer; border-radius: 0%; }
   #calendario td[style*="not-allowed"] { cursor: not-allowed; color: #999; }
 
   /* Turnos */
@@ -229,10 +229,10 @@ function renderCalendario(year, month) {
     const fecha = new Date(year, month, d);
     const fechaStr = fecha.toISOString().split("T")[0];
     if (fecha < new Date(today.getFullYear(), today.getMonth(), today.getDate())) {
-      table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
-    } else {
-      table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
-    }
+  table += `<td style="color:#999; cursor:not-allowed;">${d}</td>`;
+} else {
+  table += `<td onclick="cargarTurnos('${fechaStr}')">${d}</td>`;
+}
     if (fecha.getDay() === 6 && d!==lastDay.getDate()) table += "</tr><tr>";
   }
   table += "</tr></table>";
