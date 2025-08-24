@@ -285,12 +285,20 @@ async function login() {
     const data = await res.json();
 
     if (data.status === "ok") {
-      spinner.style.display = "none"; 
-      showToast("¡Vamos!");
-      window.location.href = "/panel.html";
-    } else {
-      showToast("Ups! Fijate bien el email y la clave");
-    }
+  spinner.style.display = "none";
+  showToast("¡Vamos!");
+
+  // Guardar datos del usuario
+  localStorage.setItem("userId", data.user.userId);
+  localStorage.setItem("username", data.user.username);
+  localStorage.setItem("email", data.user.email);
+
+  // Redirigir usando el username correcto
+  window.location.href = `/panel.html?username=${data.user.username}`;
+} else {
+  showToast("Ups! Fijate bien el email y la clave");
+}
+
   } catch (error) {
     showToast("Error de conexión");
     console.error(error);
