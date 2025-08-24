@@ -395,7 +395,7 @@ header {
   <div id="turnos"></div>
   <div id="reservaFormContainer" style="display:none;">
  
-  <div><img id="userLogo"></div>
+  
 
     
   </div>
@@ -615,37 +615,53 @@ function mostrarFormReserva() {
   formContainer.innerHTML = `
     <h3>Reservando turno con  ${selectedProf} el ${fechaBonita} a las ${selectedHora}</h3>
    <form id="reservaForm">
-  
-  <label for="nombre"><i class="fas fa-user"></i> Nombre</label>
-  <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
-  
-  <label for="apellido"><i class="fas fa-user"></i> Apellido</label>
-  <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
-  
+
+  <div class="input-container">
+    <i class="fas fa-user"></i>
+    <input type="text" name="nombre" placeholder="Nombre" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fas fa-user"></i>
+    <input type="text" name="apellido" placeholder="Apellido" required>
+  </div>
+
   <input type="hidden" name="telefono" value="">
-  
-  <label for="direccion"><i class="fas fa-location-dot"></i> Dirección</label>
-  <input type="text" id="direccion" name="direccion" placeholder="Dirección" required>
-  
-  <label for="fechaNacimiento"><i class="fas fa-calendar"></i> Fecha de nacimiento</label>
-  <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
-  
-  <label for="email"><i class="fas fa-envelope"></i> Email</label>
-  <input type="email" id="email" name="email" placeholder="Email" required>
-  
-  <label for="whatsapp"><i class="fab fa-whatsapp"></i> Whatsapp</label>
-  <input type="text" id="whatsapp" name="whatsapp" placeholder="Whatsapp" required>
-  
-  <label for="dni"><i class="fas fa-id-card"></i> DNI</label>
-  <input type="text" id="dni" name="dni" placeholder="DNI" required>
-  
-  <label for="comentario"><i class="fas fa-comment"></i> Comentario (opcional)</label>
-  <textarea id="comentario" name="comentario" placeholder="Comentario (opcional)"></textarea>
-  
+
+  <div class="input-container">
+    <i class="fas fa-location-dot"></i>
+    <input type="text" name="direccion" placeholder="Dirección" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fas fa-calendar"></i>
+    <input type="date" name="fechaNacimiento" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fas fa-envelope"></i>
+    <input type="email" name="email" placeholder="Email" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fab fa-whatsapp"></i>
+    <input type="text" name="whatsapp" placeholder="Whatsapp" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fas fa-id-card"></i>
+    <input type="text" name="dni" placeholder="DNI" required>
+  </div>
+
+  <div class="input-container">
+    <i class="fas fa-comment"></i>
+    <textarea name="comentario" placeholder="Comentario (opcional)"></textarea>
+  </div>
+
   <input type="hidden" name="extra1" value="">
   <input type="hidden" name="extra2" value="">
   <input type="hidden" name="extra3" value="">
-  
+
   <button type="submit"><i class="fas fa-check"></i> Reservar</button>
 </form>
     <div id="reservaMsg"></div>
