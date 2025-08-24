@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subir Logo</title>
+<style>
+  body { font-family: Arial; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+  #preview { max-width: 200px; margin-bottom: 10px; }
+  button { padding: 8px 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h2>Subir Logo</h2>
+
+<img id="preview" src="" alt="Logo Actual">
+<input type="file" id="fileInput" accept="image/*">
+<button id="uploadBtn">Subir</button>
+<p id="status"></p>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxKoJjty1C5xlTUZj3PnNVTubQdvpLVjyzWFj3YdCOEj8tLjNaJbG32wt_mOz8hFsNckw/exec"; // reemplaza con tu URL de Apps Script
+
+// Obtener userId de la URL
+const params = new URLSearchParams(window.location.search);
+const userId = params.get("userId");
+if (!userId) alert("Falta userId en la URL");
+
+// Preview de la imagen
+const fileInput = document.getElementById("fileInput");
+const preview = document.getElementById("preview");
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if(file) preview.src = URL.createObjectURL(file);
+});
+
+// Subir imagen
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+  const file = fileInput.files[0];
+  if (!file) return alert("Selecciona un archivo");
+
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const base64 = e.target.result.split(",")[1]; // eliminar el prefijo data:image/...
+    
+    document.getElementById("status").innerText = "Subiendo...";
+    
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "uploadLogo",
+        userId,
+        file: base64,
+        fileName: file.name
+      })
+    });
+    const data = await res.json();
+    if (data.status === "ok") {
+      preview.src = data.url;
+      document.getElementById("status").innerText = "Logo subido correctamente!";
+    } else {
+      document.getElementById("status").innerText = "Error: " + data.msg;
+    }
+  };
+  reader.readAsDataURL(file);
+});
+</script>
+
+</body>
+</html>
