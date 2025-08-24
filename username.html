@@ -481,7 +481,7 @@ function mostrarFormReserva() {
     <form id="reservaForm">
       <input type="text" name="nombre" placeholder="Nombre" required>
       <input type="text" name="apellido" placeholder="Apellido" required>
-      <input type="tel" name="telefono" placeholder="Teléfono" required>
+      <input type="hidden" name="telefono" value="">
       <input type="text" name="direccion" placeholder="Dirección" required>
       <label for="fechaNacimiento">Fecha de nacimiento</label>
 <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
@@ -489,9 +489,9 @@ function mostrarFormReserva() {
       <input type="text" name="whatsapp" placeholder="Whatsapp" required>
       <input type="text" name="dni" placeholder="DNI" required>
       <textarea name="comentario" placeholder="Comentario (opcional)"></textarea>
-      <input type="text" name="extra1" placeholder="Extra1">
-      <input type="text" name="extra2" placeholder="Extra2">
-      <input type="text" name="extra3" placeholder="Extra3">
+      <input type="hidden" name="extra1" value="">
+<input type="hidden" name="extra2" value="">
+<input type="hidden" name="extra3" value="">
       <button type="submit">Reservar</button>
     </form>
     <div id="reservaMsg"></div>
