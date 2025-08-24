@@ -7,7 +7,7 @@
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Librería Font Awesome -->
+  <!-- Librería Font Awesome 6 -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pap6k+oJ6OzOZ2wVv+az+FbU3G4f3gR9rKfKqD9qE6pRkd0EhF7RWfT3h+q6U7nZVrXgT7H5lHdZQFZ+7f+JHQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Iconos -->
@@ -393,7 +393,14 @@ header {
 
 
   <div id="turnos"></div>
-  <div id="reservaFormContainer" style="display:none;"></div>
+  <div id="reservaFormContainer" style="display:none;">
+ <!-- Logo del usuario -->
+<div id="floatingLogo">
+  <div class="logo-container">
+  <img id="userLogo"></div>
+</div>
+    
+  </div>
 
 
 <!-- Nuevo: ticket fijo -->
@@ -609,39 +616,39 @@ function mostrarFormReserva() {
   formContainer.style.display = "block";
   formContainer.innerHTML = `
     <h3>Reservando turno con  ${selectedProf} el ${fechaBonita} a las ${selectedHora}</h3>
-    <form id="reservaForm">
+   <form id="reservaForm">
   
-  <label for="nombre"><i class="fa fa-user"></i> Nombre</label>
+  <label for="nombre"><i class="fas fa-user"></i> Nombre</label>
   <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
   
-  <label for="apellido"><i class="fa fa-user"></i> Apellido</label>
+  <label for="apellido"><i class="fas fa-user"></i> Apellido</label>
   <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
   
   <input type="hidden" name="telefono" value="">
   
-  <label for="direccion"><i class="fa fa-location-dot"></i> Dirección</label>
+  <label for="direccion"><i class="fas fa-location-dot"></i> Dirección</label>
   <input type="text" id="direccion" name="direccion" placeholder="Dirección" required>
   
-  <label for="fechaNacimiento"><i class="fa fa-calendar"></i> Fecha de nacimiento</label>
+  <label for="fechaNacimiento"><i class="fas fa-calendar"></i> Fecha de nacimiento</label>
   <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
   
-  <label for="email"><i class="fa fa-envelope"></i> Email</label>
+  <label for="email"><i class="fas fa-envelope"></i> Email</label>
   <input type="email" id="email" name="email" placeholder="Email" required>
   
-  <label for="whatsapp"><i class="fa fa-phone"></i> Whatsapp</label>
+  <label for="whatsapp"><i class="fab fa-whatsapp"></i> Whatsapp</label>
   <input type="text" id="whatsapp" name="whatsapp" placeholder="Whatsapp" required>
   
-  <label for="dni"><i class="fa fa-id-card"></i> DNI</label>
+  <label for="dni"><i class="fas fa-id-card"></i> DNI</label>
   <input type="text" id="dni" name="dni" placeholder="DNI" required>
   
-  <label for="comentario"><i class="fa fa-comment"></i> Comentario (opcional)</label>
+  <label for="comentario"><i class="fas fa-comment"></i> Comentario (opcional)</label>
   <textarea id="comentario" name="comentario" placeholder="Comentario (opcional)"></textarea>
   
   <input type="hidden" name="extra1" value="">
   <input type="hidden" name="extra2" value="">
   <input type="hidden" name="extra3" value="">
   
-  <button type="submit"><i class="fa fa-check"></i> Reservar</button>
+  <button type="submit"><i class="fas fa-check"></i> Reservar</button>
 </form>
     <div id="reservaMsg"></div>
   `;
