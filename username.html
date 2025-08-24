@@ -521,6 +521,10 @@ function mostrarFormReserva() {
     </form>
     <div id="reservaMsg"></div>
   `;
+
+  // 🔽 Bajamos al formulario automáticamente
+  formContainer.scrollIntoView({ behavior: "smooth" });
+  
   document.getElementById("reservaForm").onsubmit = async function(event){
     event.preventDefault();
     const formData = new FormData(this);
