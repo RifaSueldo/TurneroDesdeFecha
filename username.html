@@ -426,53 +426,67 @@ function seleccionarDia(td, fechaStr) {
 /// ------------------ CARGAR TURNOS ------------------
 async function cargarTurnos(fechaStr) {
   selectedDate = new Date(fechaStr + "T00:00:00");
-
-  // 🔽 Formatear la fecha como "25 de agosto de 2025"
   const fechaBonita = selectedDate.toLocaleDateString("es-ES", {
     day: "numeric",
     month: "long",
     year: "numeric"
   });
 
-  document.getElementById("turnos").innerHTML = `
-    <div style="text-align:center; margin: 20px 0;">
-      <h2>Turnos del ${fechaBonita}</h2>
-      <p id="loadingMsg">Cargando...</p>
-    </div>
-  `;
-  
+  const turnosDiv = document.getElementById("turnos");
+  turnosDiv.innerHTML = `<h2>Turnos del ${fechaBonita}</h2><p>Cargando...</p>`;
   document.getElementById("reservaFormContainer").style.display = "none";
 
-  // acá seguís con la lógica para traer los turnos
+  try {
+    const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
+    const data = await res.json();
 
-  const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
-  const data = await res.json();
+    if (data.status !== "ok") {
+      turnosDiv.innerHTML = `
+        <h2>Turnos del ${fechaBonita}</h2>
+        <p style="color:red;">Error al cargar: ${data.msg || "Error desconocido"}</p>
+      `;
+      return;
+    }
 
-  if (data.status !== "ok") {
-    document.getElementById("turnos").innerHTML = "Error al cargar turnos";
-    return;
-  }
+    turnosData = data.turnos;
+    profesionales = data.profesionales;
 
-  turnosData = data.turnos;
-  profesionales = data.profesionales;
+    let html = `<h2>Turnos del ${fechaBonita}</h2>`;
 
-  let html = "";
-  Object.keys(turnosData).forEach(profId => {
-    const profObj = turnosData[profId];
-    html += `<div class="turnos"><h3>${profObj.nombre}</h3>`;
-    if (profObj.turnos.length === 0) html += "<p>No hay turnos disponibles</p>";
-    else {
-      profObj.turnos.forEach(t => {
-        const clase = t.estado === "bloqueado" ? "bloqueado" : "disponible";
-        const horaFormateada = t.hora.padStart(5, "0");
-        html += `<span class="hora ${clase}" ${clase === "bloqueado" ? "" : `onclick="seleccionarTurno('${profId}','${horaFormateada}')"`}>${horaFormateada}</span>`;
+    if (!turnosData || Object.keys(turnosData).length === 0) {
+      html += `<div class="turnos"><p>No hay turnos configurados para esta fecha</p></div>`;
+    } else {
+      Object.keys(turnosData).forEach(profId => {
+        const profObj = turnosData[profId];
+        html += `<div class="turnos"><h3>${profObj.nombre}</h3>`;
+        if (!profObj.turnos || profObj.turnos.length === 0) {
+          html += "<p>No hay turnos disponibles</p>";
+        } else {
+          profObj.turnos.forEach(t => {
+            const clase = t.estado === "bloqueado" ? "bloqueado" : "disponible";
+            const horaFormateada = t.hora.padStart(5, "0");
+            html += `<span class="hora ${clase}" ${
+              clase === "bloqueado"
+                ? ""
+                : `onclick="seleccionarTurno('${profId}','${horaFormateada}')"`
+            }>${horaFormateada}</span>`;
+          });
+        }
+        html += `</div>`;
       });
     }
-    html += "</div>";
-  });
-  document.getElementById("turnos").innerHTML = html;
-}
 
+    turnosDiv.innerHTML = html;
+  } catch (err) {
+    console.error("Error cargando turnos:", err);
+    turnosDiv.innerHTML = `
+      <h2>Turnos del ${fechaBonita}</h2>
+      <p style="color:red;">No se pudieron cargar los turnos.</p>
+    `;
+  }
+}
+  
+  
 // ------------------ SELECCIONAR TURNO ------------------
 function seleccionarTurno(profId, hora) {
   selectedProfId = profId;
