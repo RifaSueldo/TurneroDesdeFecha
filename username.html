@@ -285,15 +285,33 @@
 .ticket button:hover {
   background: #452a7a;
 }
+/* Contenedor flotante */
+  #floatingLogo {
+    position: fixed;
+    top: 20px;       /* Ajusta la distancia desde arriba */
+    right: -200px;    /* Inicial fuera de pantalla a la derecha */
+    width: 120px;     /* Tamaño del logo */
+    transition: right 0.8s ease; /* Animación al aparecer */
+    z-index: 9999;    /* Siempre por encima */
+    pointer-events: none; /* No interfiere con clicks */
+  }
 
+  #floatingLogo img {
+    width: 100%;
+    display: block;
+  }
 </style>
 
 </head>
 <body>
-
+ 
   <!-- Logo del usuario -->
+<div id="floatingLogo">
   <div class="logo-container" style="largin-left:0px; margin-bottom:20px;">
   <img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin:0 auto 10px;"></div>
+</div>
+
+  
 
   
 
@@ -639,6 +657,12 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 </script>
-
+<script>
+  // Esperar 4 segundos antes de mostrar el logo
+  setTimeout(() => {
+    const logo = document.getElementById('floatingLogo');
+    logo.style.right = '0px'; // Lo mueve hacia la pantalla
+  }, 4000);
+</script>
 </body>
 </html>
