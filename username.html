@@ -289,19 +289,22 @@
 
 /* Contenedor flotante */ 
      #floatingLogo { 
-       
-       left: -150px; /* empieza fuera de pantalla por la izquierda */ 
-                    
-      height: 100%;             /* ocupará el alto del header */
+       position: absolute;          /* o fixed si querés que quede flotante al scrollear */
+  top: 0;
+  left: -150px;                /* empieza fuera del header */
+  height: 100%;                /* ocupa todo el alto del header */
   display: flex;
-  align-items: center;      /* centra verticalmente */
-  margin-left: 5px;  
+  align-items: center;         /* centra verticalmente */
+  margin-left: 5px;
+  transition: left 0.8s ease;  /* hace la animación de izquierda a derecha */
+  z-index: 100;
                    } 
      #floatingLogo img { 
-       max-height: 60px;         /* deja margen arriba y abajo dentro del header */
-  max-width: 60vw;          /* nunca supera el 60% del ancho de pantalla */
-  object-fit: contain;      /* mantiene proporciones */
-  display: block; }
+       max-height: 60px;
+  max-width: 60vw;
+  object-fit: contain;
+  display: block; 
+     }
 header {
       position: fixed;
   top: 0;
@@ -713,9 +716,8 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 <script>
   setTimeout(() => {
-    const logo = document.getElementById("floatingLogo");
-    logo.style.left = "10px";  // se mueve hasta el borde izquierdo
-  }, 5000);
+  document.getElementById('floatingLogo').style.left = '5px'; // posición final dentro del header
+}, 3000);
 </script>
 </body>
 </html>
