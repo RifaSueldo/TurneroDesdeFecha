@@ -219,6 +219,10 @@
 }
 
     .ticket {
+      font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   margin: 20px auto;
   max-width: 500px;
   background: 
@@ -241,24 +245,36 @@
     background-blend-mode: overlay;
   color: #333;
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 0px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
   text-align: left;
 }
 .ticket h2 {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   text-align: center;
   color: #533482;
   margin-bottom: 15px;
 }
 .ticket p {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   margin: 6px 0;
   font-size: 0.95rem;
 }
 .ticket button {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   margin-top: 15px;
   padding: 8px 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: 0px;
   background: #533482;
   color: #fff;
   cursor: pointer;
@@ -311,7 +327,7 @@
 <!-- Nuevo: ticket fijo -->
 <div id="ticketContainer"></div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbyPQ3FCCUIGJPzsC7CepvT9BISkBqL_4exc2-Ukrb1rMX9scdryBvZdjJ11rznkUMvE-A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyIOaY3QIBCV68RKmLypIir1m2_5nTDbBw8m-dHIVaUrZgIyQPn5F1blmyYKN_YXXFkOQ/exec";
 
 // ------------------ OBTENER USERNAME ------------------
 let params = new URLSearchParams(window.location.search);
@@ -509,7 +525,7 @@ function mostrarFormReserva() {
     const formData = new FormData(this);
      // Mostrar cargando antes de enviar
     const reservaMsg = document.getElementById("reservaMsg");
-    reservaMsg.innerHTML = `<p>Cargando...</p>`;
+    reservaMsg.innerHTML = `<p>Reservando...</p>`;
 
     const dataToSend = {
       username,
