@@ -625,8 +625,8 @@ function mostrarFormReserva() {
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
-    <h2>${selectedProf}</h2>
-    <h2>${fechaBonita} - ${selectedHora}hs.</h2>
+    <p>Vas a reservar turno con ${selectedProf} el ${fechaBonita} a las ${selectedHora}hs.</p>
+    <p>Completa los datos, luego confirma la reserva!</p>
     
    <form id="reservaForm">
   
@@ -660,7 +660,7 @@ function mostrarFormReserva() {
   <input type="hidden" name="extra2" value="">
   <input type="hidden" name="extra3" value="">
   
-  <button type="submit"><i class="fas fa-check"></i> Reservar</button>
+  <button type="submit"><i class="fas fa-check"></i> Confirmar Reserva</button>
 </form>
     <div id="reservaMsg"></div>
   `;
