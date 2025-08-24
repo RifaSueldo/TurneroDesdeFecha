@@ -290,7 +290,7 @@
 /* Contenedor flotante */ 
      #floatingLogo { 
        
-       top: -150px; /* empieza fuera de pantalla por la izquierda */ 
+       left: -150px; /* empieza fuera de pantalla por la izquierda */ 
                     
       height: 100%;             /* ocupará el alto del header */
   display: flex;
@@ -714,7 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
   setTimeout(() => {
     const logo = document.getElementById("floatingLogo");
-    logo.style.top = "0px";  // se mueve hasta el borde izquierdo
+    logo.style.left = "10px";  // se mueve hasta el borde izquierdo
   }, 5000);
 </script>
 </body>
