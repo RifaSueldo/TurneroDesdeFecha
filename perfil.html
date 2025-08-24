@@ -1,131 +1,77 @@
-
- 
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Subir Logo</title>
+  <title>Guardar Logo Externo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    .card {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      text-align: center;
-    }
-    input[type="file"] {
-      margin: 15px 0;
-    }
-    button {
-      padding: 10px 20px;
-      border: none;
-      background: #28a745;
-      color: #fff;
-      font-size: 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:disabled {
-      background: #999;
-    }
-    .preview {
-      margin-top: 15px;
-    }
-    .preview img {
-      max-width: 100%;
-      border-radius: 8px;
-    }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .card { max-width: 400px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; text-align: center; }
+    input[type="url"] { width: 90%; padding: 8px; margin: 15px 0; font-size: 16px; }
+    button { padding: 10px 20px; border: none; background: #28a745; color: #fff; font-size: 16px; border-radius: 5px; cursor: pointer; }
+    button:disabled { background: #999; }
+    .preview img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>Subir Logo</h2>
-    <input type="file" id="fileInput" accept="image/*">
-    <button id="uploadBtn" disabled>Subir Logo</button>
+    <h2>Guardar Logo Externo</h2>
+    <input type="url" id="logoUrl" placeholder="Pega aquí el link del logo" required>
+    <button id="saveBtn" disabled>Guardar Logo</button>
     <div class="preview" id="preview"></div>
     <p id="status"></p>
   </div>
 
   <script>
-    // ==================== TOMAR USERID DE URL ====================
     const params = new URLSearchParams(window.location.search);
     const userId = params.get("userId");
-    console.log("UserId detectado en URL:", userId);
-
-    if (!userId) {
-      document.getElementById("status").innerText = "❌ Falta userId en la URL";
-    }
-
-    // ==================== EVENTOS ====================
-    const fileInput = document.getElementById("fileInput");
-    const uploadBtn = document.getElementById("uploadBtn");
+    const logoInput = document.getElementById("logoUrl");
+    const saveBtn = document.getElementById("saveBtn");
     const status = document.getElementById("status");
     const preview = document.getElementById("preview");
 
-    let selectedFile = null;
+    if (!userId) {
+      status.innerText = "❌ Falta userId en la URL";
+    }
 
-    fileInput.addEventListener("change", (e) => {
-      selectedFile = e.target.files[0];
-      if (selectedFile) {
-        uploadBtn.disabled = false;
-        preview.innerHTML = `<img src="${URL.createObjectURL(selectedFile)}">`;
+    // Habilitar botón si hay texto
+    logoInput.addEventListener("input", () => {
+      saveBtn.disabled = !logoInput.value.trim();
+      if (logoInput.value.trim()) {
+        preview.innerHTML = `<img src="${logoInput.value.trim()}" alt="Logo">`;
       } else {
-        uploadBtn.disabled = true;
         preview.innerHTML = "";
       }
     });
 
-    // ==================== SUBIR A APPS SCRIPT ====================
-    uploadBtn.addEventListener("click", async () => {
-      if (!selectedFile || !userId) {
-        alert("Falta archivo o userId");
-        return;
-      }
+    // Guardar logo
+    saveBtn.addEventListener("click", async () => {
+      const logoUrl = logoInput.value.trim();
+      if (!logoUrl || !userId) return;
 
-      status.innerText = "⏳ Subiendo...";
+      status.innerText = "⏳ Guardando logo...";
 
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64File = reader.result.split(",")[1];
-
-        console.log("Enviando a Apps Script:", {
-          action: "uploadLogo",
-          userId,
-          fileName: selectedFile.name
+      try {
+        const res = await fetch("https://script.google.com/macros/s/AKfycbxQfOkrlZj8AznBH8VmG9fmFj0rKngjzE6tenTkXOW1RqEfVYyGGsvFB9vXm0B7xpbmRA/exec", {
+          method: "POST",
+          body: new URLSearchParams({
+            action: "guardarLogoExterno",
+            userId: userId,
+            logoUrl: logoUrl
+          })
         });
 
-        try {
-          const res = await fetch("https://script.google.com/macros/s/AKfycbxQfOkrlZj8AznBH8VmG9fmFj0rKngjzE6tenTkXOW1RqEfVYyGGsvFB9vXm0B7xpbmRA/exec", {
-            method: "POST",
-            body: new URLSearchParams({
-              action: "uploadLogo",
-              userId: userId,
-              file: base64File,
-              fileName: selectedFile.name
-            })
-          });
+        const data = await res.json();
 
-          const data = await res.json();
-          console.log("Respuesta Apps Script:", data);
-
-          if (data.status === "ok") {
-            status.innerHTML = `✅ Logo subido: <a href="${data.url}" target="_blank">Ver Logo</a>`;
-          } else {
-            status.innerText = "❌ Error: " + data.msg;
-          }
-        } catch (err) {
-          console.error("Error en fetch:", err);
-          status.innerText = "❌ Error de conexión con Apps Script";
+        if (data.status === "ok") {
+          status.innerHTML = `✅ Logo guardado: <a href="${data.url}" target="_blank">Ver logo</a>`;
+        } else {
+          status.innerText = "❌ Error: " + data.msg;
         }
-      };
-
-      reader.readAsDataURL(selectedFile);
+      } catch (err) {
+        console.error(err);
+        status.innerText = "❌ Error de conexión con Apps Script";
+      }
     });
   </script>
 </body>
