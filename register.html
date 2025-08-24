@@ -150,21 +150,7 @@
     }
     
 
-.btn2 {
-      width: 100%;
-      padding: 0.8rem;
-      background: white;
-      color: #533482;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
 
-    .btn2:hover {
-      background: #e5e5e5;
-    }
   </style>
 </head>
 <body>
@@ -181,7 +167,8 @@
       <input type="text" id="username" placeholder="nombreDeTuNegocio" required> 
       <span class="web">Tu "nombre de negocio" será "tu link" ej: www.turnox.pro/peluquitos o www.turnox.pro/hair-studio.</span>
       <button type="submit">Registrarme</button> 
-      <a href="/login" class="btn2">Ya tengo una cuenta</a>
+      <button type="button" onclick="window.location.href='/login'">Ya tengo una cuenta</button>
+      
       
     </form>
     <div id="msg"></div> 
