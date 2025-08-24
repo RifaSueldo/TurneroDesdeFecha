@@ -98,7 +98,10 @@
   color: #999;
   pointer-events: none;
 }
-
+#turnos {
+  text-align: center;
+ 
+}
   /* Turnos */
   .turnos {
     margin: 15px auto;
@@ -406,7 +409,15 @@ function seleccionarDia(td, fechaStr) {
 // ------------------ CARGAR TURNOS ------------------
 async function cargarTurnos(fechaStr) {
   selectedDate = new Date(fechaStr + "T00:00:00");
-  document.getElementById("turnos").innerHTML = `<h2>Turnos del ${fechaStr}</h2><p>Cargando...</p>`;
+  
+  // Contenedor con título fijo y mensaje de carga centrado
+  document.getElementById("turnos").innerHTML = `
+    <div style="text-align:center; margin: 20px 0;">
+      <h2>Turnos del ${fechaStr}</h2>
+      <p id="loadingMsg">Cargando...</p>
+    </div>
+  `;
+  
   document.getElementById("reservaFormContainer").style.display = "none";
 
   const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
