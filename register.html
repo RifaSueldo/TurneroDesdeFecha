@@ -214,7 +214,7 @@
           
   msg.style.color = "white";
   msg.innerHTML = `
-    Cuenta creada con éxito. Tu sitio es: <strong>www.turnox.pro/${data.username.toLowerCase()}</strong><br>
+    Cuenta creada con éxito. Tu sitio es: <strong>www.turnerodesdefecha.netlify.app/${data.username.toLowerCase()}</strong><br>
     Tu Usuario es:<strong> ${data.email}</strong><br>
     Enviamos un mail con los datos a:<strong> ${data.email}</strong><br>
     Agregamos créditos gratis a tu cuenta:<strong> 5 créditos</strong> para prueba.<br>
@@ -222,7 +222,7 @@
     <button id="ingresarPanel" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Ingresa a tu sitio</button>
   `;
   document.getElementById("ingresarPanel").onclick = () => {
-    window.location.href = `https://www.turnox.pro/${encodeURIComponent(data.username.toLowerCase())}`;
+    window.location.href = `https://www.turnerodesdefecha.netlify.app/${encodeURIComponent(data.username.toLowerCase())}`;
   };
 
 
