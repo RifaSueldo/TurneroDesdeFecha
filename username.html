@@ -589,7 +589,7 @@ async function cargarTurnos(fechaStr) {
   } catch (err) {
     console.error("Error cargando turnos:", err);
     turnosDiv.innerHTML = `
-      <h2>Turnos del ${fechaBonita}</h2>
+      <h2> ${fechaBonita}</h2>
       <p style="color:red;">No se pudieron cargar los turnos.</p>
     `;
   }
@@ -625,9 +625,9 @@ function mostrarFormReserva() {
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
-    <h2>Reservando turno con  ${selectedProf}</h2>
-    <h2>el ${fechaBonita}</h2>
-    <h2>a las ${selectedHora}</h2>
+    <h2>${selectedProf}</h2>
+    <h2>${fechaBonita} - ${selectedHora}hs.</h2>
+    
    <form id="reservaForm">
   
   
