@@ -576,10 +576,22 @@ if (result.status === "ok") {
   }; 
 } 
 
-// ------------------ INIT ------------------
+
+
+  // ------------------ INIT ------------------
 document.addEventListener("DOMContentLoaded", () => {
   cargarLogo();
+  
+  // Renderizamos el calendario
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
+
+  // Cargamos los turnos de hoy automáticamente
+  const todayStr = selectedDate.toISOString().split("T")[0];
+  cargarTurnos(todayStr).then(() => {
+    // Bajamos a la sección de turnos
+    const turnosDiv = document.getElementById("turnos");
+    if (turnosDiv) turnosDiv.scrollIntoView({ behavior: "smooth" });
+  });
 });
 </script>
 
