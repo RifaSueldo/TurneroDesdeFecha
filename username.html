@@ -406,19 +406,27 @@ function seleccionarDia(td, fechaStr) {
   cargarTurnos(fechaStr);
 }
 
-// ------------------ CARGAR TURNOS ------------------
+/// ------------------ CARGAR TURNOS ------------------
 async function cargarTurnos(fechaStr) {
   selectedDate = new Date(fechaStr + "T00:00:00");
-  
-  // Contenedor con título fijo y mensaje de carga centrado
+
+  // 🔽 Formatear la fecha como "25 de agosto de 2025"
+  const fechaBonita = selectedDate.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
   document.getElementById("turnos").innerHTML = `
     <div style="text-align:center; margin: 20px 0;">
-      <h2>Turnos del ${fechaStr}</h2>
+      <h2>Turnos del ${fechaBonita}</h2>
       <p id="loadingMsg">Cargando...</p>
     </div>
   `;
   
   document.getElementById("reservaFormContainer").style.display = "none";
+
+  // acá seguís con la lógica para traer los turnos
 
   const res = await fetch(`${API_URL}?username=${username}&fecha=${fechaStr}`);
   const data = await res.json();
