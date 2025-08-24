@@ -288,16 +288,17 @@ console.log("Respuesta del login:", data); // <--- mirar cómo llega
   spinner.style.display = "none";
   showToast("¡Vamos!");
 
-  // Guardar datos del usuario
-  localStorage.setItem("userId", data.user.userId);
-  localStorage.setItem("username", data.user.username);
-  localStorage.setItem("email", data.user.email);
+  // Guardar datos del usuario correctamente
+  localStorage.setItem("userId", data.userId);
+  localStorage.setItem("username", data.username);
+  localStorage.setItem("email", data.email || ""); // email puede no venir
 
   // Redirigir usando el username correcto
-  window.location.href = `/panel.html?username=${data.user.username}`;
+  window.location.href = `/panel.html?username=${data.username}`;
 } else {
   showToast("Ups! Fijate bien el email y la clave");
 }
+
 
   } catch (error) {
     showToast("Error de conexión");
