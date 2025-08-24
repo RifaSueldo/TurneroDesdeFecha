@@ -293,9 +293,7 @@
 
   <!-- Logo del usuario -->
   <div class="logo-container" style="largin-left:0px; margin-bottom:20px;">
-      <!--<img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin:0 auto 10px;">-->
-    <h2 id="userLogo" style="text-align:center;" >hair-studio</h2>
-  </div>
+  <img id="userLogo" src="" alt="Logo" style="max-width:150px; display:block; margin:0 auto 10px;"></div>
 
   
 
@@ -328,7 +326,7 @@
 <!-- Nuevo: ticket fijo -->
 <div id="ticketContainer"></div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxeerNFWrANHdMHk7S8blTR-GGpatNGY-QsNLHT-HRxo_Ql4n-k0MolCo1sVErUPlooKQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbw-R-azo_Jkht6hz-xCpxp21c1DxUnLsSP08-CA_v5CiTdVLDrC2-6VoIp6FfdjYTmxRA/exec";
 
 // ------------------ OBTENER USERNAME ------------------
 let params = new URLSearchParams(window.location.search);
@@ -351,14 +349,25 @@ let selectedProfId = "";
 let selectedHora = "";
 
 // ------------------ CARGAR LOGO ------------------
-async function cargarLogo() {
-  if (!userId) return;
+async function cargarLogo(username) {
   try {
-    const res = await fetch(`${API_URL}?action=getPerfil&userId=${userId}`);
+    const res = await fetch(`${API_URL}?username=${username}`);
     const perfil = await res.json();
-    if (perfil.logo) document.getElementById("userLogo").src = perfil.logo;
-  } catch(e){ console.log(e); }
+
+    if (perfil.status === "ok") {
+      const logo = document.getElementById("userLogo");
+      logo.src = perfil.logoURL || "https://i.ibb.co/default-logo.png"; // fallback
+    } else {
+      console.log("No se encontró perfil para", username);
+    }
+  } catch(e) {
+    console.log("Error cargando logo:", e);
+  }
 }
+
+
+// Llamada al cargar la página
+cargarLogo(username);
 
 // ------------------ RENDER CALENDARIO ------------------
 function renderCalendario(year, month) {
@@ -606,7 +615,7 @@ if (result.status === "ok") {
 
   // ------------------ INIT ------------------
 document.addEventListener("DOMContentLoaded", () => {
-  cargarLogo();
+ cargarLogo(username);
   
   // Renderizamos el calendario
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
