@@ -286,27 +286,23 @@
 .ticket button:hover {
   background: #452a7a;
 }
-/* Contenedor flotante */
-  /* Contenedor fijo arriba */
-#floatingLogo {
-  position: fixed;
-  top: 0;             /* pegado arriba */
-  left: -200px;       /* arranca oculto a la izquierda */
-  width: 200px;       /* ancho del bloque/logo */
-  height: 60px;       /* alto de la franja */
-  background: white;  /* opcional: fondo para parecer barra */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: left 0.8s ease;
-  z-index: 9999;
-  pointer-events: none;
-}
 
-#floatingLogo img {
-  height: 40px;       /* tamaño del logo dentro de la barra */
-  width: auto;
-}
+/* Contenedor flotante */ 
+     #floatingLogo { 
+       position: relative;
+       top: 20px; /* distancia desde arriba */ 
+                    
+       left: -150px; /* empieza fuera de pantalla por la izquierda */ 
+                    
+       width: 200px; /* tamaño del logo */ 
+                    
+       transition: left 0.8s ease; 
+                   
+       z-index: 9999; 
+                  
+       pointer-events: none; 
+                   } 
+     #floatingLogo img { width: 100%; display: block; }
 
 </style>
 
