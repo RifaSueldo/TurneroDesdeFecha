@@ -283,7 +283,7 @@ async function login() {
     });
 
     const data = await res.json();
-
+console.log("Respuesta del login:", data); // <--- mirar cómo llega
     if (data.status === "ok") {
   spinner.style.display = "none";
   showToast("¡Vamos!");
