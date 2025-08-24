@@ -7,7 +7,8 @@
 
   <!-- Fuentes -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <!-- Librería Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pap6k+oJ6OzOZ2wVv+az+FbU3G4f3gR9rKfKqD9qE6pRkd0EhF7RWfT3h+q6U7nZVrXgT7H5lHdZQFZ+7f+JHQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- Iconos -->
   <link rel="icon" type="image/png" href="https://i.ibb.co/p6Ycq6XC/Turnox-logo.png">
@@ -398,7 +399,7 @@ header {
 <!-- Nuevo: ticket fijo -->
 <div id="ticketContainer"></div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxQfOkrlZj8AznBH8VmG9fmFj0rKngjzE6tenTkXOW1RqEfVYyGGsvFB9vXm0B7xpbmRA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxhL-hEvY0j86gCCqysKg0HDSd8bmpBfIzC4F06D9NuQve23qbM5wKM59IWZpi-ciT2Kw/exec";
 
 // ------------------ OBTENER USERNAME ------------------
 let params = new URLSearchParams(window.location.search);
@@ -609,21 +610,39 @@ function mostrarFormReserva() {
   formContainer.innerHTML = `
     <h3>Reservando turno con  ${selectedProf} el ${fechaBonita} a las ${selectedHora}</h3>
     <form id="reservaForm">
-      <input type="text" name="nombre" placeholder="Nombre" required>
-      <input type="text" name="apellido" placeholder="Apellido" required>
-      <input type="hidden" name="telefono" value="">
-      <input type="text" name="direccion" placeholder="Dirección" required>
-      <label for="fechaNacimiento">Fecha de nacimiento</label>
-<input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
-      <input type="email" name="email" placeholder="Email" required>
-      <input type="text" name="whatsapp" placeholder="Whatsapp" required>
-      <input type="text" name="dni" placeholder="DNI" required>
-      <textarea name="comentario" placeholder="Comentario (opcional)"></textarea>
-      <input type="hidden" name="extra1" value="">
-<input type="hidden" name="extra2" value="">
-<input type="hidden" name="extra3" value="">
-      <button type="submit">Reservar</button>
-    </form>
+  
+  <label for="nombre"><i class="fa fa-user"></i> Nombre</label>
+  <input type="text" id="nombre" name="nombre" placeholder="Nombre" required>
+  
+  <label for="apellido"><i class="fa fa-user"></i> Apellido</label>
+  <input type="text" id="apellido" name="apellido" placeholder="Apellido" required>
+  
+  <input type="hidden" name="telefono" value="">
+  
+  <label for="direccion"><i class="fa fa-location-dot"></i> Dirección</label>
+  <input type="text" id="direccion" name="direccion" placeholder="Dirección" required>
+  
+  <label for="fechaNacimiento"><i class="fa fa-calendar"></i> Fecha de nacimiento</label>
+  <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+  
+  <label for="email"><i class="fa fa-envelope"></i> Email</label>
+  <input type="email" id="email" name="email" placeholder="Email" required>
+  
+  <label for="whatsapp"><i class="fa fa-phone"></i> Whatsapp</label>
+  <input type="text" id="whatsapp" name="whatsapp" placeholder="Whatsapp" required>
+  
+  <label for="dni"><i class="fa fa-id-card"></i> DNI</label>
+  <input type="text" id="dni" name="dni" placeholder="DNI" required>
+  
+  <label for="comentario"><i class="fa fa-comment"></i> Comentario (opcional)</label>
+  <textarea id="comentario" name="comentario" placeholder="Comentario (opcional)"></textarea>
+  
+  <input type="hidden" name="extra1" value="">
+  <input type="hidden" name="extra2" value="">
+  <input type="hidden" name="extra3" value="">
+  
+  <button type="submit"><i class="fa fa-check"></i> Reservar</button>
+</form>
     <div id="reservaMsg"></div>
   `;
 
