@@ -287,11 +287,11 @@
 }
 /* Contenedor flotante */
   #floatingLogo {
-    position: fixed;
-    top: 20px;             /* distancia desde arriba */
-    right: -150px;          /* empieza fuera de pantalla */
-    width: 180px;           /* tamaño del logo */
-    transition: right 0.8s ease; 
+   position: fixed;
+    top: 20px;       /* distancia desde arriba */
+    left: -150px;     /* empieza fuera de pantalla por la izquierda */
+    width: 120px;     /* tamaño del logo */
+    transition: left 0.8s ease; 
     z-index: 9999;
     pointer-events: none;
   }
@@ -658,11 +658,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script>
-  // Aparece 4 segundos después
   setTimeout(() => {
     const logo = document.getElementById("floatingLogo");
-    logo.style.right = "0px";  // se mueve hasta el borde derecho
-  }, 4000);
+    logo.style.left = "0px";  // se mueve hasta el borde izquierdo
+  }, 3000);
 </script>
 </body>
 </html>
