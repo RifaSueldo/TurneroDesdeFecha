@@ -351,12 +351,15 @@ let selectedHora = "";
 // ------------------ CARGAR LOGO ------------------
 async function cargarLogo(username) {
   try {
-    const res = await fetch(`${API_URL}?username=${username}`);
+    // pedimos al backend los datos del perfil
+    const res = await fetch(`${API_URL}?action=getPerfil&username=${username}`);
     const perfil = await res.json();
+
+    console.log("Perfil recibido del backend:", perfil); // <-- depuración
 
     if (perfil.status === "ok") {
       const logo = document.getElementById("userLogo");
-      logo.src = perfil.logoURL || "https://i.ibb.co/default-logo.png"; // fallback
+      logo.src = perfil.logoURL || "https://i.ibb.co/default-logo.png"; // fallback si no hay logo
     } else {
       console.log("No se encontró perfil para", username);
     }
@@ -364,7 +367,6 @@ async function cargarLogo(username) {
     console.log("Error cargando logo:", e);
   }
 }
-
 
 // Llamada al cargar la página
 cargarLogo(username);
