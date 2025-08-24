@@ -38,7 +38,7 @@
   font-style: normal;
   margin: 0;
   padding: 0;
-  background-color: #000;
+  background-color: #533482;
      color: #F2F2F2;
     }
   h1 {
@@ -290,7 +290,7 @@
 /* Contenedor flotante */ 
      #floatingLogo { 
        position: relative;
-       top: 20px; /* distancia desde arriba */ 
+       top: 5px; /* distancia desde arriba */ 
                     
        left: -150px; /* empieza fuera de pantalla por la izquierda */ 
                     
@@ -308,13 +308,30 @@ header {
       justify-content: space-between;
       align-items: center;
       padding: 10px 20px;
-      background-color: #f8f9fa;
+       background: 
+        linear-gradient(
+            135deg,
+            #D2B8FF 0%, 
+            #fff 25%, 
+            #F4EDFF 50%, 
+            #fff 75%, 
+            #D2B8FF 100%
+        ),
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.05) 0px,
+            rgba(255,255,255,0.05) 2px,
+            transparent 2px,
+            transparent 4px
+        );
+   
+    background-blend-mode: overlay;
       border-bottom: 1px solid #ddd;
     }
      /* Botón Login */
     .login-btn {
       padding: 8px 16px;
-      background-color: #007bff;
+      background-color: #575757;
       color: white;
       border: none;
       border-radius: 5px;
@@ -325,7 +342,7 @@ header {
     }
 
     .login-btn:hover {
-      background-color: #0056b3;
+      background-color: #533482;
     }
 </style>
 
