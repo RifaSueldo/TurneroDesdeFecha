@@ -256,6 +256,7 @@
 
     <div class="recuperar">
       <a href="#" onclick="mostrarRecuperar()">¿Olvidaste tu contraseña?</a>
+      <a onclick="window.location.href='/register'">No tengo cuenta</a>
     </div>
 
     <div id="recuperarDiv" style="display:none;">
@@ -267,7 +268,7 @@
   </div>
 <div id="toast"></div>
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxeerNFWrANHdMHk7S8blTR-GGpatNGY-QsNLHT-HRxo_Ql4n-k0MolCo1sVErUPlooKQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxhL-hEvY0j86gCCqysKg0HDSd8bmpBfIzC4F06D9NuQve23qbM5wKM59IWZpi-ciT2Kw/exec";
 async function login() {
   const spinner = document.getElementById("spinnerIngresar");
   spinner.style.display = "block"; // mostrar spinner
