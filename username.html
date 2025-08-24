@@ -541,6 +541,11 @@ function mostrarFormReserva() {
   
   document.getElementById("reservaForm").onsubmit = async function(event){
     event.preventDefault();
+    
+     // deshabilitar para evitar múltiples clics
+  submitButton.disabled = true;
+  submitButton.innerText = "Reservando...";
+    
     const formData = new FormData(this);
      // Mostrar cargando antes de enviar
     const reservaMsg = document.getElementById("reservaMsg");
