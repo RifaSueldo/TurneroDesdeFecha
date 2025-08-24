@@ -539,18 +539,21 @@ function mostrarFormReserva() {
   // 🔽 Bajamos al formulario automáticamente
   formContainer.scrollIntoView({ behavior: "smooth" });
   
+  
+// ------------------ Enviar reserva ------------------
   document.getElementById("reservaForm").onsubmit = async function(event){
     event.preventDefault();
+    const form = this;
+    const submitButton = form.querySelector("button[type='submit']");
     
-     // deshabilitar para evitar múltiples clics
-  submitButton.disabled = true;
-  submitButton.innerText = "Reservando...";
-    
-    const formData = new FormData(this);
-     // Mostrar cargando antes de enviar
+    // Bloquear botón para evitar múltiples clics
+    submitButton.disabled = true;
+    submitButton.innerText = "Reservando...";
     const reservaMsg = document.getElementById("reservaMsg");
-    reservaMsg.innerHTML = `<p>Reservando...</p>`;
+    reservaMsg.innerHTML = "";
 
+    const formData = new FormData(form);
+    
     const dataToSend = {
       username,
       profesional: selectedProf,
