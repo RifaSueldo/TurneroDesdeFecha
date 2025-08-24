@@ -507,6 +507,10 @@ function mostrarFormReserva() {
   document.getElementById("reservaForm").onsubmit = async function(event){
     event.preventDefault();
     const formData = new FormData(this);
+     // Mostrar cargando antes de enviar
+    const reservaMsg = document.getElementById("reservaMsg");
+    reservaMsg.innerHTML = `<p>Cargando...</p>`;
+
     const dataToSend = {
       username,
       profesional: selectedProf,
@@ -535,14 +539,15 @@ console.log("Respuesta del backend:", result);
 if (result.status === "ok") {
   // borro el formulario, pero dejo el contenedor
   document.getElementById("reservaForm").remove();
-
-  // muestro el ticket en reservaMsg
-  document.getElementById("ticketContainer").innerHTML = `
-  <div class="ticket">
-    ${result.ticketHTML}
-    <button onclick="window.print()">Imprimir Ticket</button>
-  </div>
-`;
+// Reemplazar "cargando" por el ticket
+        reservaMsg.innerHTML = "";
+        document.getElementById("ticketContainer").innerHTML = `
+          <div class="ticket">
+            ${result.ticketHTML}
+            <button onclick="window.print()">Imprimir Ticket</button>
+          </div>
+        `;
+ 
 
   // actualizo turnos
   cargarTurnos(fechaStr);
