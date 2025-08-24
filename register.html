@@ -148,6 +148,23 @@
       margin-top: 1rem;
       font-size: 0.9rem;
     }
+    
+
+.btn2 {
+    display: block;
+    width: 250px;
+    padding: 15px 0;
+    margin: 10px auto;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #533482;
+    background-color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.2s;
+}
   </style>
 </head>
 <body>
@@ -164,11 +181,12 @@
       <input type="text" id="username" placeholder="nombreDeTuNegocio" required> 
       <span class="web">Tu "nombre de negocio" será "tu link" ej: www.turnox.pro/peluquitos o www.turnox.pro/hair-studio.</span>
       <button type="submit">Registrarme</button> 
+      <a href="/login" class="btn2">Ya tengo una cuenta</a>
       
     </form>
     <div id="msg"></div> 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxeerNFWrANHdMHk7S8blTR-GGpatNGY-QsNLHT-HRxo_Ql4n-k0MolCo1sVErUPlooKQ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbz0XFsJDwnbjMlsgRVuD3xPTfpxpY4BHd229B0OwKTLIgzZ_mCcMYmJb744pXtAHRNQVw/exec";
 // 🔹 Transformar el username en tiempo real
   document.getElementById("username").addEventListener("input", function(e) {
     this.value = this.value
@@ -222,7 +240,7 @@
     <button id="ingresarPanel" style="margin-top:10px; padding:8px 16px; cursor:pointer;">Ingresa a tu sitio</button>
   `;
   document.getElementById("ingresarPanel").onclick = () => {
-    window.location.href = `https://www.turnerodesdefecha.netlify.app/${encodeURIComponent(data.username.toLowerCase())}`;
+    window.location.href = `https://turnerodesdefecha.netlify.app/${encodeURIComponent(data.username.toLowerCase())}`;
   };
 
 
