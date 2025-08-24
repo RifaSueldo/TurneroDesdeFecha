@@ -474,6 +474,14 @@ function seleccionarTurno(profId, hora) {
 
 function mostrarFormReserva() {
   const fechaStr = selectedDate.toISOString().split("T")[0];
+  
+  // Crear fecha en formato bonito dd/mm/aaaa
+  const fechaBonita = selectedDate.toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
