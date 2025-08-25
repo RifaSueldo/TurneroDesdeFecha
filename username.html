@@ -716,35 +716,18 @@ function mostrarFormReserva(profId, hora) {
       body: new URLSearchParams({action:"saveReserva", data: JSON.stringify(dataToSend)})
     });
     const result = await res.json();
-console.log("Respuesta del backend:", result);
+    console.log("Respuesta del backend:", result);
     if (result.status === "ok") {
   // borro el formulario, pero dejo el contenedor
   document.getElementById("reservaForm").remove();
-  reservaMsg.innerHTML = "";
-  
-  // mostramos ticket con botones
-  document.getElementById("ticketContainer").innerHTML = `
-    <div class="ticket" id="ticketGenerado">
-      ${result.ticketHTML}
-      <div class="ticket-actions">
-        <button onclick="window.print()">🖨️ Imprimir Ticket</button>
-        <button id="descargarTicket">💾 Descargar JPG</button>
-      </div>
-    </div>
-  `;
-
-  // Descargar como JPG
-  document.getElementById("descargarTicket").addEventListener("click", () => {
-    const ticket = document.getElementById("ticketGenerado");
-    html2canvas(ticket, { scale: 2, useCORS: true }).then(canvas => {
-      const link = document.createElement("a");
-      link.download = "ticket.jpg";
-      link.href = canvas.toDataURL("image/jpeg", 0.95);
-      link.click();
-    });
-  });
-}
-
+// Reemplazar "cargando" por el ticket
+        reservaMsg.innerHTML = "";
+        document.getElementById("ticketContainer").innerHTML = `
+          <div class="ticket">
+            ${result.ticketHTML}
+            <button onclick="window.print()">Imprimir Ticket</button>
+          </div>
+        `; 
  
 
   // actualizo turnos
