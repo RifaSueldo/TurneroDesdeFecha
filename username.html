@@ -627,7 +627,7 @@ function mostrarFormReserva() {
   formContainer.style.display = "block";
   formContainer.innerHTML = `
   
-    <h2>Último paso!</h2>
+    <h2>Último paso! ${profId} ${fechaBonita} ${hora}</h2>
    <form id="reservaForm">
   
   
@@ -733,21 +733,25 @@ if (result.status === "ok") {
 
 
 
-  // ------------------ INIT ------------------
+ // ------------------ INIT ------------------
 document.addEventListener("DOMContentLoaded", () => {
- cargarLogo(username);
-  
+  cargarLogo(username);
+
+  // Inicializamos selectedDate al día de hoy
+  selectedDate = new Date(); // 🔹 día actual real
+
   // Renderizamos el calendario
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
 
   // Cargamos los turnos de hoy automáticamente
-  const todayStr = selectedDate.toISOString().split("T")[0];
+  const todayStr = selectedDate.toISOString().split("T")[0]; // YYYY-MM-DD exacto
   cargarTurnos(todayStr).then(() => {
     // Bajamos a la sección de turnos
     const turnosDiv = document.getElementById("turnos");
     if (turnosDiv) turnosDiv.scrollIntoView({ behavior: "smooth" });
   });
 });
+
 </script>
 <script>
  setTimeout(() => {
