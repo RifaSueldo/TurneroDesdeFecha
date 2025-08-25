@@ -622,9 +622,10 @@ function seleccionarTurno(profId, hora) {
 }
 
 
-function mostrarFormReserva() {
+// ------------------ MOSTRAR FORMULARIO ------------------
+function mostrarFormReserva(profId, hora) {
   const fechaStr = selectedDate.toISOString().split("T")[0];
-  
+
   // Crear fecha en formato bonito dd/mm/aaaa
   const fechaBonita = selectedDate.toLocaleDateString("es-AR", {
     day: "2-digit",
@@ -635,8 +636,7 @@ function mostrarFormReserva() {
   const formContainer = document.getElementById("reservaFormContainer");
   formContainer.style.display = "block";
   formContainer.innerHTML = `
-  
-    <h2>Último paso! ${profId} ${fechaBonita} ${hora}</h2>
+    <h2>Último paso! ${turnosData[profId].nombre} - ${fechaBonita} - ${hora}</h2>
    <form id="reservaForm">
   
   
