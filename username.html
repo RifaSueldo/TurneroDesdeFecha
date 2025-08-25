@@ -560,9 +560,8 @@ async function cargarTurnos(fechaStr) {
     turnosData = data.turnos;
     profesionales = data.profesionales;
 
-    // ✅ Inicializamos html
+   
     let html = "";
-
 
     if (!turnosData || Object.keys(turnosData).length === 0) {
       html += `<div class="turnos"><p>No hay turnos configurados para esta fecha</p></div>`;
