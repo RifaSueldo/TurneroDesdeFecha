@@ -593,7 +593,7 @@ async function cargarTurnos(fechaStr) {
   }
 }
 
-/ ------------------ SELECCIONAR TURNO ------------------
+// ------------------ SELECCIONAR TURNO ------------------
 function seleccionarTurno(profId, hora) {
   selectedProfId = profId;
   selectedProf = turnosData[profId].nombre;
@@ -603,7 +603,7 @@ function seleccionarTurno(profId, hora) {
   document.querySelectorAll(".hora.disponible").forEach(el => el.classList.remove("selected"));
 
   // Agregar clase selected a la hora clickeada
-  const span = document.querySelector(`.hora.disponible[onclick*="${hora}"]`);
+  const span = document.querySelector(`.hora.disponible[data-profid="${profId}"][data-hora="${hora}"]`);
   if (span) span.classList.add("selected");
 
   mostrarFormReserva(selectedProfId, selectedHora);
