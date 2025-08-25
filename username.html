@@ -430,13 +430,14 @@ if (!username) {
 }
 if (!username) alert("Falta username en la URL");
 
-// Variables globales
-let selectedDate = new Date();
-let profesionales = [];
-let turnosData = {};
+// ------------------ VARIABLES GLOBALES ------------------
+let selectedDate;      // Fecha seleccionada
+let turnosData = {};   // Turnos cargados
+let profesionales = {}; 
+let selectedProfId = null;
 let selectedProf = "";
-let selectedProfId = "";
 let selectedHora = "";
+
 
 // ------------------ CARGAR LOGO ------------------
   async function cargarLogo(username) {
@@ -728,25 +729,23 @@ if (result.status === "ok") {
 
 
 
- // ------------------ INIT ------------------
+// ------------------ INIT ------------------
 document.addEventListener("DOMContentLoaded", () => {
   cargarLogo(username);
 
   // Inicializamos selectedDate al día de hoy
-  selectedDate = new Date(); // 🔹 día actual real
+  selectedDate = new Date();
 
-  // Renderizamos el calendario
+  // Renderizamos calendario
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
 
-  // Cargamos los turnos de hoy automáticamente
-  const todayStr = selectedDate.toISOString().split("T")[0]; // YYYY-MM-DD exacto
+  // Cargamos turnos del día actual
+  const todayStr = selectedDate.toISOString().split("T")[0];
   cargarTurnos(todayStr).then(() => {
-    // Bajamos a la sección de turnos
     const turnosDiv = document.getElementById("turnos");
     if (turnosDiv) turnosDiv.scrollIntoView({ behavior: "smooth" });
   });
 });
-
 </script>
 <script>
  setTimeout(() => {
