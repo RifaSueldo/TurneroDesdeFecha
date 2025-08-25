@@ -678,102 +678,66 @@ function mostrarFormReserva(profId, hora) {
   formContainer.scrollIntoView({ behavior: "smooth" });
   
  // ------------------ Enviar reserva ------------------
-document.getElementById("reservaForm").onsubmit = async function(event){
-  event.preventDefault();
-  const form = this;
-  const submitButton = form.querySelector("button[type='submit']");
-  
-  // Bloquear botón para evitar múltiples clics
-  submitButton.disabled = true;
-  submitButton.innerText = "Reservando...";
-  const reservaMsg = document.getElementById("reservaMsg");
-  reservaMsg.innerHTML = "";
+  document.getElementById("reservaForm").onsubmit = async function(event){
+    event.preventDefault();
+    const form = this;
+    const submitButton = form.querySelector("button[type='submit']");
+    
+    // Bloquear botón para evitar múltiples clics
+    submitButton.disabled = true;
+    submitButton.innerText = "Reservando...";
+    const reservaMsg = document.getElementById("reservaMsg");
+    reservaMsg.innerHTML = "";
 
-  const formData = new FormData(form);
-  
-  const dataToSend = {
-    username,
-    profesional: selectedProf,
-    profesionalId: selectedProfId,
-    fecha: selectedDate.toLocaleDateString("fr-CA"), // fecha local yyyy-mm-dd
-    hora: selectedHora,
-    nombre: formData.get("nombre"),
-    apellido: formData.get("apellido"),
-    telefono: formData.get("telefono"),
-    direccion: formData.get("direccion"),
-    fechaNacimiento: formData.get("fechaNacimiento"),
-    email: formData.get("email"),
-    whatsapp: formData.get("whatsapp"),
-    dni: formData.get("dni"),
-    comentario: formData.get("comentario"),
-    extra1: formData.get("extra1"),
-    extra2: formData.get("extra2"),
-    extra3: formData.get("extra3")
-  };
-
-  try {
+    const formData = new FormData(form);
+    
+    const dataToSend = {
+      username,
+      profesional: selectedProf,
+      profesionalId: selectedProfId,
+      fecha: fechaStr,
+      hora: selectedHora,
+      nombre: formData.get("nombre"),
+      apellido: formData.get("apellido"),
+      telefono: formData.get("telefono"),
+      direccion: formData.get("direccion"),
+      fechaNacimiento: formData.get("fechaNacimiento"),
+      email: formData.get("email"),
+      whatsapp: formData.get("whatsapp"),
+      dni: formData.get("dni"),
+      comentario: formData.get("comentario"),
+      extra1: formData.get("extra1"),
+      extra2: formData.get("extra2"),
+      extra3: formData.get("extra3")
+    };
     const res = await fetch(API_URL, {
       method: "POST",
       body: new URLSearchParams({action:"saveReserva", data: JSON.stringify(dataToSend)})
     });
     const result = await res.json();
     console.log("Respuesta del backend:", result);
-
     if (result.status === "ok") {
-      // Borro el formulario, pero dejo el contenedor
-      document.getElementById("reservaForm").remove();
-      reservaMsg.innerHTML = "";
-
-      // Mostrar ticket tipo hoja
-      document.getElementById("ticketContainer").innerHTML = `
-        <div class="ticket" style="
-            width: 400px;
-            max-width: 90vw;
-            padding: 20px;
-            margin: 20px auto;
-            border: 1px solid #000;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
-            background-color: #fff;
-            font-family: sans-serif;
-            text-align: center;
-        ">
-          ${result.ticketHTML}
-          <div class="ticket-actions" style="margin-top:10px;">
-            <button onclick="window.print()" style="margin-right:10px;">🖨️ Imprimir</button>
-            <button id="descargarTicket">💾 Descargar JPG</button>
+  // borro el formulario, pero dejo el contenedor
+  document.getElementById("reservaForm").remove();
+// Reemplazar "cargando" por el ticket
+        reservaMsg.innerHTML = "";
+        document.getElementById("ticketContainer").innerHTML = `
+          <div class="ticket">
+            ${result.ticketHTML}
+            <button onclick="window.print()">Imprimir Ticket</button>
           </div>
-        </div>
-      `;
-
-      // Descargar como JPG
-      const descargarBtn = document.getElementById("descargarTicket");
-      descargarBtn.addEventListener("click", () => {
-        const ticket = document.querySelector("#ticketContainer .ticket");
-        html2canvas(ticket, { scale: 2, useCORS: true }).then(canvas => {
-          const link = document.createElement("a");
-          link.download = "ticket.jpg";
-          link.href = canvas.toDataURL("image/jpeg", 0.95);
-          link.click();
-        });
-      });
-
-      // Bajamos al ticket automáticamente
-      document.getElementById("ticketContainer").scrollIntoView({ behavior: "smooth" });
-    } else {
-      reservaMsg.innerHTML = `<p style="color:red;">Error al guardar la reserva: ${result.msg || "desconocido"}</p>`;
-      submitButton.disabled = false;
-      submitButton.innerText = "Confirmar Reserva";
-    }
-  } catch(err) {
-    console.error("Error enviando reserva:", err);
-    reservaMsg.innerHTML = `<p style="color:red;">No se pudo enviar la reserva.</p>`;
-    submitButton.disabled = false;
-    submitButton.innerText = "Confirmar Reserva";
-  }
-};
+        `; 
  
 
+  // actualizo turnos
+  cargarTurnos(fechaStr);
+} else {
+  document.getElementById("reservaMsg").innerText =
+    "Error al reservar: " + (result.msg || "");
+
+}
+  }; 
+} 
 
 
 // ------------------ INIT ------------------
