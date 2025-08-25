@@ -717,17 +717,34 @@ function mostrarFormReserva(profId, hora) {
     });
     const result = await res.json();
 console.log("Respuesta del backend:", result);
-if (result.status === "ok") {
+    if (result.status === "ok") {
   // borro el formulario, pero dejo el contenedor
   document.getElementById("reservaForm").remove();
-// Reemplazar "cargando" por el ticket
-        reservaMsg.innerHTML = "";
-        document.getElementById("ticketContainer").innerHTML = `
-          <div class="ticket">
-            ${result.ticketHTML}
-            <button onclick="window.print()">Imprimir Ticket</button>
-          </div>
-        `;
+  reservaMsg.innerHTML = "";
+  
+  // mostramos ticket con botones
+  document.getElementById("ticketContainer").innerHTML = `
+    <div class="ticket" id="ticketGenerado">
+      ${result.ticketHTML}
+      <div class="ticket-actions">
+        <button onclick="window.print()">🖨️ Imprimir Ticket</button>
+        <button id="descargarTicket">💾 Descargar JPG</button>
+      </div>
+    </div>
+  `;
+
+  // Descargar como JPG
+  document.getElementById("descargarTicket").addEventListener("click", () => {
+    const ticket = document.getElementById("ticketGenerado");
+    html2canvas(ticket, { scale: 2, useCORS: true }).then(canvas => {
+      const link = document.createElement("a");
+      link.download = "ticket.jpg";
+      link.href = canvas.toDataURL("image/jpeg", 0.95);
+      link.click();
+    });
+  });
+}
+
  
 
   // actualizo turnos
@@ -765,6 +782,8 @@ const todayStr = selectedDate.toLocaleDateString("fr-CA"); // yyyy-mm-dd sin UTC
   document.getElementById('floatingLogo').style.transform = 'translateX(0)';
 }, 4000);
 </script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+ 
 </body>
 </html>
