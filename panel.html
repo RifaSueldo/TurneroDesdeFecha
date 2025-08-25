@@ -138,29 +138,40 @@
   <style>
     /* ===== Tipografía y base ===== */
 body {
-  font-family: 'Montserrat', Arial, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-  padding: 20px;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
   margin: 0;
+  padding: 20px;
+  background-color: #533482;
+  color: #F2F2F2;
 }
+
+h1, h2, h3, h4 {
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+h1 { text-align: center; font-size: 2rem; }
 
 /* ===== Botones ===== */
 button {
-  background-color: #007bff;
+  background-color: #533482;
   color: #fff;
   border: none;
-  border-radius: 6px;
+  border-radius: 0px;
   padding: 8px 14px;
   margin: 4px 2px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 600;
   transition: background-color 0.2s, transform 0.1s;
 }
 
 button:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
+  background-color: #452a7a;
+  transform: translateY(-2px);
 }
 
 button:disabled {
@@ -171,17 +182,30 @@ button:disabled {
 /* ===== Contenedores de profesionales ===== */
 .profesional {
   border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #fff;
   padding: 12px;
   margin: 12px 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 0px;
+  background: linear-gradient(
+              135deg,
+              #D2B8FF 0%, 
+              #fff 25%, 
+              #F4EDFF 50%, 
+              #fff 75%, 
+              #D2B8FF 100%
+          ),
+          repeating-linear-gradient(
+              0deg,
+              rgba(255,255,255,0.05) 0px,
+              rgba(255,255,255,0.05) 2px,
+              transparent 2px,
+              transparent 4px
+          );
+  background-blend-mode: overlay;
+  color: #533482;
 }
 
 .profesional h3 {
-  margin: 0 0 8px 0;
-  font-weight: 600;
-  font-size: 16px;
+  margin-bottom: 8px;
 }
 
 /* ===== Configuración de turnos ===== */
@@ -201,57 +225,66 @@ button:disabled {
   font-weight: 500;
 }
 
-/* ===== Checkboxes ===== */
-#config label {
-  display: inline-block;
-  margin: 2px 4px;
-  padding: 4px 6px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-#config input[type="checkbox"] {
-  display: none;
-}
-
-/* Estado activo */
-#config input[type="checkbox"]:checked + span {
-  background-color: #28a745;
-  color: #fff;
-}
-
-/* Estado deshabilitado (visible=0) */
-#config input[type="checkbox"].inactive + span {
-  background-color: #dc3545;
-  color: #fff;
-}
-
-/* Hover */
-#config label:hover span {
-  background-color: #17a2b8;
-  color: #fff;
-}
-
-/* ===== Inputs de rango ===== */
-input[type="time"],
-input[type="date"],
-select {
-  padding: 6px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  margin: 4px 0;
-  font-size: 14px;
-}
-
-/* ===== Separadores y contenedores ===== */
-.day-row {
-  margin-bottom: 12px;
-}
-
 .checkbox-row {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+label.hora-label {
+  margin: 4px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+label.hora-label span {
+  display: inline-block;
+  padding: 6px 10px;
+  font-weight: 600;
+  border-radius: 0px;
+  transition: all 0.2s;
+}
+
+/* Estados de hora */
+label.hora-label span.disponible {
+  background: #F7F7F7;
+  color: #533482;
+}
+label.hora-label span.disponible:hover {
+  background-color: #533482;
+  color: #fff;
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+label.hora-label span.bloqueado {
+  background: #D2B8FF95;
+  color: #F7F7F7;
+  cursor: not-allowed;
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+label.hora-label span.selected {
+  background-color: #533482;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Inputs de rango y selects */
+input[type="time"], input[type="date"], select {
+  padding: 6px;
+  border-radius: 0px;
+  border: 1px solid #ccc;
+  margin: 4px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Responsivo */
+@media(max-width:650px){
+  .checkbox-row label span {
+    padding: 4px 6px;
+    font-size: 0.9rem;
+  }
 }
   </style>
 </head>
