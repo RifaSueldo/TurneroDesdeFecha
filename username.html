@@ -753,7 +753,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCalendario(selectedDate.getFullYear(), selectedDate.getMonth());
 
   // Cargamos turnos del día actual
-  const todayStr = selectedDate.toISOString().split("T")[0];
+const todayStr = selectedDate.toLocaleDateString("fr-CA"); // yyyy-mm-dd sin UTC
   cargarTurnos(todayStr).then(() => {
     const turnosDiv = document.getElementById("turnos");
     if (turnosDiv) turnosDiv.scrollIntoView({ behavior: "smooth" });
