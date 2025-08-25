@@ -136,11 +136,123 @@
     }
   </script>
   <style>
-    body { font-family: Arial, sans-serif; padding:20px; }
-    .profesional { border:1px solid #ccc; padding:10px; margin:10px 0; border-radius:8px; }
-    h2 { margin-top:20px; }
-    label { margin-right:10px; }
-    .slots { margin:5px 0 15px 0; padding:5px; background:#f9f9f9; border-radius:5px; }
+    /* ===== Tipografía y base ===== */
+body {
+  font-family: 'Montserrat', Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 20px;
+  margin: 0;
+}
+
+/* ===== Botones ===== */
+button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:hover {
+  background-color: #0056b3;
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* ===== Contenedores de profesionales ===== */
+.profesional {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  padding: 12px;
+  margin: 12px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.profesional h3 {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* ===== Configuración de turnos ===== */
+#config {
+  margin-top: 20px;
+}
+
+#config h2 {
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#config h4 {
+  margin: 10px 0 6px 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* ===== Checkboxes ===== */
+#config label {
+  display: inline-block;
+  margin: 2px 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+#config input[type="checkbox"] {
+  display: none;
+}
+
+/* Estado activo */
+#config input[type="checkbox"]:checked + span {
+  background-color: #28a745;
+  color: #fff;
+}
+
+/* Estado deshabilitado (visible=0) */
+#config input[type="checkbox"].inactive + span {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* Hover */
+#config label:hover span {
+  background-color: #17a2b8;
+  color: #fff;
+}
+
+/* ===== Inputs de rango ===== */
+input[type="time"],
+input[type="date"],
+select {
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* ===== Separadores y contenedores ===== */
+.day-row {
+  margin-bottom: 12px;
+}
+
+.checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+}
   </style>
 </head>
 <body onload="init()">
